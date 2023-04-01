@@ -407,7 +407,7 @@ private async Task LlamaReply(SocketMessage message, SocketCommandContext contex
 
             var overrideSettings = new JObject
             {
-                { "filter_nsfw", true }
+                { "filter_nsfw", true } // this doesn't work, if you can figure out why feel free to tell me :OMEGALUL:
             };
 
             var payload = new JObject
