@@ -353,3 +353,157 @@ private async Task LlamaReply(SocketMessage message, SocketCommandContext contex
                 Console.WriteLine("LLM server disconnected.");
             });
         }
+
+        static DateTime GetCurrentTimeInJapan()
+        {
+            DateTime utcNow = DateTime.UtcNow;
+            TimeZoneInfo japanTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Tokyo Standard Time");
+            DateTime currentTimeInJapan = TimeZoneInfo.ConvertTimeFromUtc(utcNow, japanTimeZone);
+            return currentTimeInJapan;
+        }
+
+        static string GetTimeOfDayInNaturalLanguage(DateTime dateTime)
+        {
+            int hour = dateTime.Hour;
+
+            if (hour >= 5 && hour < 12)
+            {
+                return "Morning";
+            }
+            else if (hour >= 12 && hour < 17)
+            {
+                return "Afternoon";
+            }
+            else if (hour >= 17 && hour < 21)
+            {
+                return "Evening";
+            }
+            else
+            {
+                return "Night";
+            }
+        }
+
+        private async Task TakeAPic(SocketUserMessage Msg, string llmPrompt, string timeOfDayInNaturalLanguage)
+        {
+            var Context = new SocketCommandContext(Client, Msg);
+            var user = Context.User as SocketGuildUser;
+
+            string baseUrl = "http://127.0.0.1:7860"; // here is the default URL for stable diffusion web ui with --API param enabled in the launch parameters
+            string timeOfDayStr = string.Empty;
+
+            if (timeOfDayInNaturalLanguage != null)
+                timeOfDayStr = $", ({timeOfDayInNaturalLanguage})";
+
+            string imgPrompt = $"A 25 year old anime woman smiling, looking into the camera, long hair, blonde hair, blue eyes{timeOfDayStr}"; // POSITIVE PROMPT - put what you want the image to look like generally. The AI will put its own prompt after this.
+            string imgNegPrompt = $"(worst quality, low quality:1.4), 3d, cgi, 3d render, naked, nude"; // NEGATIVE PROMPT HERE - put what you don't want to see
+
+            var adminRole = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 364221505971814400);
+
+            //if (Msg.Author == MainGlobal.Server.Owner) // only owner
+            imgPrompt = $"{imgPrompt}, {llmPrompt}";
+
+            Console.WriteLine($"Prompt:{imgPrompt}");
+
+            var overrideSettings = new JObject
+            {
+                { "filter_nsfw", true }
+            };
+
+            var payload = new JObject
+            {
+                { "prompt", imgPrompt },
+                { "negative_prompt", imgNegPrompt},
+                { "steps", 20 },
+                { "height", 688 },
+                { "send_images", true },
+                { "sampler_name", "DDIM" }
+            };
+
+            // here are the json tags you can send to the stable diffusion image generator
+
+            //"enable_hr": false,
+            //"denoising_strength": 0,
+            //"firstphase_width": 0,
+            //"firstphase_height": 0,
+            //"hr_scale": 2,
+            //"hr_upscaler": "string",
+            //"hr_second_pass_steps": 0,
+            //"hr_resize_x": 0,
+            //"hr_resize_y": 0,
+            //"prompt": "",
+            //"styles": [
+            //  "string"
+            //],
+            //"seed": -1,
+            //"subseed": -1,
+            //"subseed_strength": 0,
+            //"seed_resize_from_h": -1,
+            //"seed_resize_from_w": -1,
+            //"sampler_name": "string",
+            //"batch_size": 1,
+            //"n_iter": 1,
+            //"steps": 50,
+            //"cfg_scale": 7,
+            //"width": 512,
+            //"height": 512,
+            //"restore_faces": false,
+            //"tiling": false,
+            //"do_not_save_samples": false,
+            //"do_not_save_grid": false,
+            //"negative_prompt": "string",
+            //"eta": 0,
+            //"s_churn": 0,
+            //"s_tmax": 0,
+            //"s_tmin": 0,
+            //"s_noise": 1,
+            //"override_settings": { },
+            //"override_settings_restore_afterwards": true,
+            //"script_args": [],
+            //"sampler_index": "Euler",
+            //"script_name": "string",
+            //"send_images": true,
+            //"save_images": false,
+            //"alwayson_scripts": { }
+
+            string url = $"{baseUrl}/sdapi/v1/txt2img";
+            var client = new RestClient(url);
+            var sdImgRequest = new RestRequest($"{baseUrl}/sdapi/v1/txt2img", Method.Post);
+
+            sdImgRequest.AddHeader("Content-Type", "application/json");
+            sdImgRequest.AddParameter("application/json", payload.ToString(), ParameterType.RequestBody);
+            sdImgRequest.AddParameter("application/json", overrideSettings.ToString(), ParameterType.RequestBody);
+
+            var sdImgResponse = client.Execute(sdImgRequest);
+            if (sdImgResponse.IsSuccessful)
+            {
+                var jsonResponse = JObject.Parse(sdImgResponse.Content);
+                var images = jsonResponse["images"].ToObject<JArray>();
+
+                foreach (var imageBase64 in images)
+                {
+                    //string base64 = imageBase64.ToString().Split(",", 2)[1];
+                    string imageData = imageBase64.ToString();
+                    int commaIndex = imageData.IndexOf(',') + 1;
+                    string base64 = imageData.Substring(commaIndex);
+
+                    // Decode the base64 string to an image
+                    using var imageStream = new MemoryStream(Convert.FromBase64String(base64));
+                    using var image = SixLabors.ImageSharp.Image.Load(imageStream);
+
+                    // Save the image
+                    //Random rand = new Random();
+                    //{rand.Next(100000, 99999)}
+
+                    string sdImgFilePath = $"c:\\Users\\Dean\\Pictures\\discord\\SallyBot\\pic.png";
+                    image.Save(sdImgFilePath, new PngEncoder());
+
+                    Task.Delay(1000).Wait();
+                    Msg.Channel.SendFileAsync(sdImgFilePath);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Request failed: " + sdImgResponse.ErrorMessage);
+            }
+        }
