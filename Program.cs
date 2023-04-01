@@ -495,7 +495,7 @@ private async Task LlamaReply(SocketMessage message, SocketCommandContext contex
                     //Random rand = new Random();
                     //{rand.Next(100000, 99999)}
 
-                    string sdImgFilePath = $"c:\\Users\\Dean\\Pictures\\discord\\SallyBot\\pic.png";
+                    string sdImgFilePath = $"c:\\Users\\%USERNAME%\\Pictures\\SallyBot\\pic.png";
                     image.Save(sdImgFilePath, new PngEncoder());
 
                     Task.Delay(1000).Wait();
