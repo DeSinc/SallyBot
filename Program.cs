@@ -1,14 +1,14 @@
 private async Task LlamaReply(SocketMessage message, SocketCommandContext context)
         {
-            bool humanPrompted = true;
+            bool humanPrompted = true;  // this flag indicates the msg should run while the feedback is being sent to the person
+                                        // the bot tends to ramble after posting, so we set this to false once it sends its message to ignore the rambling
 
             var Msg = message as SocketUserMessage;
             var Context = new SocketCommandContext(Client, Msg);
             var user = Context.User as SocketGuildUser;
 
-            var patreon1 = MainGlobal.Server.Roles.FirstOrDefault(x => x.Id == 373446230090448897);
-            var youtube1 = MainGlobal.Server.Roles.FirstOrDefault(x => x.Id == 419038061762969600);
-            var adminRole = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 364221505971814400);
+        // THIS IS MY ADMIN ROLE ID, REPLACE WITH YOUR OWN
+            var adminRole = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 364221505971814400); // THIS IS MY ADMIN ROLE ID, REPLACE WITH YOUR OWN
 
             bool allowedUser = false;
 
@@ -17,7 +17,7 @@ private async Task LlamaReply(SocketMessage message, SocketCommandContext contex
             List<string> bannedWords = new List<string>
                 {
                     // Add your list of banned words here
-                    "butt", "bum", "booty", "bath", "bathtub", "nudity", "naked"
+                    "butt", "bum", "booty", "nudity", "naked"
                 };
 
             if (user.Roles.Contains(adminRole))
@@ -37,7 +37,7 @@ private async Task LlamaReply(SocketMessage message, SocketCommandContext contex
                 .Replace("\\n", "")
                 .Replace("{", "")
                 .Replace("}", "")
-                .Replace("\"", "'");
+                .Replace("\"", "'"); // this makes all the prompting detection regex work, but if you know what you're doing you can change these
 
             inputMsg = Regex.Replace(inputMsg, @"(<[@|\/][^<>]+>)|\[[^\]]+[\]:\\]\:|\:\]|\[^\]]", "");
 
