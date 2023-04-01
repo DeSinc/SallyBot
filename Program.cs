@@ -407,7 +407,7 @@ private async Task LlamaReply(SocketMessage message, SocketCommandContext contex
 
             var overrideSettings = new JObject
             {
-                { "filter_nsfw", true } // this doesn't work, if you can figure out why feel free to tell me :OMEGALUL:
+                { "filter_nsfw", true }
             };
 
             var payload = new JObject
@@ -419,6 +419,8 @@ private async Task LlamaReply(SocketMessage message, SocketCommandContext contex
                 { "send_images", true },
                 { "sampler_name", "DDIM" }
             };
+
+            payload.Add(new JProperty("override_settings", overrideSettings));
 
             // here are the json tags you can send to the stable diffusion image generator
 
@@ -472,7 +474,6 @@ private async Task LlamaReply(SocketMessage message, SocketCommandContext contex
 
             sdImgRequest.AddHeader("Content-Type", "application/json");
             sdImgRequest.AddParameter("application/json", payload.ToString(), ParameterType.RequestBody);
-            sdImgRequest.AddParameter("application/json", overrideSettings.ToString(), ParameterType.RequestBody);
 
             var sdImgResponse = client.Execute(sdImgRequest);
             if (sdImgResponse.IsSuccessful)
