@@ -52,11 +52,7 @@ namespace SallyBot
                     GatewayIntents =
                 GatewayIntents.MessageContent |
                 GatewayIntents.Guilds |
-                GatewayIntents.GuildMembers |
-                GatewayIntents.GuildPresences |
-                GatewayIntents.GuildMessageReactions |
-                GatewayIntents.GuildMessages |
-                GatewayIntents.GuildVoiceStates
+                GatewayIntents.GuildMessages
                 });
 
                 Commands = new CommandService(new CommandServiceConfig
@@ -172,7 +168,7 @@ namespace SallyBot
                 {
                     thinking = 2; // set thinking to 2 to make sure no new requests come in while it is generating (it scrambles the outputs together)
                     await LlamaReply(Msg, Context); // run the LlamaReply function to reply to the user's message
-                    Context.Channel.SendMessageAsync($"{user.Mention} has spoken in {contextChannel}! Hello!!"); 
+                    await Context.Channel.SendMessageAsync($"{user.Mention} said {Msg.Content} in {contextChannel}! Hello!!"); 
                 }
             }
             catch (Exception exception)
