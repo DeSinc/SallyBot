@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 using Discord.WebSocket;
 
-namespace RoboSinc
+namespace SallyBot
 {
     internal static class MainGlobal
     {
