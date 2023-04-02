@@ -32,8 +32,6 @@ namespace SallyBot
         private DiscordSocketClient Client;
         private CommandService Commands;
 
-        private static int tickCount = 0;
-
         static internal int thinking = 0;
         static internal int typing = 0;
         static internal int typingTicks = 0;
