@@ -11,7 +11,6 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 
-using RoboSinc.Database;
 using Discord.Rest;
 using SocketIOClient;
 using Newtonsoft.Json.Linq;
