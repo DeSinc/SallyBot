@@ -668,3 +668,5 @@ namespace SallyBot
                 Console.WriteLine("Request failed: " + sdImgResponse.ErrorMessage);
             }
         }
+    }
+}
