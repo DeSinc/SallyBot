@@ -62,6 +62,7 @@ namespace SallyBot
                     LogLevel = LogSeverity.Debug
                 });
 
+                Client.Log += Client_Log;
                 Client.MessageReceived += Client_MessageReceived;
                 await Commands.AddModulesAsync(Assembly.GetEntryAssembly(), null);
 
@@ -132,6 +133,25 @@ namespace SallyBot
             {
                 Console.WriteLine(exception.Message);
             }
+        }
+
+        private async Task Client_Log(LogMessage Msg)
+        {
+            if (!(Msg.Message.ToString().Contains("PRESENCE_UPDATE"))
+              & !(Msg.Message.ToString().Contains("TYPING_START"))
+              & !(Msg.Message.ToString().Contains("MESSAGE_CREATE"))
+              & !(Msg.Message.ToString().Contains("MESSAGE_DELETE"))
+              & !(Msg.Message.ToString().Contains("MESSAGE_UPDATE"))
+              & !(Msg.Message.ToString().Contains("GUILD_"))
+              & !(Msg.Message.ToString().Contains("REACTION_"))
+              & !(Msg.Message.ToString().Contains("VOICE_STATE_UPDATE"))
+              & !(Msg.Message.ToString().Contains("DELETE channels/"))
+              & !(Msg.Message.ToString().Contains("POST channels/"))
+              & !(Msg.Message.ToString().Contains("Heartbeat"))
+              & !(Msg.Message.ToString().Contains("GET "))
+              & !(Msg.Message.ToString().Contains("PUT "))
+              & !(Msg.Message.ToString().Contains("Latency = ")))
+                Console.WriteLine($"|{DateTime.Now} - {Msg.Source}| {Msg.Message}");
         }
 
         private static async void Tick(object sender, ElapsedEventArgs e)
