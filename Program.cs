@@ -5,20 +5,17 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Regex;
-using NetCoreExtensions.Regex;
 
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 
-using Discord.Rest;
 using SocketIOClient;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using RestSharp;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
-using System.Collections;
 
 // NOTE - I'm not 100% sure if all of these are needed for SallyBot. Some of these might be for my own code that is not included in this file. Just check to make sure.
 
@@ -169,8 +166,8 @@ namespace SallyBot
                 var contextChannel = Context.Channel as SocketGuildChannel; // used if you want to select a channel for the bot to ignore or to only pay attention to
                 
                 if (thinking <= 0  // only run if the bot is not typing or "thinking" still (aka: this code only runs 1 prompt at a time)
-                    && typing <= 0
-                    && Msg.MentionedUsers.Contains(MainGlobal.Server.GetUser(438634979862511616))) // only run when mentioning the bot (you can comment this out to have it reply to every msg)
+                    && typing <= 0)
+                    // && Msg.MentionedUsers.Contains(MainGlobal.Server.GetUser(YOUR BOT ID HERE))) // only run when mentioning the bot
                     // && (contextChannel.Id == channel_id_here) // you can uncomment this if you want it to only see one channel. put in the channel ID there.
                 {
                     thinking = 2; // set thinking to 2 to make sure no new requests come in while it is generating (it scrambles the outputs together)
