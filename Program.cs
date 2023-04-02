@@ -26,7 +26,18 @@ namespace SallyBot
 {
     class Program
     {
-            static void Main()
+        private static Timer Loop;
+
+        private SocketIO Socket;
+        private DiscordSocketClient Client;
+        private CommandService Commands;
+
+        private static int tickCount = 0;
+
+        static internal int thinking = 0;
+        static internal int typing = 0;
+        static internal int typingTicks = 0;
+        static void Main()
                 => new Program().AsyncMain().GetAwaiter().GetResult();
 
         private async Task AsyncMain()
@@ -62,14 +73,6 @@ namespace SallyBot
 
                 Client.MessageReceived += Client_MessageReceived;
                 await Commands.AddModulesAsync(Assembly.GetEntryAssembly(), null);
-
-                Client.Log += Client_Log;
-                Client.Ready += MainLoop.StartLoop;
-                Client.UserJoined += Client_UserJoined;
-                Client.MessageUpdated += Client_MessageUpdated;
-                Client.ReactionAdded += Client_ReactionAdded;
-                //Client.RoleCreated += Client_RoleCreated;
-                //Client.GuildMemberUpdated += Client_GuildMemberUpdated;
 
                 // no longer seems to work - used to detect user joining VC and remove their deny send msg perm to the vc chat text channel
                 // Client.UserVoiceStateUpdated += Client_UserVoiceStateUpdated;
@@ -177,8 +180,11 @@ namespace SallyBot
                     Context.Channel.SendMessageAsync($"{user.Mention} has spoken in {contextChannel}! Hello!!"); 
                 }
             }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message);
+            }
         }
-
         private async Task LlamaReply(SocketMessage message, SocketCommandContext context)
         {
             bool humanPrompted = true;  // this flag indicates the msg should run while the feedback is being sent to the person
@@ -534,37 +540,6 @@ namespace SallyBot
                 Console.WriteLine("LLM server disconnected.");
             });
         }
-
-        static DateTime GetCurrentTimeInJapan()
-        {
-            DateTime utcNow = DateTime.UtcNow;
-            TimeZoneInfo japanTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Tokyo Standard Time");
-            DateTime currentTimeInJapan = TimeZoneInfo.ConvertTimeFromUtc(utcNow, japanTimeZone);
-            return currentTimeInJapan;
-        }
-
-        static string GetTimeOfDayInNaturalLanguage(DateTime dateTime)
-        {
-            int hour = dateTime.Hour;
-
-            if (hour >= 5 && hour < 12)
-            {
-                return "Morning";
-            }
-            else if (hour >= 12 && hour < 17)
-            {
-                return "Afternoon";
-            }
-            else if (hour >= 17 && hour < 21)
-            {
-                return "Evening";
-            }
-            else
-            {
-                return "Night";
-            }
-        }
-
         private async Task TakeAPic(SocketUserMessage Msg, string llmPrompt, string timeOfDayInNaturalLanguage)
         {
             var Context = new SocketCommandContext(Client, Msg);
@@ -687,6 +662,114 @@ namespace SallyBot
             {
                 Console.WriteLine("Request failed: " + sdImgResponse.ErrorMessage);
             }
+        }
+
+        static DateTime GetCurrentTimeInJapan()
+        {
+            DateTime utcNow = DateTime.UtcNow;
+            TimeZoneInfo japanTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Tokyo Standard Time");
+            DateTime currentTimeInJapan = TimeZoneInfo.ConvertTimeFromUtc(utcNow, japanTimeZone);
+            return currentTimeInJapan;
+        }
+
+        static string GetTimeOfDayInNaturalLanguage(DateTime dateTime)
+        {
+            int hour = dateTime.Hour;
+
+            if (hour >= 5 && hour < 12)
+            {
+                return "Morning";
+            }
+            else if (hour >= 12 && hour < 17)
+            {
+                return "Afternoon";
+            }
+            else if (hour >= 17 && hour < 21)
+            {
+                return "Evening";
+            }
+            else
+            {
+                return "Night";
+            }
+        }
+
+        public static int LevenshteinDistance(string s, string t)
+        {
+            if (string.IsNullOrEmpty(s) || string.IsNullOrEmpty(t))
+            {
+                return 0;
+            }
+
+            int[,] d = new int[s.Length + 1, t.Length + 1];
+
+            for (int i = 0; i <= s.Length; i++)
+            {
+                d[i, 0] = i;
+            }
+
+            for (int j = 0; j <= t.Length; j++)
+            {
+                d[0, j] = j;
+            }
+
+            for (int i = 1; i <= s.Length; i++)
+            {
+                for (int j = 1; j <= t.Length; j++)
+                {
+                    int cost = GetSubstitutionCost(s[i - 1], t[j - 1]);
+
+                    d[i, j] = Math.Min(
+                        Math.Min(d[i - 1, j] + 1, d[i, j - 1] + 1),
+                        d[i - 1, j - 1] + cost);
+                }
+            }
+
+            return d[s.Length, t.Length];
+        }
+
+        private static int GetSubstitutionCost(char a, char b)
+        {
+            if (a == b) return 0;
+
+            bool isSymbolOrNumberA = !char.IsLetter(a);
+            bool isSymbolOrNumberB = !char.IsLetter(b);
+
+            if (isSymbolOrNumberA && isSymbolOrNumberB) return 1;
+            if (isSymbolOrNumberA || isSymbolOrNumberB) return 2;
+
+            return 1;
+        }
+        public static string IsSimilarToBannedWords(string input, List<string> bannedWords, int threshold)
+        {
+            string detectedWordsStr = string.Empty;
+            string[] inputWords = input.Split(' ');
+            foreach (string word in inputWords)
+            {
+                string wordRegexed = Regex.Replace(word.ToLower(), "[^a-zA-Z0-9]+", "");
+                threshold = 0;
+                int wordLength = wordRegexed.Length;
+                if (wordLength > 2)
+                {
+                    if (wordLength > 6)
+                    {
+                        threshold = 2;
+                    }
+                    else if (wordLength > 4)
+                    {
+                        threshold = 1;
+                    }
+                    foreach (string bannedWord in bannedWords)
+                    {
+                        if (LevenshteinDistance(wordRegexed, bannedWord.ToLower()) <= threshold)
+                        {
+                            Console.Write($"| BANNED WORD: {word} similar to {bannedWord} ");
+                            detectedWordsStr += word + " ";
+                        }
+                    }
+                }
+            }
+            return detectedWordsStr;
         }
     }
 }
