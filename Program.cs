@@ -1,4 +1,165 @@
-private async Task LlamaReply(SocketMessage message, SocketCommandContext context)
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using System.Timers;
+using System.Regex;
+using NetCoreExtensions.Regex;
+
+using Discord;
+using Discord.Commands;
+using Discord.WebSocket;
+
+using RoboSinc.Database;
+using Discord.Rest;
+using SocketIOClient;
+using Newtonsoft.Json.Linq;
+using System.IO;
+using RestSharp;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats.Png;
+using System.Collections;
+
+// NOTE - I'm not 100% sure if all of these are needed for SallyBot. Some of these might be for my own code that is not included in this file. Just check to make sure.
+
+namespace SallyBot
+{
+    class Program
+    {
+            static void Main()
+                => new Program().AsyncMain().GetAwaiter().GetResult();
+
+        private async Task AsyncMain()
+        {
+            //AppDomain.CurrentDomain.FirstChanceException += (sender, eventArgs) =>
+            //{
+            //    Console.WriteLine(eventArgs.Exception.ToString());
+            //};
+
+            try
+            {
+                Client = new DiscordSocketClient(new DiscordSocketConfig
+                {
+                    MessageCacheSize = 1200,
+                    LogLevel = LogSeverity.Debug,
+                    AlwaysDownloadUsers = true,
+                    GatewayIntents =
+                GatewayIntents.MessageContent |
+                GatewayIntents.Guilds |
+                GatewayIntents.GuildMembers |
+                GatewayIntents.GuildPresences |
+                GatewayIntents.GuildMessageReactions |
+                GatewayIntents.GuildMessages |
+                GatewayIntents.GuildVoiceStates
+                });
+
+                Commands = new CommandService(new CommandServiceConfig
+                {
+                    CaseSensitiveCommands = false,
+                    DefaultRunMode = RunMode.Async,
+                    LogLevel = LogSeverity.Debug
+                });
+
+                Client.MessageReceived += Client_MessageReceived;
+                await Commands.AddModulesAsync(Assembly.GetEntryAssembly(), null);
+
+                Client.Log += Client_Log;
+                Client.Ready += MainLoop.StartLoop;
+                Client.UserJoined += Client_UserJoined;
+                Client.MessageUpdated += Client_MessageUpdated;
+                Client.ReactionAdded += Client_ReactionAdded;
+                //Client.RoleCreated += Client_RoleCreated;
+                //Client.GuildMemberUpdated += Client_GuildMemberUpdated;
+
+                // no longer seems to work - used to detect user joining VC and remove their deny send msg perm to the vc chat text channel
+                // Client.UserVoiceStateUpdated += Client_UserVoiceStateUpdated;
+
+                //Client.Connected += Client_Connected;
+
+             // This code reads bot's token from a text file in \data\ folder rather than pasting it directly in the code (note: last I checked it doesn't seem to work)
+                //using (var TextStream = new FileStream(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.0", @"data\Token.txt"), FileMode.Open, FileAccess.Read))
+                //using (var ReadToken = new StreamReader(TextStream))
+                //{
+                //TokenType = ReadToken.ReadToEnd();
+                //}
+
+
+                await Client.LoginAsync(TokenType.Bot, MainGlobal.conS);
+
+                await Client.StartAsync();
+
+                Loop = new Timer()
+                {
+                    Interval = 5900,
+                    AutoReset = true,
+                    Enabled = true
+                };
+                Loop.Elapsed += Tick;
+                //Loop.Elapsed += Tock; // TEST LIMITED SCOPE TICK
+
+                Console.WriteLine($"|{DateTime.Now} | Main loop initialised");
+
+                MainGlobal.Client = Client;
+
+                // Connect to the LLM with SocketIO (fill in your particular LLM server details here)
+                try
+                {
+                    // Initialize the Socket.IO connection
+                    Socket = new SocketIO("http://localhost:3000");
+                    Socket.OnConnected += async (sender, e) =>
+                    {
+                        Console.WriteLine("Connected to LLM server.");
+                    };
+
+                    Socket.On("token", response =>
+                    {
+                        Console.WriteLine("response: " + response);
+                        Console.WriteLine("response.tostring: " + response.ToString());
+                        string token = response.GetValue<string>();
+                        Console.WriteLine("token = response.GetValue<string>(): " + token);
+                    });
+
+                    Socket.ConnectAsync();
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+                }
+
+                await Task.Delay(-1);
+
+                AppDomain.CurrentDomain.FirstChanceException += (sender, eventArgs) =>
+                {
+                    Exception ex = eventArgs.Exception;
+                    Console.WriteLine($"\u001b[45;1m[  DISC  ]\u001b[41;1m[  ERR  ]\u001b[0m MSG: {ex.Message} \n WHERE: {ex.StackTrace} \n\n");
+                };
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message);
+            }
+        }
+
+        private static async void Tick(object sender, ElapsedEventArgs e)
+        {
+            if (typing > 0)
+            {
+                typing--;       // Lower typing tick over time until it's back to 0 - used below for sending "Is typing..." to discord.
+                typingTicks++;  // increase tick by 1 per tick. Each tick it gets closer to the limit you choose, until it exceeds the limit where you can tell the bot to interrupt the code.
+            }
+            if (thinking > 0)
+            {
+                thinking--;     // this thinking value, while above 0, stops all other user commands from coming in. Lowers over time until 0 again, then accepting requests.
+                if (thinking == 0)
+                {
+                    Console.WriteLine();
+                    Console.WriteLine("Thinking timeout"); // bot is cleared for requests again.
+                }
+            }
+        }
+
+        private async Task LlamaReply(SocketMessage message, SocketCommandContext context)
         {
             bool humanPrompted = true;  // this flag indicates the msg should run while the feedback is being sent to the person
                                         // the bot tends to ramble after posting, so we set this to false once it sends its message to ignore the rambling
