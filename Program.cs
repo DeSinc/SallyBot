@@ -347,7 +347,7 @@ namespace SallyBot
             var request = new
             {
                 seed = -1,
-                threads = 16,
+                threads = 4,
                 n_predict = 200,
                 top_k = 40,
                 top_p = 0.9,
