@@ -417,7 +417,7 @@ namespace SallyBot
 
                 if (listening && humanPrompted)
                 {
-                    llmFinalMsg = llmMsg;
+                    llmFinalMsg += token; // start writing the LLM's response to this string
                     string llmFinalMsgRegexed = promptEndDetectionRegex.Replace(llmFinalMsg, "");
                     string llmFinalMsgUnescaped = Regex.Unescape(llmFinalMsgRegexed);
 
@@ -477,7 +477,7 @@ namespace SallyBot
 
                 if (imgListening)
                 {
-                    llmFinalMsg = llmMsg;
+                    llmFinalMsg += token; // start writing the LLM's response to this string
                     promptEndDetected = promptEndDetectionRegex.IsMatch(llmFinalMsg);
 
                     if (llmFinalMsg.Length > 2
