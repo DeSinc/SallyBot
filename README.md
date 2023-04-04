@@ -9,7 +9,7 @@ Double click sallybot.csproj and open with Visual Studio
 
 It should open up the whole project and make a .sln file etc.
 
-If you (don't have a bot already)
+If (you don't have a bot already)
 
 {
 
