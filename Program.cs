@@ -392,7 +392,13 @@ namespace SallyBot
                 tokenStartIndex = result.ToString().IndexOf("\"response\":\"");
                 token = result.ToString().Substring(tokenStartIndex + 12);
                 tokenEndIndex = token.IndexOf("\",\"");
-                token = token.Substring(0, tokenEndIndex);
+                token = token
+                .Substring(0, tokenEndIndex)
+                .Replace("\\n", "\n"); // replace backslash n with the proper newline char
+                                       //.Replace("\n", "")
+                                       //.Replace("\r", "")
+                                       //.Replace("\\n", "\n")
+                                       //.Replace("\\r", "\n");
 
                 Console.Write(token);
                 //    .Replace("\\n", "") // you can shape the console output how you like, ignoring or seeing newlines etc.
