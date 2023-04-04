@@ -11,7 +11,7 @@ It should open up the whole project and make a .sln file etc.
 
 If you don't have a bot already:
 
-* Create a new Discord bot on their developer portal and make an API key (takes about 5 mins) https://discord.com/developers/applications
+* Create a new Discord bot on their developer portal and make an API key (takes about 2 mins) https://discord.com/developers/applications
             
 * Make sure you enable message intents and other intents for this bot or you won't see any message content etc. Use this guide: https://autocode.com/discord/threads/what-are-discord-privileged-intents-and-how-do-i-enable-them-tutorial-0c3f9977/
 * Join the bot to your server, follow this guide if you don't know how: https://discordjs.guide/preparations/adding-your-bot-to-servers.html#bot-invite-links
