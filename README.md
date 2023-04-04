@@ -9,6 +9,8 @@ Double click sallybot.csproj and open with Visual Studio
 
 It should open up the whole project and make a .sln file etc.
 
+Put your bot API key in the MainGlobal.cs file
+
 Press F5 to build it and run and see what happens (it should work first try)
 
 If it doesn't idk lmao. Google will be your greatest ally in this battle. have fun
