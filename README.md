@@ -10,15 +10,10 @@ Double click sallybot.csproj and open with Visual Studio
 It should open up the whole project and make a .sln file etc.
 
 If (you don't have a bot already)
-
 {
-
-* Follow a quick youtube tutorial on creating a new Discord bot in their developer portal and make an API key (only takes about 5-10 mins)
-
-* Make sure you enable message intents and other intents for this bot or you won't see any message content etc. Use this guide: https://autocode.com/discord/threads/what-are-discord-privileged-intents-and-how-do-i-enable-them-tutorial-0c3f9977/
-
-* Join the bot to your server, follow this guide if you don't know how: https://discordjs.guide/preparations/adding-your-bot-to-servers.html#bot-invite-links
-
+            Follow a quick youtube tutorial on creating a new Discord bot in their developer portal and make an API key (only takes about 5-10 mins)
+            Make sure you enable message intents and other intents for this bot or you won't see any message content etc. Use this guide: https://autocode.com/discord/threads/what-are-discord-privileged-intents-and-how-do-i-enable-them-tutorial-0c3f9977/
+            Join the bot to your server, follow this guide if you don't know how: https://discordjs.guide/preparations/adding-your-bot-to-servers.html#bot-invite-links
 }
 
 Put your bot API key in the MainGlobal.cs file
