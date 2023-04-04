@@ -32,8 +32,13 @@ This bot doesn't generate the AI text but just sends requests off to a language 
 It's this line:
 
 var request = new
+
             {
+            
                 seed = -1,
-                threads = 4, <--(btw you can change this to your thread count minus 2 for more speed)
+                
+                threads = 4,   <--(btw, change this to your thread count minus 2 for more speed)
                 
 etc..
+
+If you're using another AI text generator, check its github page for instructions on how to format the data and change the format of the request to what it needs. You might also need to change the way it sends the request in, which could be a lot of code changes depending. This bot sends via SocketIO to Dalai Alpaca which is the easiest to set up imo and runs on anything with very good speed. I mean anything. It runs on a raspberry pi 4B.
