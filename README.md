@@ -13,6 +13,8 @@ Put your bot API key in the MainGlobal.cs file
 
 Press F5 to build it and run and see what happens (it should work first try)
 
+It has a line of code to reply to any message it sees, feel free to remove this after testing the bot is up and running
+
 If it doesn't idk lmao. Google will be your greatest ally in this battle. have fun
 
 
