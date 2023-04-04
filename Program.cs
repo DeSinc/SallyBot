@@ -183,12 +183,12 @@ namespace SallyBot
                 
                 if (thinking <= 0  // only run if the bot is not typing or "thinking" still (aka: this code only runs 1 prompt at a time)
                     && typing <= 0)
-                    // && Msg.MentionedUsers.Contains(MainGlobal.Server.GetUser(YOUR BOT ID HERE))) // only run when mentioning the bot
+                    && Msg.MentionedUsers.Contains(MainGlobal.Server.GetUser(YOUR BOT ID HERE))) // only run the code if you mentioned the bot
                     // && (contextChannel.Id == channel_id_here) // you can uncomment this if you want it to only see one channel. put in the channel ID there.
                 {
                     thinking = 2; // set thinking to 2 to make sure no new requests come in while it is generating (it scrambles the outputs together)
                     await LlamaReply(Msg, Context); // run the LlamaReply function to reply to the user's message
-                    await Context.Channel.SendMessageAsync($"{user.Mention} said {Msg.Content} in {contextChannel}! Hello!!"); 
+                    await Context.Channel.SendMessageAsync($"{user.Mention} said {Msg.Content} in {contextChannel}! Hello!!"); // remove this once you confirm the bot is working
                 }
             }
             catch (Exception exception)
