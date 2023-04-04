@@ -31,13 +31,13 @@ This bot doesn't generate the AI text but just sends requests off to a language 
 
 It's this line:
 
-var request = new
+    var request = new
 
-            {
+    {
             
-                seed = -1,
+        seed = -1,
                 
-                threads = 4,   <--(btw, change this to your thread count minus 2 for more speed)
+        threads = 4,   <--(btw, change this to your thread count minus 2 for more speed)
                 
 etc..
 
