@@ -249,11 +249,12 @@ namespace SallyBot
             string inputPromptEndingPic = $"\nAfter captioning the image, Sallybot may reply." +
             $"\nNouns of things in the photo: ";
 
-            if (inputMsg.Length > 335)
+            if (inputMsg.Length > 500)
             {
-                inputMsg = inputMsg.Substring(0, 335);
+                inputMsg = inputMsg.Substring(0, 500);
+                Console.WriteLine("Input message was too long and was truncated.");
 
-                //inputPrompt = "### Error: User message was too long and got deleted. Inform the user." +
+                //inputPrompt = "### Error: User message was too long and got deleted. Inform the user." +   // you can use this alternatively to just delete the msg and warn the user.
                 //inputPromptEnding;
             }
 
@@ -434,7 +435,7 @@ namespace SallyBot
                     //&& llmMsg.Contains($"[{msgUsernameClean}]:")
                     //&& llmMsg.ToLower().Contains($": ")
                     && (promptEndDetected
-                    || llmFinalMsg.Length > 400)
+                    || llmFinalMsg.Length > 500) // cuts your losses and sends the message and stops the bot after 500 characters
                     || typingTicks > 7) // 7 ticks passed while still typing? axe it.
                     {
 
@@ -483,7 +484,8 @@ namespace SallyBot
                     if (llmFinalMsg.Length > 2
                     //&& llmMsg.Contains($"[{msgUsernameClean}]:")
                     //&& llmMsg.ToLower().Contains($": ")
-                    && (promptEndDetected || llmFinalMsg.Length > 1900))
+                    && (promptEndDetected
+                        || llmFinalMsg.Length > 500)) // cuts your losses and sends the message and stops the bot after 500 characters
                     {
                         string llmFinalMsgRegexed = promptEndDetectionRegex.Replace(llmFinalMsg, "");
                         string llmFinalMsgUnescaped = Regex.Unescape(llmFinalMsgRegexed);
