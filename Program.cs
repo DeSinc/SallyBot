@@ -95,6 +95,8 @@ namespace SallyBot
                 Console.WriteLine($"|{DateTime.Now} | Main loop initialised");
 
                 MainGlobal.Client = Client;
+                
+                Client.Ready += Ready;
 
                 // Connect to the LLM with SocketIO (fill in your particular LLM server details here)
                 try
@@ -133,6 +135,12 @@ namespace SallyBot
             {
                 Console.WriteLine(exception.Message);
             }
+        }
+        
+        private async Task Ready()
+        {
+            var guild = Client.Guilds.FirstOrDefault();
+            MainGlobal.Server = guild;
         }
 
         private async Task Client_Log(LogMessage Msg)
