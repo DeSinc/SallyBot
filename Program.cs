@@ -174,6 +174,11 @@ namespace SallyBot
         
         private async Task Client_MessageReceived(SocketMessage MsgParam)  // this fires upon receiving a message in the discord
         {
+            if (Msg.Author.IsBot) return; // don't listen to bot messages, including itself
+            
+            // optionally, you can swap it for this line, which tells it to not listen to itself, but allows listening to other bots
+            //if (Msg.Author.Id == MainGlobal.Server.GetUser(YOUR BOT ID HERE)) return;
+            
             try
             {
                 var Msg = MsgParam as SocketUserMessage;
