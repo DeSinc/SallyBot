@@ -71,7 +71,7 @@ namespace SallyBot
 
                 //Client.Connected += Client_Connected;
 
-             // This code reads bot's token from a text file in \data\ folder rather than pasting it directly in the code (note: last I checked it doesn't seem to work)
+                // This code reads bot's token from a text file in \data\ folder rather than pasting it directly in the code (note: last I checked it doesn't seem to work)
                 //using (var TextStream = new FileStream(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.0", @"data\Token.txt"), FileMode.Open, FileAccess.Read))
                 //using (var ReadToken = new StreamReader(TextStream))
                 //{
@@ -157,8 +157,8 @@ namespace SallyBot
         private static async void Tick(object sender, ElapsedEventArgs e)
         {
             if (MainGlobal.Server != null)
-                MainGlobal.Server = MainGlobal.Client.GetGuild(INPUT_YOUR_SERVER_ID_HERE); // Put your discord's server ID in here
-            
+                MainGlobal.Server = MainGlobal.Client.GetGuild(CHANGE_THIS_TO_YOUR_SERVER_ID); // Put your discord's server ID in here
+
             if (typing > 0)
             {
                 typing--;       // Lower typing tick over time until it's back to 0 - used below for sending "Is typing..." to discord.
@@ -174,25 +174,26 @@ namespace SallyBot
                 }
             }
         }
-        
+
         private async Task Client_MessageReceived(SocketMessage MsgParam)  // this fires upon receiving a message in the discord
         {
-            if (Msg.Author.IsBot) return; // don't listen to bot messages, including itself
-            
+
             // optionally, you can swap it for this line, which tells it to not listen to itself, but allows listening to other bots
             //if (Msg.Author.Id == MainGlobal.Server.GetUser(YOUR BOT ID HERE)) return;
-            
+
             try
             {
                 var Msg = MsgParam as SocketUserMessage;
                 var Context = new SocketCommandContext(Client, Msg);
                 var user = Context.User as SocketGuildUser;
                 var contextChannel = Context.Channel as SocketGuildChannel; // used if you want to select a channel for the bot to ignore or to only pay attention to
-                
+
+                if (Msg.Author.IsBot) return; // don't listen to bot messages, including itself
+
                 if (thinking <= 0  // only run if the bot is not typing or "thinking" still (aka: this code only runs 1 prompt at a time)
                     && typing <= 0
-                    && Msg.MentionedUsers.Contains(MainGlobal.Server.GetUser(YOUR BOT ID HERE))) // only run the code if you mentioned the bot
-                    // && (contextChannel.Id == channel_id_here) // you can uncomment this if you want it to only see one channel. put in the channel ID there.
+                    && Msg.MentionedUsers.Contains(MainGlobal.Server.GetUser(CHANGE_THIS_TO_YOUR_BOT_ID))) // only run the code if you mentioned the bot
+                                                                                                 // && (contextChannel.Id == channel_id_here) // you can uncomment this if you want it to only see one channel. put in the channel ID there.
                 {
                     thinking = 2; // set thinking to 2 to make sure no new requests come in while it is generating (it scrambles the outputs together)
                     await LlamaReply(Msg, Context); // run the LlamaReply function to reply to the user's message
@@ -213,7 +214,7 @@ namespace SallyBot
             var Context = new SocketCommandContext(Client, Msg);
             var user = Context.User as SocketGuildUser;
 
-        // THIS IS MY ADMIN ROLE ID, REPLACE WITH YOUR OWN
+            // THIS IS MY ADMIN ROLE ID, REPLACE WITH YOUR OWN
             var adminRole = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 364221505971814400); // THIS IS MY ADMIN ROLE ID, REPLACE WITH YOUR OWN
 
             bool allowedUser = false;
@@ -334,7 +335,7 @@ namespace SallyBot
             if (takeAPicMatch
                 && !allowedUser
                 && !(Msg.Author == MainGlobal.Server.Owner
-                ||      user.Roles.Contains(adminRole)))
+                || user.Roles.Contains(adminRole)))
             {
                 inputPrompt = $"{msgUsernameClean} requested a photo of SallyBot.. Ew, gross! He hasn't paid! SallyBot denying this request..." +
                 inputPromptEnding;
@@ -343,7 +344,7 @@ namespace SallyBot
             //&& (Msg.Author == MainGlobal.Server.Owner  // allow owner
             //||  user.Roles.Contains(adminRole)))      // allow admins (change admin role id # to your admin role ID)
             {
-                inputPrompt = inputPrompt + 
+                inputPrompt = inputPrompt +
                     inputPromptEndingPic;
             }
             else
@@ -472,7 +473,7 @@ namespace SallyBot
                         llmFinalMsgUnescaped = string.Empty;
                         promptEndDetected = false;
                         //inputPrompt = inputPromptEnding;  // use this if you want the bot to be able to continue rambling if it so chooses
-                                                            //(you have to comment out the stop emit though and let it continue sending data, and also comment out the humanprompted = false bool)
+                        //(you have to comment out the stop emit though and let it continue sending data, and also comment out the humanprompted = false bool)
                         //Task.Delay(300).Wait();   // to be safe, you can wait a couple hundred miliseconds to make sure the input doesn't get garbled with a new request
                         typing = 0;     // ready the bot for new requests
                         thinking = 0;   // ready the bot for new requests
@@ -540,11 +541,11 @@ namespace SallyBot
                         botImgCount++;
                         if (botImgCount >= 1) // you can raise this if you want the bot to be able to send up to x images
                         {
-                        Socket.EmitAsync("stop"); // note: this only works on my custom code of the LLM.
-                                                  // //the default LLM doesn't yet listen to stop emits..
-                                                  // //I had to code that in myself into the server source code
-                        typing = 0;
-                        thinking = 0;
+                            Socket.EmitAsync("stop"); // note: this only works on my custom code of the LLM.
+                                                      // //the default LLM doesn't yet listen to stop emits..
+                                                      // //I had to code that in myself into the server source code
+                            typing = 0;
+                            thinking = 0;
                         }
                     }
                 }
