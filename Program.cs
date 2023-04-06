@@ -352,6 +352,11 @@ namespace SallyBot
                 prompt = inputPrompt
             };
 
+            var stop = new
+            {
+                prompt = "/stop"
+            };
+
             string token = string.Empty;
             string llmMsg = string.Empty;
             string llmFinalMsg = string.Empty;
@@ -414,7 +419,8 @@ namespace SallyBot
 
                 if (llmMsg.EndsWith("<end>") || llmFinalMsg.EndsWith("[end of text]"))
                 {
-                    Socket.EmitAsync("stop");
+                    Socket.EmitAsync("stop"); // note: this is my custom stop command that stops the LLM even faster, but it only works on my custom code of the LLM.
+                    Socket.EmitAsync("request", stop);
                     thinking = 0;
                     typing = 0;
                     Console.WriteLine();
@@ -451,9 +457,10 @@ namespace SallyBot
                         Msg.ReplyAsync(llmFinalMsgUnescaped);
                         botMsgCount++;
 
-                        if (botMsgCount >= 1)
+                        if (botMsgCount >= 1) // you can raise this number to allow SallyBot to ramble (note it will just reply to phantom conversations)
                         {
-                            Socket.EmitAsync("stop");
+                            Socket.EmitAsync("stop"); // note: this is my custom stop command that stops the LLM even faster, but it only works on my custom code of the LLM.
+                            Socket.EmitAsync("request", stop);
                         }
 
                         llmMsg = string.Empty;
@@ -525,16 +532,17 @@ namespace SallyBot
 
                         llmPrompt = Regex.Replace(llmPrompt, "[^a-zA-Z,\\s]+", "");
 
-                        TakeAPic(Msg, llmPrompt, timeOfDayInNaturalLanguage);
                         botImgCount++;
                         if (botImgCount >= 1) // you can raise this if you want the bot to be able to send up to x images
                         {
-                            Socket.EmitAsync("stop"); // note: this only works on my custom code of the LLM.
-                                                      // //the default LLM doesn't yet listen to stop emits..
-                                                      // //I had to code that in myself into the server source code
+                            Socket.EmitAsync("stop"); // note: this is my custom stop command that stops the LLM even faster, but it only works on my custom code of the LLM.
+                            Socket.EmitAsync("request", stop);
+                            // //the default LLM doesn't yet listen to stop emits..
+                            // //I had to code that in myself into the server source code
                             typing = 0;
                             thinking = 0;
                         }
+                        TakeAPic(Msg, llmPrompt, timeOfDayInNaturalLanguage);
                     }
                 }
                 else
