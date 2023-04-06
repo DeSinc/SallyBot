@@ -46,4 +46,10 @@ If you're using another AI text generator, check its github page for instruction
 
 ## To make selfies with Automatic1111 webui with --api flag set
 
-Google it and github download it, and then set the --api flag in the web-user.bat file by right click edit to open it in notepad. Then save and run the batch file and the api is now ready to receive requests right from the bot!
+Google it and github download the Automatic1111 webui and then right click Edit on the web-user.bat file.
+
+Change the "set COMMANDLINE_ARGS=" line to this:
+
+set COMMANDLINE_ARGS=--api
+
+Then save and run the batch file and the api is now ready to receive requests right from the bot!
