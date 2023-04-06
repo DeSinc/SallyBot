@@ -199,10 +199,6 @@ namespace SallyBot
             var Context = new SocketCommandContext(Client, Msg);
             var user = Context.User as SocketGuildUser;
 
-            // THIS IS MY ADMIN ROLE ID, REPLACE WITH YOUR OWN
-            var adminRole = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 364221505971814400); // THIS IS MY ADMIN ROLE ID, REPLACE WITH YOUR OWN
-
-
             typingTicks = 0;
 
             List<string> bannedWords = new List<string>
