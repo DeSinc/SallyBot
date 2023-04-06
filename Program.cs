@@ -156,6 +156,9 @@ namespace SallyBot
 
         private static async void Tick(object sender, ElapsedEventArgs e)
         {
+            if (MainGlobal.Server != null)
+                MainGlobal.Server = MainGlobal.Client.GetGuild(INPUT_YOUR_SERVER_ID_HERE); // Put your discord's server ID in here
+            
             if (typing > 0)
             {
                 typing--;       // Lower typing tick over time until it's back to 0 - used below for sending "Is typing..." to discord.
