@@ -72,3 +72,14 @@ Linux:
 export COMMANDLINE_ARGS="--api"
 ```
 Save the file and run it.  The API is now ready to receive request right from Sally!
+
+## Known Issues
+
+1. Stable Diffusion needs to use an older version of Python.  Follow the steps in their repo and install Python 3.10 making sure to add it to your system PATH.  
+Afterwards, assuming you did not change the default install location, modify the `PYTHON` line in your `webui-user.bat` file.  
+```bat
+set PYTHON="%LOCALAPPDATA%\Programs\Python\Python310\python.exe"
+```
+
+2. Dalai Alpaca needs to be run in Command Prompt (cmd.exe) and not PowerShell (powershell.exe).  
+With Windows 11, Microsoft made PowerShell the default terminal, make sure to use Command Prompt to start it instead, an easy way to do that is `WIN + R` ``cmd.exe` and then use `cd` to navigate to the Dalai directory.
