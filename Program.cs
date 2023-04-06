@@ -190,7 +190,7 @@ namespace SallyBot
                 var contextChannel = Context.Channel as SocketGuildChannel; // used if you want to select a channel for the bot to ignore or to only pay attention to
                 
                 if (thinking <= 0  // only run if the bot is not typing or "thinking" still (aka: this code only runs 1 prompt at a time)
-                    && typing <= 0)
+                    && typing <= 0
                     && Msg.MentionedUsers.Contains(MainGlobal.Server.GetUser(YOUR BOT ID HERE))) // only run the code if you mentioned the bot
                     // && (contextChannel.Id == channel_id_here) // you can uncomment this if you want it to only see one channel. put in the channel ID there.
                 {
