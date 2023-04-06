@@ -1,5 +1,7 @@
 # SallyBot
-AI Chatbot that takes selfies for you with Stable Diffusion, using the Automatic1111 webui with --api flag set
+AI Chatbot that takes selfies for you with Stable Diffusion, using the Automatic1111 webui with --api flag set (download and edit the launch batch file and add --api to the batch file and then just double click to run it)
+
+Text generation is set up atm using the Dalai Alpaca model (2 command setup, instructions on github)
 
 Coded in Discord.net C#
 
