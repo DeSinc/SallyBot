@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 using Discord.WebSocket;
 
 namespace SallyBot
@@ -8,7 +6,7 @@ namespace SallyBot
     {
         internal static SocketGuild Server { get; set; }
         internal static DiscordSocketClient Client { get; set; }
-
-        internal static string conS = "BOT_TOKEN_HERE";
+        
+        internal static string conS = "Put your bot token here, between these double quotes"; PUT_YOUR_BOT_TOKEN_HERE_AND_REMOVE_THIS_WHITE_TEXT_AFTER_THE_SEMICOLON
     }
 }
