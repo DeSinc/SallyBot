@@ -416,7 +416,7 @@ namespace SallyBot
                 if (llmMsg.EndsWith("<end>") || llmFinalMsg.EndsWith("[end of text]"))
                 {
                     Socket.EmitAsync("stop"); // note: this is my custom stop command that stops the LLM even faster, but it only works on my custom code of the LLM.
-                    Socket.EmitAsync("request", stop);
+                    //Socket.EmitAsync("request", stop); // this bloody stop request stops the entire dalai process for some reason
                     thinking = 0;
                     typing = 0;
                     Console.WriteLine();
@@ -456,7 +456,7 @@ namespace SallyBot
                         if (botMsgCount >= 1) // you can raise this number to allow SallyBot to ramble (note it will just reply to phantom conversations)
                         {
                             Socket.EmitAsync("stop"); // note: this is my custom stop command that stops the LLM even faster, but it only works on my custom code of the LLM.
-                            Socket.EmitAsync("request", stop);
+                            //Socket.EmitAsync("request", stop); // this bloody stop request stops the entire dalai process for some reason
                         }
 
                         llmMsg = string.Empty;
@@ -532,7 +532,7 @@ namespace SallyBot
                         if (botImgCount >= 1) // you can raise this if you want the bot to be able to send up to x images
                         {
                             Socket.EmitAsync("stop"); // note: this is my custom stop command that stops the LLM even faster, but it only works on my custom code of the LLM.
-                            Socket.EmitAsync("request", stop);
+                            //Socket.EmitAsync("request", stop); // this bloody stop request stops the entire dalai process for some reason
                             // //the default LLM doesn't yet listen to stop emits..
                             // //I had to code that in myself into the server source code
                             typing = 0;
