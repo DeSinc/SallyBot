@@ -178,7 +178,7 @@ namespace SallyBot
                 if (Msg.Author.IsBot) return; // don't listen to bot messages, including itself
 
                 if (Msg.MentionedUsers.Contains(MainGlobal.Server.GetUser(botUserId))) // only run the code if you mentioned the bot
-                    // && (contextChannel.Id == channel_id_here) // you can uncomment this if you want it to only see one channel. put in the channel ID there.
+                                                                                       // && (contextChannel.Id == channel_id_here) // you can uncomment this if you want it to only see one channel. put in the channel ID there.
                 {
                     thinking = 2; // set thinking to 2 to make sure no new requests come in while it is generating (it scrambles the outputs together)
                     await LlamaReply(Msg, Context); // run the LlamaReply function to reply to the user's message
@@ -218,7 +218,7 @@ namespace SallyBot
             string inputMsg = Msg.Content
                 .Replace("\n", "")
                 .Replace("\\n", ""); // this makes all the prompting detection regex work, but if you know what you're doing you can change these
-            
+
             inputMsg = Regex.Replace(inputMsg, @"(<[#|@|\/][^<>]+>)|\[[^\]]+[\]:\\]\:|\:\]|\[^\]]", "");
 
             bool takeAPicMatch = takeAPicRegex.IsMatch(inputMsg);
@@ -307,12 +307,7 @@ namespace SallyBot
 
             if (takeAPicMatch)
             {
-                inputPrompt = $"{msgUsernameClean} is not authorised. SallyBot denying this request..." +
-                inputPromptEnding;
-            }
-            else if (takeAPicMatch)
-            {
-                inputPrompt = inputPrompt + 
+                inputPrompt = inputPrompt +
                     inputPromptEndingPic;
             }
             else
