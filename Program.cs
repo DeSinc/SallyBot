@@ -305,18 +305,14 @@ namespace SallyBot
                 Console.WriteLine("User's text prompt contains no banned words.");
             }
 
-            if (takeAPicMatch
-                && !(Msg.Author == MainGlobal.Server.Owner
-                || user.Roles.Contains(adminRole)))
+            if (takeAPicMatch)
             {
                 inputPrompt = $"{msgUsernameClean} is not authorised. SallyBot denying this request..." +
                 inputPromptEnding;
             }
             else if (takeAPicMatch)
-            //&& (Msg.Author == MainGlobal.Server.Owner
-            //||  user.Roles.Contains(adminRole)))
             {
-                inputPrompt = inputPrompt +
+                inputPrompt = inputPrompt + 
                     inputPromptEndingPic;
             }
             else
