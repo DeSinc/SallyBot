@@ -1,5 +1,5 @@
 # SallyBot
-AI Chatbot that takes selfies for you with Automatic1111 Webui with --api flag set
+AI Chatbot that takes selfies for you with Stable Diffusion, using the Automatic1111 webui with --api flag set
 
 Coded in Discord.net C#
 
