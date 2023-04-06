@@ -63,6 +63,7 @@ namespace SallyBot
                 });
 
                 Client.Log += Client_Log;
+                Client.Ready += MainLoop.StartLoop;
                 Client.MessageReceived += Client_MessageReceived;
                 await Commands.AddModulesAsync(Assembly.GetEntryAssembly(), null);
 
@@ -106,14 +107,6 @@ namespace SallyBot
                         Console.WriteLine("Connected to LLM server.");
                     };
 
-                    Socket.On("token", response =>
-                    {
-                        Console.WriteLine("response: " + response);
-                        Console.WriteLine("response.tostring: " + response.ToString());
-                        string token = response.GetValue<string>();
-                        Console.WriteLine("token = response.GetValue<string>(): " + token);
-                    });
-
                     Socket.ConnectAsync();
                 }
                 catch (Exception exception)
@@ -156,9 +149,6 @@ namespace SallyBot
 
         private static async void Tick(object sender, ElapsedEventArgs e)
         {
-            if (MainGlobal.Server != null)
-                MainGlobal.Server = MainGlobal.Client.GetGuild(CHANGE_THIS_TO_YOUR_SERVER_ID); // Put your discord's server ID in here
-
             if (typing > 0)
             {
                 typing--;       // Lower typing tick over time until it's back to 0 - used below for sending "Is typing..." to discord.
@@ -177,27 +167,22 @@ namespace SallyBot
 
         private async Task Client_MessageReceived(SocketMessage MsgParam)  // this fires upon receiving a message in the discord
         {
-
-            // optionally, you can swap it for this line, which tells it to not listen to itself, but allows listening to other bots
-            //if (Msg.Author.Id == MainGlobal.Server.GetUser(YOUR BOT ID HERE)) return;
-
             try
             {
                 var Msg = MsgParam as SocketUserMessage;
                 var Context = new SocketCommandContext(Client, Msg);
                 var user = Context.User as SocketGuildUser;
+                var botUserId = Client.CurrentUser.Id;
                 var contextChannel = Context.Channel as SocketGuildChannel; // used if you want to select a channel for the bot to ignore or to only pay attention to
 
                 if (Msg.Author.IsBot) return; // don't listen to bot messages, including itself
 
-                if (thinking <= 0  // only run if the bot is not typing or "thinking" still (aka: this code only runs 1 prompt at a time)
-                    && typing <= 0
-                    && Msg.MentionedUsers.Contains(MainGlobal.Server.GetUser(CHANGE_THIS_TO_YOUR_BOT_ID))) // only run the code if you mentioned the bot
-                                                                                                 // && (contextChannel.Id == channel_id_here) // you can uncomment this if you want it to only see one channel. put in the channel ID there.
+                if (Msg.MentionedUsers.Contains(MainGlobal.Server.GetUser(botUserId))) // only run the code if you mentioned the bot
+                    // && (contextChannel.Id == channel_id_here) // you can uncomment this if you want it to only see one channel. put in the channel ID there.
                 {
                     thinking = 2; // set thinking to 2 to make sure no new requests come in while it is generating (it scrambles the outputs together)
                     await LlamaReply(Msg, Context); // run the LlamaReply function to reply to the user's message
-                    await Context.Channel.SendMessageAsync($"{user.Mention} said {Msg.Content} in {contextChannel}! Hello!! Ping me to get a LLM response from your LLM! You can remove this line of code to stop me talking."); // remove this once you confirm the bot is working
+                    //await Context.Channel.SendMessageAsync($"{user.Mention} said {Msg.Content} in {contextChannel}! Hello!! Ping me to get a LLM response from your LLM! You can remove this line of code to stop me talking."); // remove this once you confirm the bot is working
                 }
             }
             catch (Exception exception)
@@ -217,7 +202,6 @@ namespace SallyBot
             // THIS IS MY ADMIN ROLE ID, REPLACE WITH YOUR OWN
             var adminRole = (user as IGuildUser).Guild.Roles.FirstOrDefault(x => x.Id == 364221505971814400); // THIS IS MY ADMIN ROLE ID, REPLACE WITH YOUR OWN
 
-            bool allowedUser = false;
 
             typingTicks = 0;
 
@@ -227,26 +211,19 @@ namespace SallyBot
                     "butt", "bum", "booty", "nudity", "naked"
                 };
 
-            if (user.Roles.Contains(adminRole))
-            {
-                allowedUser = true;
-            }
-            string takeAPicRegexStr = @"\b(take|generate|show|give|snap|capture|send|display|share|shoot|see|provide|another)\b.*(\S\s{0,10})?(image|picture|pic|photo|selfie)\b";
+            string takeAPicRegexStr = @"\b(take|paint|generate|make|draw|create|show|give|snap|capture|send|display|share|shoot|see|provide|another)\b.*(\S\s{0,10})?(image|picture|painting|pic|photo|portrait|selfie)\b";
             Regex takeAPicRegex = new Regex(takeAPicRegexStr, RegexOptions.IgnoreCase);
 
             string msgUsernameClean = Regex.Replace(Msg.Author.Username, "[^a-zA-Z0-9]+", "");
 
-            //                                          (?:\\n|\\r|(?<=\S)\[)(?!\s|$)(?=[^\s.?!0-9])(?!\.[a-z]{2,6}(?=[^\w]|$))(?!\s*[""”])(\S*?)(?=[\s.?!]|$)|([\[\]<>]?\s*(\[end|<end|\[human|\[chat|\[cc|<chat|<cc|\[@chat|\[@cc|<@chat|<@cc))\s*
-            Regex promptEndDetectionRegex = new Regex(@"\n([^\\.\n]{2})|\r\n([^\\.\n]{2})|\r([^\\.\n]{2})|(\[end|<end|\[human|\[chat|\[sally|\[cc|<chat|<cc|\[@chat|\[@cc|sallybot\]:|<@chat|<@cc)", RegexOptions.IgnoreCase);
+            Regex promptEndDetectionRegex = new Regex(@"[\n|\r|\r\n]([^\\.|^\\\-|^\\*|)\n]{2})|(\[end|<end|]:|>:|\[human|\[chat|\[sally|\[cc|<chat|<cc|\[@chat|\[@cc|bot\]:|<@chat|<@cc|\[.*]: |\[.*] : |\[[^\]]+\]\s*:)", RegexOptions.IgnoreCase);
+            Regex newLineDetection = new Regex(@"[\n|\r|\r\n]"); // detects newlines
 
             string inputMsg = Msg.Content
                 .Replace("\n", "")
-                .Replace("\\n", "")
-                .Replace("{", "")
-                .Replace("}", "")
-                .Replace("\"", "'"); // this makes all the prompting detection regex work, but if you know what you're doing you can change these
-
-            inputMsg = Regex.Replace(inputMsg, @"(<[@|\/][^<>]+>)|\[[^\]]+[\]:\\]\:|\:\]|\[^\]]", "");
+                .Replace("\\n", ""); // this makes all the prompting detection regex work, but if you know what you're doing you can change these
+            
+            inputMsg = Regex.Replace(inputMsg, @"(<[#|@|\/][^<>]+>)|\[[^\]]+[\]:\\]\:|\:\]|\[^\]]", "");
 
             bool takeAPicMatch = takeAPicRegex.IsMatch(inputMsg);
 
@@ -255,8 +232,8 @@ namespace SallyBot
 
             string inputPrompt = $"[{msgUsernameClean}]: {inputMsg}";
             string inputPromptEnding = "\n[SallyBot]: ";
-            string inputPromptEndingPic = $"\nAfter captioning the image, Sallybot may reply." +
-            $"\nNouns of things in the photo: ";
+            string inputPromptEndingPic = $"\nAfter describing the image she took, SallyBot may reply." +
+                $"\nNouns of things in the photo: ";
 
             if (inputMsg.Length > 500)
             {
@@ -329,20 +306,19 @@ namespace SallyBot
             }
             else
             {
-                Console.WriteLine("User's image prompt contains no banned words.");
+                Console.WriteLine("User's text prompt contains no banned words.");
             }
 
             if (takeAPicMatch
-                && !allowedUser
                 && !(Msg.Author == MainGlobal.Server.Owner
                 || user.Roles.Contains(adminRole)))
             {
-                inputPrompt = $"{msgUsernameClean} requested a photo of SallyBot.. Ew, gross! He hasn't paid! SallyBot denying this request..." +
+                inputPrompt = $"{msgUsernameClean} is not authorised. SallyBot denying this request..." +
                 inputPromptEnding;
             }
-            else if (takeAPicMatch && allowedUser)
-            //&& (Msg.Author == MainGlobal.Server.Owner  // allow owner
-            //||  user.Roles.Contains(adminRole)))      // allow admins (change admin role id # to your admin role ID)
+            else if (takeAPicMatch)
+            //&& (Msg.Author == MainGlobal.Server.Owner
+            //||  user.Roles.Contains(adminRole)))
             {
                 inputPrompt = inputPrompt +
                     inputPromptEndingPic;
@@ -353,7 +329,13 @@ namespace SallyBot
                     inputPromptEnding;
             }
 
-            Console.WriteLine("User's prompt: " + inputMsg);
+            inputPrompt = Regex.Unescape(inputPrompt) // try unescape to allow for emojis? Isn't working because of Dalai code. I can't figure out how to fix. Emojis are seen by dalai as ??.
+                .Replace("{", "")                       // these symbols don't work in LLMs such as Dalai 0.3.1 for example
+                .Replace("}", "")
+                .Replace("\"", "'")
+                .Replace("`", "\\`")
+                .Replace("$", "");
+
             var request = new
             {
                 seed = -1,
@@ -390,7 +372,14 @@ namespace SallyBot
 
             Socket.On("result", result =>
             {
-                thinking = 2;
+                if (humanPrompted) // if this prompt is currently in response to a proper human request
+                {
+                    thinking = 2; // set thinking timeout to 2 to give it buffer to not allow new requests while generating
+                }
+                else // otherwise if human prompt is over and ai is just rambling a few extra tokens
+                {
+                    thinking = 1; // just apply 1 thinking tick so it still protects slow prompts, but times-out quicker
+                }
 
                 //while (i < 1)  // you can uncomment this to see the raw format the LLM is sending the data back
                 //{
@@ -458,7 +447,7 @@ namespace SallyBot
                         //Socket.Off("result");
 
                         listening = false;
-                        //humanPrompted = false; // nothing generated after this point is human prompted. IT'S A HALLUCINATION! DISCARD IT ALL!
+                        humanPrompted = false; // nothing generated after this point is human prompted. IT'S A HALLUCINATION! DISCARD IT ALL!
                         Msg.ReplyAsync(llmFinalMsgUnescaped);
                         botMsgCount++;
 
@@ -481,8 +470,7 @@ namespace SallyBot
                 }
                 else
                 {
-                    if (humanPrompted
-                    && llmMsg.Contains(inputPromptEnding))
+                    if (humanPrompted && llmMsg.Contains(inputPromptEnding))
                     {
                         llmMsg = string.Empty;
                         listening = true;
@@ -552,7 +540,6 @@ namespace SallyBot
                 else
                 {
                     if (takeAPicMatch
-                    && allowedUser
                     && llmMsg.Contains(inputPromptEndingPic))
                     {
                         llmMsg = string.Empty;
