@@ -1,5 +1,7 @@
 # SallyBot
-AI Chatbot coded in Discord.net C#
+AI Chatbot that takes selfies for you with Automatic1111 Webui with --api flag set
+
+Coded in Discord.net C#
 
 ## USAGE
 
