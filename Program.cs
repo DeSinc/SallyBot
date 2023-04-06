@@ -32,6 +32,8 @@ namespace SallyBot
         static internal int thinking = 0;
         static internal int typing = 0;
         static internal int typingTicks = 0;
+
+        static internal ulong botUserId = 0; // <-- this is your bot's client ID number inside discord (not the token) and gets set in MainLoop after initialisation
         static void Main()
                 => new Program().AsyncMain().GetAwaiter().GetResult();
 
@@ -65,20 +67,6 @@ namespace SallyBot
                 Client.Log += Client_Log;
                 Client.Ready += MainLoop.StartLoop;
                 Client.MessageReceived += Client_MessageReceived;
-                await Commands.AddModulesAsync(Assembly.GetEntryAssembly(), null);
-
-                // no longer seems to work - used to detect user joining VC and remove their deny send msg perm to the vc chat text channel
-                // Client.UserVoiceStateUpdated += Client_UserVoiceStateUpdated;
-
-                //Client.Connected += Client_Connected;
-
-                // This code reads bot's token from a text file in \data\ folder rather than pasting it directly in the code (note: last I checked it doesn't seem to work)
-                //using (var TextStream = new FileStream(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.0", @"data\Token.txt"), FileMode.Open, FileAccess.Read))
-                //using (var ReadToken = new StreamReader(TextStream))
-                //{
-                //TokenType = ReadToken.ReadToEnd();
-                //}
-
 
                 await Client.LoginAsync(TokenType.Bot, MainGlobal.conS);
 
@@ -91,7 +79,6 @@ namespace SallyBot
                     Enabled = true
                 };
                 Loop.Elapsed += Tick;
-                //Loop.Elapsed += Tock; // TEST LIMITED SCOPE TICK
 
                 Console.WriteLine($"|{DateTime.Now} | Main loop initialised");
 
@@ -172,7 +159,7 @@ namespace SallyBot
                 var Msg = MsgParam as SocketUserMessage;
                 var Context = new SocketCommandContext(Client, Msg);
                 var user = Context.User as SocketGuildUser;
-                var botUserId = Client.CurrentUser.Id;
+                
                 var contextChannel = Context.Channel as SocketGuildChannel; // used if you want to select a channel for the bot to ignore or to only pay attention to
 
                 if (Msg.Author.IsBot) return; // don't listen to bot messages, including itself
@@ -245,7 +232,7 @@ namespace SallyBot
             {
                 string replyUsernameClean = string.Empty;
                 string truncatedReply = referencedMsg.Content;
-                if (referencedMsg.Author.Id == 438634979862511616)
+                if (referencedMsg.Author.Id == botUserId)
                 {
                     replyUsernameClean = "SallyBot";
                 }
