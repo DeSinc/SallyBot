@@ -7,7 +7,7 @@ namespace SallyBot
     {
         internal static Task StartLoop()
         {
-            MainGlobal.Server = MainGlobal.Client.GetGuild(PUT_YOUR_SERVER_ID_HERE);
+            MainGlobal.Server = MainGlobal.Client.GetGuild(364220567190241280);
             if (MainGlobal.Server != null) // if bot is in DeSinc server
             {
                 Console.WriteLine("| Server detected: " + MainGlobal.Server.Name);
@@ -24,6 +24,8 @@ namespace SallyBot
                 delayVar.Wait();
                 Console.WriteLine($"| Waiting for connection to be established by Discord...");
             }
+
+            Program.botUserId = MainGlobal.Client.CurrentUser.Id; // <--- bot's user ID is detected and filled in automatically
 
             return Task.CompletedTask;
         }
