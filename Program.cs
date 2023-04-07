@@ -169,7 +169,7 @@ namespace SallyBot
                 {
                     thinking = 2; // set thinking to 2 to make sure no new requests come in while it is generating (it scrambles the outputs together)
                     await LlamaReply(Msg, Context); // run the LlamaReply function to reply to the user's message
-                    //await Context.Channel.SendMessageAsync($"{user.Mention} said {Msg.Content} in {contextChannel}! Hello!! Ping me to get a LLM response from your LLM! You can remove this line of code to stop me talking."); // remove this once you confirm the bot is working
+                    await Context.Channel.SendMessageAsync($"{user.Mention} said {Msg.Content} in {contextChannel}! Hello!! Ping me to get a LLM response from your LLM! You can remove this line of code to stop me talking."); // remove this once you confirm the bot is working
                 }
             }
             catch (Exception exception)
