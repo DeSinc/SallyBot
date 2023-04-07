@@ -6,7 +6,8 @@ Coded in Discord.net C#
 Context: [I Made a Discord Chat Bot that Can Take Selfies](https://www.youtube.com/watch?v=KM4a7RGG270)  
 [![](https://markdown-videos.deta.dev/youtube/KM4a7RGG270)](https://youtu.be/KM4a7RGG270)
 
-https://twitter.com/super6plx/status/1643243123592806400
+![image](https://user-images.githubusercontent.com/12345584/230605559-8f8b4d1f-f50b-44a7-bb61-bdaed3efd307.png)
+![image](https://user-images.githubusercontent.com/12345584/230605576-029e498c-0a22-42fa-86c6-84069a207734.png)
 
 ## USAGE
 
