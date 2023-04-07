@@ -30,7 +30,11 @@ Put your bot API key in the MainGlobal.cs file
 
 Press F5 to build it and run and see what happens (it should work first try)
 
-It has a line of code that is currently commented out to reply to any message it sees. Remove the slashes if you want to activate this line of code to test if the bot works in your server. Feel free to remove this line of code entirely after testing the bot is up and running. (CTRL + F "Hello!!" to find that line and use/remove/change it however you like.)
+It has a line of code that replies to any message it sees. This will test if the bot works in your server by sending a message back to you.
+
+If it does not repeat your message back to you, then message intents might not be enabled. See the steps above with pictures to fix that.
+
+Feel free to remove this line of code entirely after testing the bot is up and running. (CTRL + F "Hello!!" to find that line and use/remove/change it however you like.)
 
 ## AI Text Generation with Dalai Alpaca
 
