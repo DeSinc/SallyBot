@@ -1,5 +1,5 @@
 # SallyBot
-AI Chatbot that uses [Dalai Alpaca](https://github.com/cocktailpeanut/dalai) to talk to you and [Stable Diffusion](https://github.com/AUTOMATIC1111/stable-diffusion-webui) to take selfies for you!
+AI Chatbot that uses [Dalai Alpaca](https://github.com/cocktailpeanut/dalai) to talk to you and [Stable Diffusion](https://github.com/AUTOMATIC1111/stable-diffusion-webui) to take real selfies
 
 Coded in Discord.net C#  
 
