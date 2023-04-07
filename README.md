@@ -8,9 +8,6 @@ Context: [I Made a Discord Chat Bot that Can Take Selfies](https://www.youtube.c
 
 ![image](https://user-images.githubusercontent.com/12345584/230606279-cb741c83-ebb9-4e4f-9754-67bee57d1540.png)
 
-![image](https://user-images.githubusercontent.com/12345584/230605559-8f8b4d1f-f50b-44a7-bb61-bdaed3efd307.png)
-![image](https://user-images.githubusercontent.com/12345584/230605576-029e498c-0a22-42fa-86c6-84069a207734.png)
-
 ## USAGE
 
 Clone the repo into a folder called SallyBot (changing the name risks issues with the Visual Studio environment)
