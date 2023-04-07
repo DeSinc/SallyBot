@@ -30,10 +30,7 @@ Put your bot API key in the MainGlobal.cs file
 
 Press F5 to build it and run and see what happens (it should work first try)
 
-It has a line of code to reply to any message it sees, feel free to remove this after testing the bot is up and running (CTRL + F "Hello!!")
-
-If it doesn't idk lmao. Google will be your greatest ally in this battle. have fun
-
+It has a line of code that is currently commented out to reply to any message it sees. Remove the slashes if you want to activate this line of code to test if the bot works in your server. Feel free to remove this line of code entirely after testing the bot is up and running. (CTRL + F "Hello!!" to find that line and use/remove/change it however you like.)
 
 ## AI Text Generation with Dalai Alpaca
 
