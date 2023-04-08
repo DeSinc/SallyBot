@@ -1,6 +1,9 @@
 # SallyBot
 AI Chatbot that uses locally-ran large language models to talk to you (not chat-GPT, offline running on your system) and [Stable Diffusion](https://github.com/AUTOMATIC1111/stable-diffusion-webui) to take real selfies
 
+Context: [I Made a Discord Chat Bot that Can Take Selfies](https://www.youtube.com/watch?v=KM4a7RGG270)  
+[![](https://markdown-videos.deta.dev/youtube/KM4a7RGG270)](https://youtu.be/KM4a7RGG270)
+
 ### Supported LLM interfaces:
 
 [Oobabooga Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)
@@ -8,9 +11,6 @@ AI Chatbot that uses locally-ran large language models to talk to you (not chat-
 [Dalai Alpaca](https://github.com/cocktailpeanut/dalai)
 
 Coded in Discord.net C#  
-
-Context: [I Made a Discord Chat Bot that Can Take Selfies](https://www.youtube.com/watch?v=KM4a7RGG270)  
-[![](https://markdown-videos.deta.dev/youtube/KM4a7RGG270)](https://youtu.be/KM4a7RGG270)
 
 ### Examples
 
