@@ -283,10 +283,10 @@ namespace SallyBot
             if (chatHistoryDownloaded == false)
             {
                 chatHistoryDownloaded = true; // only do this once per program run to load msges into memory
-                var last100Msges = await Msg.Channel.GetMessagesAsync(20).FlattenAsync();
+                var last100Msges = await Msg.Channel.GetMessagesAsync(30).FlattenAsync();
                 foreach (var msg in last100Msges)
                 {
-                    oobaboogaChatHistory += $"[{msg.Author.Username}]: {msg.Content}\n";
+                    oobaboogaChatHistory = $"[{msg.Author.Username}]: {msg.Content}\n" + oobaboogaChatHistory;
                 }
             }
             string oobaBoogaChatHistoryDetectedWords = IsSimilarToBannedWords(oobaboogaChatHistory, bannedWords, 0);
@@ -338,7 +338,7 @@ namespace SallyBot
             // oobabooga code
             oobaboogaChatHistory += inputPrompt + "\n"; // writes msg to a rolling chat history string
             int strLength = oobaboogaChatHistory.Length; // current chat history string length
-            int maxChatHistoryStrLength = 16000; // max chat history length
+            int maxChatHistoryStrLength = 2000; // max chat history length
             if (strLength > maxChatHistoryStrLength)
             {
                 oobaboogaChatHistory = oobaboogaChatHistory.Substring(strLength - maxChatHistoryStrLength);
