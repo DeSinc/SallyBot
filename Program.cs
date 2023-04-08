@@ -283,13 +283,16 @@ namespace SallyBot
             if (chatHistoryDownloaded == false)
             {
                 chatHistoryDownloaded = true; // only do this once per program run to load msges into memory
-                var last100Msges = await Msg.Channel.GetMessagesAsync(30).FlattenAsync();
-                foreach (var msg in last100Msges)
+                var downloadedMsges = await Msg.Channel.GetMessagesAsync(30).FlattenAsync();
+                foreach (var downloadedMsg in downloadedMsges)
                 {
-                    oobaboogaChatHistory = $"[{msg.Author.Username}]: {msg.Content}\n" + oobaboogaChatHistory;
+                    if (downloadedMsg.Content != Msg.Content) // don't double up the last msg that the user just sent
+                    {
+                        oobaboogaChatHistory = $"[{downloadedMsg.Author.Username}]: {downloadedMsg.Content}\n" + oobaboogaChatHistory;
+                    }
                 }
             }
-            string oobaBoogaChatHistoryDetectedWords = IsSimilarToBannedWords(oobaboogaChatHistory, bannedWords, 0);
+            string oobaBoogaChatHistoryDetectedWords = IsSimilarToBannedWords(oobaboogaChatHistory, bannedWords);
 
             if (oobaBoogaChatHistoryDetectedWords.Length > 2) // Threshold set to 2
             {
@@ -307,7 +310,7 @@ namespace SallyBot
                 Console.WriteLine("Oobabooga chat history contained bad or similar to bad words and all have been removed.");
             }
 
-            string inputPromptDetectedWords = IsSimilarToBannedWords(inputPrompt, bannedWords, 0);
+            string inputPromptDetectedWords = IsSimilarToBannedWords(inputPrompt, bannedWords);
 
             if (inputPromptDetectedWords.Length > 2) // Threshold set to 2
             {
@@ -338,7 +341,7 @@ namespace SallyBot
             // oobabooga code
             oobaboogaChatHistory += inputPrompt + "\n"; // writes msg to a rolling chat history string
             int strLength = oobaboogaChatHistory.Length; // current chat history string length
-            int maxChatHistoryStrLength = 2000; // max chat history length
+            int maxChatHistoryStrLength = 5000; // max chat history length
             if (strLength > maxChatHistoryStrLength)
             {
                 oobaboogaChatHistory = oobaboogaChatHistory.Substring(strLength - maxChatHistoryStrLength);
@@ -410,7 +413,7 @@ namespace SallyBot
             // Console.WriteLine(result); // full response json received back from oobabooga (uncomment to see the full json so you can take whatever values you want
             Console.WriteLine("Response: " + botReply); // just the response part of the json
 
-            string oobaBoogaImgPromptDetectedWords = IsSimilarToBannedWords(botReply, bannedWords, 0);
+            string oobaBoogaImgPromptDetectedWords = IsSimilarToBannedWords(botReply, bannedWords);
 
             if (oobaBoogaImgPromptDetectedWords.Length > 2) // Threshold set to 2
             {
@@ -530,7 +533,7 @@ namespace SallyBot
                     $"\n{inputPrompt}";
             }
 
-            string detectedWords = IsSimilarToBannedWords(inputPrompt, bannedWords, 0);
+            string detectedWords = IsSimilarToBannedWords(inputPrompt, bannedWords);
 
             if (detectedWords.Length > 2) // Threshold set to 2
             {
@@ -737,7 +740,7 @@ namespace SallyBot
                         promptEndDetected = false;
                         inputPrompt = string.Empty;
 
-                        string detectedWords = IsSimilarToBannedWords(llmPrompt, bannedWords, 0);
+                        string detectedWords = IsSimilarToBannedWords(llmPrompt, bannedWords);
 
                         if (detectedWords.Length > 2) // Threshold set to 2
                         {
@@ -991,8 +994,9 @@ namespace SallyBot
 
             return 1;
         }
-        public static string IsSimilarToBannedWords(string input, List<string> bannedWords, int threshold)
+        public static string IsSimilarToBannedWords(string input, List<string> bannedWords)
         {
+            int threshold = 0;
             string detectedWordsStr = string.Empty;
             string[] inputWords = input.Split(' ');
             foreach (string word in inputWords)
