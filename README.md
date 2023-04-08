@@ -122,4 +122,4 @@ NOTE: it will do this purple IndexTree thingie every time you start the server w
 
 I don't know why but it just does. It takes like 20-40 seconds at worst. Small price to pay for a working stop command that actually stops the bot ramblin without crashing the server.
 
-then it will work
+That's it! After it starts up, you are ready to run the bot and query some LLMs!
