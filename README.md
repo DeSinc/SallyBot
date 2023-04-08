@@ -114,6 +114,8 @@ It's just 5 easy steps to get it working on your system too!
 
 3. replace the index.js file with my special index.js file here: https://pastebin.com/A3bpWhTG
 4. navigate a command prompt to this custom source dalai folder we just unzipped with the custom index.js file in it (by typing "cd" and then the custom folder. like this: ``cd c:\downloads\dalaiCustomSource``
-5. run the ``npx dalai serve`` command from command prompt within this folder 
+5. run the ``npx dalai serve`` command from command prompt within this folder
+
+NOTE: it will do this purple IndexTree thingie every time you start the server with my custom code. I don't know why but it just does. It takes like 20-40 seconds at worst. Small price to pay for a working stop command that actually stops the bot ramblin without crashing the server.
 
 then it will work
