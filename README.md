@@ -1,5 +1,5 @@
 # SallyBot
-AI Chatbot that uses locally-ran large language models to talk to you, and [Stable Diffusion](https://github.com/AUTOMATIC1111/stable-diffusion-webui) to take real selfies
+AI Chatbot that uses locally-ran large language models to talk to you (not chat-GPT, offline running on your system) and [Stable Diffusion](https://github.com/AUTOMATIC1111/stable-diffusion-webui) to take real selfies
 
 ### Supported LLM interfaces:
 
