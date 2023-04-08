@@ -95,9 +95,10 @@ With Windows 11, Microsoft made PowerShell the default terminal, make sure to us
 
 The reason for this is that there is no proper working stop command built into dalai. There is one they tried to make, but it crashes the dalai server every 2nd or 3rd time you run it so in my view it's not working.
 
-I built my own stop command into the source code myself. Here are 5 steps to get it working too!
+I built my own stop command into the source code myself. Not only does it work every time without crashing, it's also much faster and stops the rambling instantly, compared to their weak stop command that lets it ramble for like 5+ whole seconds after you told it to stop.
 
-you need to 
+It's just 5 easy steps to get it working on your system too!
+
 1. download the dalai source code from that cocktailpeanut github linked above
 2. unzip it to a folder somewhere
 3. replace the index.js file with my special index.js file here: https://pastebin.com/A3bpWhTG
