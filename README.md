@@ -90,3 +90,18 @@ set PYTHON="%LOCALAPPDATA%\Programs\Python\Python310\python.exe"
 
 2. Dalai Alpaca needs to be run in Command Prompt (cmd.exe) and not PowerShell (powershell.exe).  
 With Windows 11, Microsoft made PowerShell the default terminal, make sure to use Command Prompt to start it instead, an easy way to do that is `WIN + R` ``cmd.exe` and then use `cd` to navigate to the Dalai directory.
+
+3. Dalai Alpaca tends to ramble even after your bot has already sent the message.
+
+The reason for this is that there is no proper working stop command built into dalai. There is one they tried to make, but it crashes the dalai server every 2nd or 3rd time you run it so in my view it's not working.
+
+I built my own stop command into the source code myself. Here are 5 steps to get it working too!
+
+you need to 
+1. download the dalai source code from that cocktailpeanut github linked above
+2. unzip it to a folder somewhere
+3. replace the index.js file with my special index.js file here: https://pastebin.com/A3bpWhTG
+4. navigate a command prompt to this custom source dalai folder we just unzipped with the custom index.js file in it (by typing "cd" and then the custom folder. like this: ``cd c:\downloads\dalaiCustomSource``
+5. run the ``npx dalai serve`` command from command prompt within this folder 
+
+then it will work
