@@ -7,8 +7,8 @@ namespace SallyBot
     {
         internal static Task StartLoop()
         {
-            MainGlobal.Server = MainGlobal.Client.GetGuild(364220567190241280);
-            if (MainGlobal.Server != null) // if bot is in DeSinc server
+            MainGlobal.Server = MainGlobal.Client.GetGuild(PUT_YOUR_SERVER_ID_HERE_OTHERWISE_KNOWN_AS_GUILD_ID);
+            if (MainGlobal.Server != null)
             {
                 Console.WriteLine("| Server detected: " + MainGlobal.Server.Name);
             }
