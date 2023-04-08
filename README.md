@@ -30,6 +30,8 @@ Use this guide: https://autocode.com/discord/threads/what-are-discord-privileged
 
 Put your bot API key in the MainGlobal.cs file
 
+Put your server's ID into the MainLoop.cs file
+
 Press F5 to build it and run and see what happens (it should work first try)
 
 There is a disabled line of code that you can enable which replies to any message the bot sees. This can be used to test if the bot works in your server by sending a message back to you. CTRL + F search for "Hello!!" to find that commented-out line of code, and use it/remove it/change it however you like.
