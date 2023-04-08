@@ -108,7 +108,7 @@ I built my own stop command into the source code myself. Not only does it work e
 It's just 5 easy steps to get it working on your system too!
 
 1. download the dalai source code from that cocktailpeanut github linked above
-2. unzip it to a folder somewhere
+2. unzip it to a folder somewhere ***ON C DRIVE ON C DRIVE ON C DRIVE IT DOES NOT WORK ON ANY OTHER DRIVE LETTER*** (I suggest putting it next to the c:\users\username\dalai folder. mine is C:\Users\Dean\dalaiDS)
 3. replace the index.js file with my special index.js file here: https://pastebin.com/A3bpWhTG
 4. navigate a command prompt to this custom source dalai folder we just unzipped with the custom index.js file in it (by typing "cd" and then the custom folder. like this: ``cd c:\downloads\dalaiCustomSource``
 5. run the ``npx dalai serve`` command from command prompt within this folder 
