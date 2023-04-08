@@ -59,6 +59,18 @@ namespace SallyBot
 
         static internal string token = string.Empty;
 
+
+        static internal List<string> bannedWords = new List<string>
+                {
+                    // Add your list of banned words here
+                    "butt", "bum", "booty", "nudity", "naked"
+                };
+
+        static internal string takeAPicRegexStr = @"\b(take|paint|generate|make|draw|create|show|give|snap|capture|send|display|share|shoot|see|provide|another)\b.*(\S\s{0,10})?(image|picture|painting|pic|photo|portrait|selfie)\b";
+        static internal Regex takeAPicRegex = new Regex(takeAPicRegexStr, RegexOptions.IgnoreCase);
+
+        static internal string promptEndDetectionRegexStr = @"[\n|\r|\r\n]([^\\.|^\\\-|^\\*|)\n]{2})|(\[end|<end|]:|>:|\[human|\[chat|\[sally|\[cc|<chat|<cc|\[@chat|\[@cc|bot\]:|<@chat|<@cc|\[.*]: |\[.*] : |\[[^\]]+\]\s*:)";
+
         static void Main()
                 => new Program().AsyncMain().GetAwaiter().GetResult();
 
@@ -240,20 +252,6 @@ namespace SallyBot
         {
             var Msg = message as SocketUserMessage;
 
-            List<string> bannedWords = new List<string>
-                {
-                    // Add your list of banned words here
-                    "butt", "bum", "booty", "nudity", "naked"
-                };
-
-            string takeAPicRegexStr = @"\b(take|paint|generate|make|draw|create|show|give|snap|capture|send|display|share|shoot|see|provide|another)\b.*(\S\s{0,10})?(image|picture|painting|pic|photo|portrait|selfie)\b";
-            Regex takeAPicRegex = new Regex(takeAPicRegexStr, RegexOptions.IgnoreCase);
-
-            string msgUsernameClean = Regex.Replace(Msg.Author.Username, "[^a-zA-Z0-9]+", "");
-
-            string promptEndDetectionRegexStr = @"[\n|\r|\r\n]([^\\.|^\\\-|^\\*|)\n]{2})|(\[end|<end|]:|>:|\[human|\[chat|\[sally|\[cc|<chat|<cc|\[@chat|\[@cc|bot\]:|<@chat|<@cc|\[.*]: |\[.*] : |\[[^\]]+\]\s*:)";
-            Regex promptEndDetectionRegex = new Regex(promptEndDetectionRegexStr, RegexOptions.IgnoreCase);
-
             string inputMsg = Msg.Content
                 .Replace("\n", "")
                 .Replace("\\n", ""); // this makes all the prompting detection regex work, but if you know what you're doing you can change these
@@ -270,6 +268,7 @@ namespace SallyBot
             string timeOfDayInNaturalLanguage = GetTimeOfDayInNaturalLanguage(currentTimeInJapan);
 
             // Create the message line that the bot will see
+            string msgUsernameClean = Regex.Replace(Msg.Author.Username, "[^a-zA-Z0-9]+", "");
             string inputPrompt = $"[{msgUsernameClean}]: {inputMsg}";
 
             //// you can use this if you want to trim the messages to below 500 characters each
