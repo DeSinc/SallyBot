@@ -20,8 +20,6 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 
-// NOTE - I'm not 100% sure if all of these are needed for SallyBot. Some of these might be for my own code that is not included in this file. Just check to make sure.
-
 namespace SallyBot
 {
     class Program
@@ -75,7 +73,7 @@ namespace SallyBot
                     "butt", "bum", "booty", "nudity", "naked"
                 };
 
-        static internal string takeAPicRegexStr = @"\b(take|paint|generate|make|draw|create|show|give|snap|capture|send|display|share|shoot|see|provide|another)\b.*(\S\s{0,10})?(image|picture|painting|pic|photo|portrait|selfie)\b";
+        static internal string takeAPicRegexStr = @"\b(take|paint|generate|make|draw|create|show|give|snap|capture|send|display|share|shoot|see|provide|another)\b.*(\S\s{0,10})?(image|picture|painting|pic|screenshot|photo|portrait|selfie)\b";
         static internal Regex takeAPicRegex = new Regex(takeAPicRegexStr, RegexOptions.IgnoreCase);
 
         static internal string promptEndDetectionRegexStr = @"[\n|\r|\r\n]([^\\.|^\\\-|^\\*|)\n]{2})|(\[end|<end|]:|>:|\[human|\[chat|\[sally|\[cc|<chat|<cc|\[@chat|\[@cc|bot\]:|<@chat|<@cc|\[.*]: |\[.*] : |\[[^\]]+\]\s*:)";
@@ -926,7 +924,16 @@ namespace SallyBot
                     image.Save(sdImgFilePath, new PngEncoder());
 
                     Task.Delay(1000).Wait();
-                    Msg.Channel.SendFileAsync(sdImgFilePath);
+
+                    using var fileStream = new FileStream(sdImgFilePath, FileMode.Open, FileAccess.Read);
+                    var file = new FileAttachment(fileStream, "cutepic.png");
+                    if (Msg.Reference != null)
+                        await Context.Channel.SendFileAsync(sdImgFilePath, null, false, null, null, false, null, Msg.Reference);
+                    else
+                    {
+                        var messageReference = new MessageReference(Msg.Id);
+                        await Context.Channel.SendFileAsync(sdImgFilePath, null, false, null, null, false, null, messageReference);
+                    }
                 }
             }
             else
