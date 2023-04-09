@@ -50,11 +50,13 @@ Feel free to use or remove this line of code entirely after testing the bot is u
 
 ## AI Text Generation with Dalai Alpaca
 
-This bot doesn't generate the AI text but just sends requests off to a language learning model of your choice. At the moment I made the requests send out in the format for [Dalai Alpaca 7B](https://github.com/cocktailpeanut/dalai) because that's easy to set up, but you can change the format to other LLMs in the bot code.
+This bot doesn't generate the AI text but just sends requests off to a language learning model of your choice. At the moment I made the requests send out in the format for [Dalai Alpaca 7B](https://github.com/cocktailpeanut/dalai)
 
-It's this line:
+Just follow their quick and easy instructions and the bot will automatically connect and start sending Dalai requests when you ping the bot.
+
+If you wish to modify the LLM parameters, it's this section here:
 ```c#
-    var request = new
+    var dalaiRequest = new
     {
         seed = -1,
         threads = 4,   <--(btw, change this to your thread count minus 2 for more speed)
@@ -85,6 +87,28 @@ Example: --no-stream --listen-port 7861    <-- I coded it so that it is expectin
 
 Once the Oobabooga server is running NOT in chat mode, it should start accepting queries from Sallybot immediately!
 
+If you'd like to modify the parameters for Oobabooga, it's this section here:
+```
+var parameters = new
+            {
+                max_new_tokens = 200,
+                do_sample = true,
+                temperature = 0.8,
+                top_p = 0.1,
+                typical_p = 1,
+                repetition_penalty = 1.18,
+                encoder_repetition_penalty = 1.0,
+                top_k = 50,
+                min_length = 0,
+                no_repeat_ngram_size = 0,
+                num_beams = 1,
+                penalty_alpha = 0,
+                length_penalty = 1,
+                early_stopping = false,
+                stopping_strings = new string[] { "\\n[", "\n[", "]:", "##", "###", "<noinput>", "\\end" },
+                seed = -1
+            };
+```
 ## Other AI text generators as yet unsupported
 
 If you're using another AI text generator, check its github page for instructions on how to format the data and change the format of the request to what it needs. You might also need to change the way it sends the request in, which could be a lot of code changes depending. This bot sends via SocketIO to Dalai Alpaca which is the easiest to set up imo and runs on anything with very good speed. I mean anything. It runs on a raspberry pi 4B.
