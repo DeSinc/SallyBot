@@ -130,7 +130,7 @@ namespace SallyBot
                     Socket = new SocketIO("http://localhost:3000");
                     Socket.OnConnected += async (sender, e) =>
                     {
-                        Console.WriteLine("Connected to LLM server.");
+                        Console.WriteLine("Connected to Dalai server.");
                         dalaiConnected = true;
                     };
 
@@ -809,7 +809,7 @@ namespace SallyBot
 
             Socket.On("disconnect", result =>
             {
-                Console.WriteLine("LLM server disconnected.");
+                Console.WriteLine("Dalai server disconnected.");
                 dalaiConnected = false;
             });
         }
