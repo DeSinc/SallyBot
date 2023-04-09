@@ -71,6 +71,22 @@ It's this line:
     };          
 ```
 
+## Using Oobabooga Text Generation Webui
+
+Download and install Oobabooga from their repo [here](https://github.com/oobabooga/text-generation-webui). You can use the 1-click windows installer zip file or clone their repo, both work fine. Follow their guide on installing it and then come back here.
+
+Once installed, you need to enable API access on Oobabooga. The API only works when Chat Mode is OFF and no-stream is enabled.
+
+So for example:
+1. REMOVE the --chat or --cai-chat arguments (API does not function with these enabled at the time of writing this)
+2. ADD the --no-stream argument
+
+Example: --no-stream --listen-port 7861    <-- I coded it so that it is expecting chat server on this port since stable diffusion uses 7860 by default too
+
+Once the Oobabooga server is running NOT in chat mode, it should start accepting queries from Sallybot immediately!
+
+## Other AI text generators as yet unsupported
+
 If you're using another AI text generator, check its github page for instructions on how to format the data and change the format of the request to what it needs. You might also need to change the way it sends the request in, which could be a lot of code changes depending. This bot sends via SocketIO to Dalai Alpaca which is the easiest to set up imo and runs on anything with very good speed. I mean anything. It runs on a raspberry pi 4B.
 
 ## Generate images with Stable Diffusion
