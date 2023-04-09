@@ -20,7 +20,11 @@ Context: [I Made a Discord Chat Bot that Can Take Selfies](https://www.youtube.c
 
 ## USAGE
 
-Clone the repo (or click the 'Code' drop-down at the top right and select 'Download ZIP') and place the contents into a folder called SallyBot (changing the name risks issues with the Visual Studio environment)
+Either git clone the repo into a folder called Sallybot
+
+or
+
+Click the 'Code' drop-down at the top right corner of this webpage and select 'Download ZIP' and place the contents into a folder called SallyBot (changing the name risks issues with the Visual Studio environment)
 
 Double click sallybot.csproj and open with Visual Studio
 
