@@ -231,9 +231,10 @@ namespace SallyBot
                             if (thinking <= 0 && typing <= 0)
                                 await DalaiReply(Msg); // dalai chat
                         }
-                        catch
+                        catch (Exception e)
                         {
-                            Console.WriteLine("Could not connect to Dalai server. Attempting to send an Oobaboga request...");
+                            Console.WriteLine($"Dalai error: {e}\nAttempting to send an Oobaboga request...");
+                            await OobaboogaReply(Msg); // run the OobaboogaReply function to reply to the user's message with an Oobabooga chat server message
                         }
                     }
                     else
@@ -242,11 +243,17 @@ namespace SallyBot
                         {
                             await OobaboogaReply(Msg); // run the OobaboogaReply function to reply to the user's message with an Oobabooga chat server message
                         }
-                        catch
+                        catch (Exception e)
                         {
-                            Console.WriteLine("Could not connect to Oobabooga server. Attempting Dalai request...");
+                            if (e.ToString().Contains("blank"))
+                                Console.WriteLine($"Oobabooga response was blank. Try enable --no-stream in the command args.");
+                            else
+                                Console.WriteLine($"Oobabooga server could not be found. \nAttempting Dalai request...");
                             if (thinking <= 0 && typing <= 0)
+                            {
+                                Console.WriteLine($"Attempting Dalai request...");
                                 await DalaiReply(Msg); // run the DalaiReply function to reply to the user's message with a Dalai chat server message
+                            }
                         }
                     }
                 }
@@ -375,12 +382,13 @@ namespace SallyBot
 
             var parameters = new
             {
+                api_name = "SallyBot",
                 max_new_tokens = 200,
                 do_sample = true,
                 temperature = 0.7,
-                top_p = 0.5,
+                top_p = 0.1,
                 typical_p = 1,
-                repetition_penalty = 1.3,
+                repetition_penalty = 1.18,
                 encoder_repetition_penalty = 1.0,
                 top_k = 40,
                 min_length = 0,
@@ -389,7 +397,7 @@ namespace SallyBot
                 penalty_alpha = 0,
                 length_penalty = 1,
                 early_stopping = true,
-                stopping_strings = new List<string> { "\\n[", "\n[", "]:" },
+                stopping_strings = new string[] { "\\n[", "\n[", "]:", "##", "###", "<noinput>" },
                 seed = -1
             };
 
