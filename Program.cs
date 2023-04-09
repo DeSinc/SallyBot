@@ -43,13 +43,22 @@ namespace SallyBot
         static internal string oobaboogaChatHistory = string.Empty; // <-- chat history saves to this string over time
         static internal bool chatHistoryDownloaded = false; // Records if you have downloaded chat history before so it only downloads message history once.
 
-        static internal string oobaboogaInputPromptStart = $"### Instruction:\r\n" +
-                $"Write the next message in this Discord chat room as a girl.\r\n";
-        static internal string oobaboogaInputPromptEnd = $"### Single message response:\r\n" +
-                $"[{botName}]: ";
+        //static internal string oobaboogaInputPromptStart = $"### Instruction:\r\n" +
+        //        $"Write the next message in this Discord chat room.\r\n";
 
-        static internal string oobaboogaInputPromptStartPic = $"\n### After describing the image, {botName} must then send a message talking about the picture she just took." + // or pick this prompt ending to request a picture
-            $"\n### Write a short list of things in the photo followed by a new message from SallyBot on a new line talking about the image: ";
+        //static internal string oobaboogaInputPromptEnd = $"### Reply to this user with a short message.\r\n" +
+        //        $"[{botName}]: ";
+
+        static internal string oobaboogaInputPromptStart = $"";
+        static internal string oobaboogaInputPromptEnd = $"[{botName}]: ";
+
+
+        //static internal string oobaboogaInputPromptStartPic = $"\n### After describing the image, {botName} must then send a message talking about the picture she just took." + // or pick this prompt ending to request a picture
+        //    $"\n### Write a short list of things in the photo followed by a new message from SallyBot on a new line talking about the image: ";
+
+
+        static internal string oobaboogaInputPromptStartPic = $"\nAfter describing the image she took, {botName} may reply." +
+            $"\nNouns of things in the photo: ";
 
         static internal string inputPromptEnding = $"\n[{botName}]: ";
         static internal string inputPromptEndingPic = $"\nAfter describing the image she took, {botName} may reply." +
