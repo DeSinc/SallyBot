@@ -3,6 +3,8 @@ AI Chatbot that uses locally-ran large language models to talk to you (No Chat-G
 
 It also uses [Stable Diffusion](https://github.com/AUTOMATIC1111/stable-diffusion-webui) to take real selfies, running on your local GPU
 
+Coded in Discord.net C# 
+
 Context: [I Made a Discord Chat Bot that Can Take Selfies](https://www.youtube.com/watch?v=KM4a7RGG270)  
 [![](https://markdown-videos.deta.dev/youtube/KM4a7RGG270)](https://youtu.be/KM4a7RGG270)
 
@@ -10,9 +12,7 @@ Context: [I Made a Discord Chat Bot that Can Take Selfies](https://www.youtube.c
 
 [Oobabooga Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)
 
-[Dalai Alpaca](https://github.com/cocktailpeanut/dalai)
-
-Coded in Discord.net C#  
+[Dalai Alpaca](https://github.com/cocktailpeanut/dalai) 
 
 ### Examples
 
