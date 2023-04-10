@@ -44,7 +44,6 @@ namespace SallyBot
         // here is the default URL for stable diffusion web ui with --API param enabled in the launch parameters
         string stableDiffUrl = "http://127.0.0.1:7860";
 
-        public static bool publicAccess = true;
         public static bool longMsgWarningGiven = false; // gives a warning for a long msg, but only once
 
         static internal ulong botUserId = 0; // <-- this is your bot's client ID number inside discord (not the token) and gets set in MainLoop after initialisation
@@ -243,20 +242,13 @@ namespace SallyBot
                 // used if you want to select a channel for the bot to ignore or to only pay attention to
                 var contextChannel = Context.Channel as SocketGuildChannel;
 
-                // skip if not one of the SallyBot channels
-                if (contextChannel.Id != 1090136473392644207
-                    && contextChannel.Id != 1088816212189917214) return;
-
-                // skip public channels if public access is off
-                if (contextChannel.Id == 1090136473392644207 && publicAccess == false) return;
-
                 string imagePresent = string.Empty;
                 MatchCollection matches;
                 // get only unique matches
                 List<string> uniqueMatches;
 
                 // downloads recent chat messages and puts them into the bot's memory
-                if (chatHistoryDownloaded == false)
+                if (chatHistoryDownloaded == false && dalaiConnected == false) // don't log history if dalai is connected
                 {
                     chatHistoryDownloaded = true; // only do this once per program run to load msges into memory
                     var downloadedMsges = await Msg.Channel.GetMessagesAsync(10).FlattenAsync();
@@ -942,27 +934,20 @@ namespace SallyBot
                 //    .Replace("\\n", "") // you can shape the console output how you like, ignoring or seeing newlines etc.
                 //.Replace("\\r", ""));
 
-                cursorPosition = Console.GetCursorPosition();
-                if (cursorPosition.Left == 120)
-                {
-                    Console.WriteLine();
-                    Console.SetCursorPosition(0, cursorPosition.Top + 1);
-                }
-
                 llmMsg += token
+                .Replace("\r", "") // remove /r's
+                .Replace("\\r", "")
                 .Replace("\\n", "\n"); // replace backslash n with the proper newline char
-
-                if (llmMsg.EndsWith("<end>") || llmFinalMsg.EndsWith("[end of text]"))
-                {
-                    Socket.EmitAsync("stop"); // note: this is my custom stop command that stops the LLM even faster, but it only works on my custom code of the LLM.
-                                              //Socket.EmitAsync("request", dalaiStop); // this bloody stop request stops the entire dalai process for some reason
-                    dalaiThinking = 0;
-                    typing = 0;
-                    Console.WriteLine();
-                }
 
                 if (listening && humanPrompted)
                 {
+                    cursorPosition = Console.GetCursorPosition();
+                    if (cursorPosition.Left == 120)
+                    {
+                        Console.WriteLine();
+                        Console.SetCursorPosition(0, cursorPosition.Top + 1);
+                    }
+
                     llmFinalMsg += token; // start writing the LLM's response to this string
                     string llmFinalMsgRegexed = promptEndDetectionRegex.Replace(llmFinalMsg, "");
                     string llmFinalMsgUnescaped = Regex.Unescape(llmFinalMsgRegexed);
@@ -997,6 +982,7 @@ namespace SallyBot
                             Socket.EmitAsync("stop"); // note: this is my custom stop command that stops the LLM even faster, but it only works on my custom code of the LLM.
                             //Socket.EmitAsync("request", dalaiStop); // this bloody stop request stops the entire dalai process for some reason
                         }
+                        Console.WriteLine();
 
                         llmMsg = string.Empty;
                         llmFinalMsg = string.Empty;
@@ -1016,16 +1002,23 @@ namespace SallyBot
                     {
                         llmMsg = string.Empty;
                         listening = true;
-                        Console.WriteLine();
-                        Console.Write("Response: ");
                     }
                 }
 
                 if (imgListening)
                 {
-                    llmFinalMsg += token
-                .Replace("\r", "") // remove /r's
-                .Replace("\\r", ""); // start writing the LLM's response to this string
+                    Console.Write(token);
+                    //    .Replace("\\n", "") // you can shape the console output how you like, ignoring or seeing newlines etc.
+                    //.Replace("\\r", ""));
+
+                    cursorPosition = Console.GetCursorPosition();
+                    if (cursorPosition.Left == 120)
+                    {
+                        Console.WriteLine();
+                        Console.SetCursorPosition(0, cursorPosition.Top + 1);
+                    }
+
+                    llmFinalMsg += token;
                     promptEndDetected = promptEndDetectionRegex.IsMatch(llmFinalMsg);
 
                     if (llmFinalMsg.Length > 2
