@@ -525,7 +525,7 @@ namespace SallyBot
 
             // oobabooga code
             int strLength = oobaboogaChatHistory.Length; // current chat history string length
-            int maxChatHistoryStrLength = 500; // max chat history length (you can go to like 4800 before errors with oobabooga)(subtract character prompt length if you are using one)
+            int maxChatHistoryStrLength = 100; // max chat history length (you can go to like 4800 before errors with oobabooga)(subtract character prompt length if you are using one)
             if (strLength > maxChatHistoryStrLength) // warning: higher length history seems to introduce emoji psychosis
             {
                 oobaboogaChatHistory = oobaboogaChatHistory.Substring(strLength - maxChatHistoryStrLength);
