@@ -209,6 +209,8 @@ namespace SallyBot
 
         private static async void Tick(object sender, ElapsedEventArgs e)
         {
+            botName = MainGlobal.Server.GetUser(botUserId).Nickname;
+
             if (typing > 0)
             {
                 typing--;       // Lower typing tick over time until it's back to 0 - used below for sending "Is typing..." to discord.
@@ -251,8 +253,6 @@ namespace SallyBot
                 MatchCollection matches;
                 // get only unique matches
                 List<string> uniqueMatches;
-
-                botName = MainGlobal.Server.GetUser(botUserId).Nickname;
 
                 // downloads recent chat messages and puts them into the bot's memory
                 if (chatHistoryDownloaded == false && dalaiConnected == false) // don't log history if dalai is connected
