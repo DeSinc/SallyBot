@@ -1,5 +1,5 @@
 # SallyBot
-AI Chatbot that uses locally-ran large language models to talk to you (No Chat-GPT! Runs offline!)
+AI Chatbot that uses locally-ran large language models to talk to you (No Chat-GPT! Runs on your PC! It even runs on a raspberry pi 4B!)
 
 It also uses [Stable Diffusion](https://github.com/AUTOMATIC1111/stable-diffusion-webui) to take real selfies, running on your local GPU
 
