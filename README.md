@@ -134,16 +134,22 @@ Save the file and run it.  The API is now ready to receive request right from Sa
 
 ## Known Issues
 
-### 1. Stable Diffusion needs to use an older version of Python.  Follow the steps in their repo and install Python 3.10 making sure to add it to your system PATH.  
+### Stable Diffusion needs to use an older version of Python.  Follow the steps in their repo and install Python 3.10 making sure to add it to your system PATH.  
 Afterwards, assuming you did not change the default install location, modify the `PYTHON` line in your `webui-user.bat` file.  
 ```bat
 set PYTHON="%LOCALAPPDATA%\Programs\Python\Python310\python.exe"
 ```
 
-### 2. Dalai Alpaca needs to be run in Command Prompt (cmd.exe) and not PowerShell (powershell.exe).  
+### Dalai Alpaca needs to be run in Command Prompt (cmd.exe) and not PowerShell (powershell.exe).  
 With Windows 11, Microsoft made PowerShell the default terminal, make sure to use Command Prompt to start it instead, an easy way to do that is `WIN + R` `cmd.exe` and then use `cd` to navigate to the Dalai directory.
 
-### 3. Dalai tends to ramble even after your bot has already sent the message.
+### Emoji Psychosis / Hashtag Psychosis
+
+Oobabooga has an issue at the moment with its default built-in API (haven't tested the API extension as of yet) where for some reason any data that is sent in the request ends up either not setting params correctly (for example, seed -1 literally uses -1 as the seed, it does not generate a random seed value) and the result of these params being set wrong is that the bot enters a state known only as Hashtag Psychosis. If the bot sees a single hashtag anywhere it will begin to put a few hashtags on the end of their msg.. then 4.. then 10... and it sees its own messages in the history and causes it to spiral and become actually unusable.
+
+No known cure exists, although doctors are looking into using the [API extension here](https://github.com/oobabooga/text-generation-webui/blob/main/extensions/api/script.py) instead of the default one.
+
+### Dalai tends to ramble even after your bot has already sent the message.
 
 The reason for this is that there is no proper working stop command built into dalai. There is one they tried to make, but it crashes the dalai server every 2nd or 3rd time you run it so in my view it's not working.
 
