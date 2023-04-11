@@ -729,7 +729,10 @@ namespace SallyBot
                     return;
                 }
             }
-            if (result != null && result.Length > 6)
+            if (response != null)
+                result = await response.Content.ReadAsStringAsync();
+
+            if (result != null)
             {
                 JsonDocument jsonDocument = JsonDocument.Parse(result);
 
