@@ -848,11 +848,11 @@ namespace SallyBot
             }
 
             inputPrompt = Regex.Unescape(inputPrompt) // try unescape to allow for emojis? Isn't working because of Dalai code. I can't figure out how to fix. Emojis are seen by dalai as ??.
-                .Replace("{", "")                       // these symbols don't work in LLMs such as Dalai 0.3.1 for example
-                .Replace("}", "")
-                .Replace("\"", "'")
-                .Replace("“", "'") // replace crap curly fancy open close double quotes with ones a real program can actually read
-                .Replace("”", "'")
+                .Replace("{", @"\{")                       // these symbols don't work in LLMs such as Dalai 0.3.1 for example
+                .Replace("}", @"\}")
+                .Replace("\"", "\\\"")
+                .Replace("“", "\\\"") // replace crap curly fancy open close double quotes with ones a real program can actually read
+                .Replace("”", "\\\"")
                 .Replace("’", "'")
                 .Replace("`", "\\`")
                 .Replace("$", "");
