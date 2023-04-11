@@ -441,12 +441,9 @@ namespace SallyBot
 
                 // put new message in the history (also remove hashtags so bot doesn't see them, prevents hashtag psychosis)
                 oobaboogaChatHistory += $"{inputMsgFiltered.Replace("#", "")}{imagePresent}\n";
-                if (oobaboogaThinking > 0 || typing > 0) return; // don't pass go if it's already responding
-
-                // this makes the bot only reply to one person at a time and ignore all requests while it is still typing a message.
-                //oobaboogaThinking = 2; // enable this by uncommenting this line here
-
-                if (Msg.Author.IsBot) return; // don't listen to bot messages, including itself
+                if (oobaboogaThinking > 0 // don't pass go if it's already responding
+                    || typing > 0 
+                    || Msg.Author.IsBot) return; // don't listen to bot messages, including itself
 
                 // detect when a user types the bot name and a questionmark, or the bot name followed by a comma.
                 // Examples: 
@@ -461,6 +458,9 @@ namespace SallyBot
                     || (lastLineWasSallyBot && Msg.Content.EndsWith("?")) // if last msg was sallybot and user followed up with question
                     || (Msg.Content.ToLower().Contains($"{botName.ToLower()}") && Msg.Content.Length < 25)) // or very short sentences mentioning sally
                 {
+                    // this makes the bot only reply to one person at a time and ignore all requests while it is still typing a message.
+                    //oobaboogaThinking = 2; // enable this by uncommenting this line here
+
                     if (dalaiConnected)
                     {
                         try
@@ -743,8 +743,6 @@ namespace SallyBot
                             if (dalaiConnected == false)
                                 Console.WriteLine($"No Dalai server connected");
                             oobaboogaThinking = 0; // reset thinking flag after error
-                            dalaiThinking = 0;
-                            typing = 0; // reset typing flag after error
                             return;
                         }
                     }
@@ -755,8 +753,6 @@ namespace SallyBot
                     if (dalaiConnected == false)
                         Console.WriteLine($"No Dalai server connected");
                     oobaboogaThinking = 0; // reset thinking flag after error
-                    dalaiThinking = 0;
-                    typing = 0; // reset typing flag after error
                     return;
                 }
             }
@@ -782,8 +778,6 @@ namespace SallyBot
             {
                 Console.WriteLine("No response from Oobabooga server.");
                 oobaboogaThinking = 0; // reset thinking flag after error
-                dalaiThinking = 0;
-                typing = 0; // reset typing flag after error
             }
 
             // detect if this exact sentence has already been said before by sally
@@ -801,6 +795,7 @@ namespace SallyBot
             else if (loopCounts >= 6)
             {
                 loopCounts = 0;
+                oobaboogaThinking = 0; // reset thinking flag after error
                 return; // give up lol
             }
 
@@ -912,6 +907,7 @@ namespace SallyBot
                     Console.WriteLine($"Warning: The actual message was {messageToRambleRatio}x longer, but was cut off. Considering changing prompts to speed up its replies.");
                 }
             }
+            oobaboogaThinking = 0; // reset thinking flag after error
         }
         private async Task DalaiReply(SocketMessage message)
         {
