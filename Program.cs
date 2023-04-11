@@ -38,6 +38,8 @@ namespace SallyBot
         static internal int typingTicks = 0;
         static internal int oobaboogaErrorCount = 0;
 
+        static internal string botLastReply = string.Empty;
+
         static internal string oobServer = "127.0.0.1";
         static internal int oobServerPort = 5000;
 
@@ -249,8 +251,7 @@ namespace SallyBot
                 MatchCollection matches;
                 // get only unique matches
                 List<string> uniqueMatches;
-                
-                // sets bot name dynamically to nickname and checks it before the function every time
+
                 botName = MainGlobal.Server.GetUser(botUserId).Nickname;
 
                 // downloads recent chat messages and puts them into the bot's memory
@@ -435,6 +436,7 @@ namespace SallyBot
 
                 if (Msg.MentionedUsers.Contains(MainGlobal.Server.GetUser(botUserId))
                     || sallybotMatch.Success // sallybot, or sallybot? query detected
+                    || Msg.Content.StartsWith(botName.ToLower())
                     || (lastLineWasSallyBot && Msg.Content.EndsWith("?")) // if last msg was sallybot and user followed up with question
                     || (Msg.Content.ToLower().Contains($"{botName.ToLower()}") && Msg.Content.Length < 25)) // or very short sentences mentioning sally
                 {
@@ -524,7 +526,7 @@ namespace SallyBot
 
             // oobabooga code
             int strLength = oobaboogaChatHistory.Length; // current chat history string length
-            int maxChatHistoryStrLength = 4800; // max chat history length (you can go to like 4800 before errors with oobabooga)(subtract character prompt length if you are using one)
+            int maxChatHistoryStrLength = 100; // max chat history length (you can go to like 4800 before errors with oobabooga)(subtract character prompt length if you are using one)
             if (strLength > maxChatHistoryStrLength) // warning: higher length history seems to introduce emoji psychosis
             {
                 oobaboogaChatHistory = oobaboogaChatHistory.Substring(strLength - maxChatHistoryStrLength);
@@ -752,6 +754,16 @@ namespace SallyBot
             }
             else
                 Console.WriteLine("No response from Oobabooga server.");
+
+            if (botReply == botLastReply)
+            {
+                // LOOPING!! CLEAR HISTORY and try again
+                var lines = oobaboogaChatHistory.Split('\n');
+                oobaboogaChatHistory = string.Join("\n", lines.Skip(lines.Length - 4));
+
+                OobaboogaReply(Msg, inputMsgFiltered); // try again
+                return;
+            }
 
             string oobaBoogaImgPromptDetectedWords = Functions.IsSimilarToBannedWords(botReply, bannedWords);
 
