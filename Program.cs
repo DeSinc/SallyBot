@@ -37,6 +37,7 @@ namespace SallyBot
         static internal int typing = 0;
         static internal int typingTicks = 0;
         static internal int oobaboogaErrorCount = 0;
+        static internal int maxChatHistoryStrLength = 500; // max chat history length (you can go to like 4800 before errors with oobabooga)(subtract character prompt length if you are using one)
 
         static internal string botLastReply = string.Empty;
 
