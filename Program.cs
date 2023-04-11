@@ -400,7 +400,7 @@ namespace SallyBot
                     }
                     Console.WriteLine($"{inputMsgFiltered} <Banned or similar words removed.>{imagePresent}");
                 }
-                else
+                else if (dalaiConnected == false)
                 {
                     Console.WriteLine($"{inputMsgFiltered}{imagePresent}");
                 }
