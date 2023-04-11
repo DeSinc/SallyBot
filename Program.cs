@@ -520,12 +520,14 @@ namespace SallyBot
         {
             var Msg = message as SocketUserMessage;
 
-            string inputMsg = inputMsgFiltered
+            inputMsgFiltered = inputMsgFiltered
                 .Replace("\n", "")
                 .Replace("\\n", ""); // this makes all the prompting detection regex work, but if you know what you're doing you can change these
 
             // check if the user is requesting a picture or not
-            bool takeAPicMatch = takeAPicRegex.IsMatch(inputMsg);
+            bool takeAPicMatch = takeAPicRegex.IsMatch(inputMsgFiltered);
+
+            var Context = new SocketCommandContext(Client, Msg);
 
             //// you can use this if you want to trim the messages to below 500 characters each
             //// (prevents hacking the bot memory a little bit)
@@ -535,7 +537,7 @@ namespace SallyBot
             //    Console.WriteLine("Input message was too long and was truncated.");
             //}
 
-            inputMsg = Regex.Unescape(inputMsg) // try unescape to allow for emojis? Isn't working because of Dalai code. I can't figure out how to fix. Emojis are seen by dalai as ??.
+            inputMsgFiltered = Regex.Unescape(inputMsgFiltered) // try unescape to allow for emojis? Isn't working because of Dalai code. I can't figure out how to fix. Emojis are seen by dalai as ??.
                 .Replace("{", "")                       // these symbols don't work in LLMs such as Dalai 0.3.1 for example
                 .Replace("}", "")
                 .Replace("\"", "'")
@@ -547,6 +549,7 @@ namespace SallyBot
 
             // oobabooga code
             int strLength = oobaboogaChatHistory.Length; // current chat history string length
+            int maxChatHistoryStrLength = 1800; // max chat history length (you can go to like 4800 before errors with oobabooga)(subtract character prompt length if you are using one)
             if (strLength > maxChatHistoryStrLength) // warning: higher length history seems to introduce emoji psychosis
             {
                 oobaboogaChatHistory = oobaboogaChatHistory.Substring(strLength - maxChatHistoryStrLength);
@@ -559,6 +562,7 @@ namespace SallyBot
                 oobaboogaChatHistory = characterPrompt + // add character prompt to start of history
                                         oobaboogaChatHistory;
             }
+
             string oobaboogaInputPrompt = string.Empty;
 
             if (takeAPicMatch)
@@ -566,26 +570,25 @@ namespace SallyBot
                 // add the message the user is replying to (if there is one) so LLM has context
                 var referencedMsg = Msg.ReferencedMessage as SocketUserMessage;
                 string truncatedReply = string.Empty;
+
                 if (referencedMsg != null)
                 {
-                    string replyUsernameClean = string.Empty;
                     truncatedReply = referencedMsg.Content;
+                    string replyUsernameClean = string.Empty;
                     if (referencedMsg.Author.Id == botUserId)
                     {
                         replyUsernameClean = botName;
                     }
                     else
                     {
-                        SocketGuildUser replyUser = referencedMsg.Author as SocketGuildUser;
-                        string replyNickname = replyUser.Nickname;
-                        replyUsernameClean = Regex.Replace(replyNickname, "[^a-zA-Z0-9]+", "");
+                        replyUsernameClean = Regex.Replace(referencedMsg.Author.Username, "[^a-zA-Z0-9]+", "");
                     }
                     if (truncatedReply.Length > 150)
                     {
                         truncatedReply = truncatedReply.Substring(0, 150);
                     }
-                    inputMsg = $"[{replyUsernameClean}]: {truncatedReply}" +
-                        $"\n{inputMsg}";
+                    inputMsgFiltered = $"[{replyUsernameClean}]: {truncatedReply}" +
+                        $"\n{inputMsgFiltered}";
                 }
                 else if (Msg.MentionedUsers.Count == 0)
                 {
@@ -600,12 +603,15 @@ namespace SallyBot
                         else
                             truncatedReply = line + "\n" + truncatedReply;
                     }
-                    inputMsg = $"{truncatedReply}" +
-                            $"{inputMsg}";
+                    inputMsgFiltered = $"{truncatedReply}" +
+                            $"{inputMsgFiltered}";
                 }
 
-                oobaboogaInputPrompt = inputMsg +
+                oobaboogaInputPrompt = inputMsgFiltered +
                                         oobaboogaInputPromptStartPic;
+
+                // cut out exact matching banned words from the list at the top of this file
+                oobaboogaInputPrompt = Regex.Replace(oobaboogaInputPrompt, bannedWordsExact, "");
 
                 Console.WriteLine("Image request sent to LLM:\n" + oobaboogaInputPrompt);
             }
@@ -616,29 +622,27 @@ namespace SallyBot
                                         oobaboogaInputPromptEnd;
             }
 
-            // cut out exact matching banned words from the list at the top of this file
-            oobaboogaInputPrompt = Regex.Replace(oobaboogaInputPrompt, bannedWordsExact, "");
-
             var httpClient = new HttpClient();
-            var apiUrl = $"http://{oobServer}:{oobServerPort}/run/textgen";
+            var apiExtensionUrl = $"http://{oobServer}:{oobServerPort}{oobApiEndpoint}";
+            var apiUrl = $"http://{oobServer}:{oobServerPort}{oobApiEndpoint}";
 
             var parameters = new
             {
                 prompt = oobaboogaInputPrompt,
-                max_new_tokens = 250,
+                max_new_tokens = 200,
                 do_sample = false,
-                temperature = 0.8,
+                temperature = 0.99,
                 top_p = 0.9,
                 typical_p = 1,
-                repetition_penalty = 1.18,
+                repetition_penalty = 1.1,
                 encoder_repetition_penalty = 1,
                 top_k = 40,
                 num_beams = 1,
                 penalty_alpha = 0,
                 min_length = 0,
                 length_penalty = 1,
-                no_repeat_ngram_size = 0,
-                early_stopping = false,
+                no_repeat_ngram_size = 1,
+                early_stopping = true,
                 stopping_strings = new string[] { "\\n[", "\n[", "]:", "##", "###", "<noinput>", "\\end" },
                 seed = -1,
                 add_bos_token = true
@@ -651,6 +655,8 @@ namespace SallyBot
             //    chat_prompt_size_slider = ,
             //    chat_generation_attempts
             //};
+
+            // strip random whitespace chars from the input to attempt to last ditch sanitise it to cure emoji psychosis
             oobaboogaInputPrompt = new string(oobaboogaInputPrompt.Where(c => !char.IsControl(c)).ToArray());
 
             HttpResponseMessage response = null;
@@ -778,6 +784,7 @@ namespace SallyBot
             {
                 Console.WriteLine("No response from Oobabooga server.");
                 oobaboogaThinking = 0; // reset thinking flag after error
+                return;
             }
 
             // detect if this exact sentence has already been said before by sally
@@ -856,14 +863,17 @@ namespace SallyBot
                 Console.WriteLine("LLM's image prompt: " + llmPromptPicRegexed);
 
                 // send snipped and regexed image prompt string off to stable diffusion
-                TakeAPic(Msg, llmPromptPicRegexed, inputMsg);
+                TakeAPic(Msg, llmPromptPicRegexed, inputMsgFiltered);
+
+                // write the bot's pic to the chat history
+                //oobaboogaChatHistory += $"[{botName}]: <attachment.jpg>\n";
 
                 string llmFinalMsgUnescaped = string.Empty;
                 if (llmSubsequentMsg.Length > 0)
                 {
                     if (llmSubsequentMsg.Contains(oobaboogaInputPromptEnd))
                     {
-                        // find the character that the bot's attempt to hallucinate and ramble starts on
+                        // find the character that the bot's hallucinated username starts on
                         int llmSubsequentMsgStartIndex = Regex.Match(llmSubsequentMsg, oobaboogaInputPromptEnd).Index;
                         if (llmSubsequentMsgStartIndex > 0)
                         {
@@ -907,7 +917,7 @@ namespace SallyBot
                     Console.WriteLine($"Warning: The actual message was {messageToRambleRatio}x longer, but was cut off. Considering changing prompts to speed up its replies.");
                 }
             }
-            oobaboogaThinking = 0; // reset thinking flag after error
+            oobaboogaThinking = 0; // reset thinking flag
         }
         private async Task DalaiReply(SocketMessage message)
         {
