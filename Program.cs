@@ -249,6 +249,9 @@ namespace SallyBot
                 MatchCollection matches;
                 // get only unique matches
                 List<string> uniqueMatches;
+                
+                // sets bot name dynamically to nickname and checks it before the function every time
+                botName = MainGlobal.Server.GetUser(botUserId).Nickname;
 
                 // downloads recent chat messages and puts them into the bot's memory
                 if (chatHistoryDownloaded == false && dalaiConnected == false) // don't log history if dalai is connected
