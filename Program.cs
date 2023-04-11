@@ -156,7 +156,7 @@ namespace SallyBot
                     Socket = new SocketIO("http://localhost:3000");
                     Socket.OnConnected += async (sender, e) =>
                     {
-                        Console.WriteLine("Connected to LLM server.");
+                        Console.WriteLine("Connected to Dalai server.");
                         dalaiConnected = true;
                     };
 
