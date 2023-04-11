@@ -610,7 +610,8 @@ namespace SallyBot
                 length_penalty = 1,
                 early_stopping = false,
                 stopping_strings = new string[] { "\\n[", "\n[", "]:", "##", "###", "<noinput>", "\\end" },
-                seed = -1
+                seed = -1,
+                add_bos_token = true
             };
 
             // Extra params I found for Oobabooga that you can try if you know the values
