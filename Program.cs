@@ -600,12 +600,12 @@ namespace SallyBot
             var parameters = new
             {
                 prompt = oobaboogaInputPrompt,
-                max_new_tokens = 100,
+                max_new_tokens = 250,
                 do_sample = false,
                 temperature = 0.8,
                 top_p = 0.9,
                 typical_p = 1,
-                repetition_penalty = 1.8,
+                repetition_penalty = 1.18,
                 encoder_repetition_penalty = 1,
                 top_k = 40,
                 num_beams = 1,
