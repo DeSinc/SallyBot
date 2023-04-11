@@ -548,21 +548,6 @@ namespace SallyBot
                 .Replace("$", "");
 
             // oobabooga code
-            int strLength = oobaboogaChatHistory.Length; // current chat history string length
-            int maxChatHistoryStrLength = 1800; // max chat history length (you can go to like 4800 before errors with oobabooga)(subtract character prompt length if you are using one)
-            if (strLength > maxChatHistoryStrLength) // warning: higher length history seems to introduce emoji psychosis
-            {
-                oobaboogaChatHistory = oobaboogaChatHistory.Substring(strLength - maxChatHistoryStrLength);
-                int indexOfNextChatMsg = oobaboogaChatHistory.IndexOf("\n[");
-                oobaboogaChatHistory = characterPrompt + // add character prompt to start of history
-                                        oobaboogaChatHistory.Substring(indexOfNextChatMsg + 1); // start string at the next newline bracket + 1 to ignore the newline
-            }
-            else
-            {
-                oobaboogaChatHistory = characterPrompt + // add character prompt to start of history
-                                        oobaboogaChatHistory;
-            }
-
             string oobaboogaInputPrompt = string.Empty;
 
             if (takeAPicMatch)
@@ -620,6 +605,29 @@ namespace SallyBot
                 oobaboogaInputPrompt = oobaboogaInputPromptStart +
                                         oobaboogaChatHistory +
                                         oobaboogaInputPromptEnd;
+            }
+
+            // current input prompt string length
+            int inputPromptLength = oobaboogaInputPrompt.Length - characterPrompt.Length;
+            // max allowed prompt length (you can go to like ~5000 ish before errors with oobabooga)
+            int maxLength = 5000;
+            // amount to subtract from history if needed
+            int subtractAmount = inputPromptLength - maxLength;
+
+            if (inputPromptLength > maxLength
+                && subtractAmount > 0) // make sure we aren't subtracting a negative value lol
+            {
+                oobaboogaChatHistory = oobaboogaChatHistory.Substring(inputPromptLength - maxLength);
+                int indexOfNextChatMsg = oobaboogaChatHistory.IndexOf("\n[");
+                oobaboogaChatHistory = characterPrompt + // add character prompt to start of history
+                                        oobaboogaChatHistory.Substring(indexOfNextChatMsg + 1); // start string at the next newline bracket + 1 to ignore the newline
+            }
+            else if (subtractAmount <= 0)
+                oobaboogaChatHistory = string.Empty; // no leftover space, cut it all!!
+            else
+            {
+                oobaboogaChatHistory = characterPrompt + // add character prompt to start of history
+                                        oobaboogaChatHistory;
             }
 
             var httpClient = new HttpClient();
