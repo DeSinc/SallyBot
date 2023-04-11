@@ -449,7 +449,7 @@ namespace SallyBot
                 // ok ->sally,<- it's go time. tell me a story
                 // how many miles is a kilometre ->sallybot?<-
                 // hey ->sallybot,<- are you there?
-                Match sallybotMatch = Regex.Match(inputMsg, @$"(?:.*{botName.ToLower()}\?.*|{botName.ToLower()},.*|{botName.ToLower().Substring(0, 5)}\?.*|{botName.ToLower().Substring(0, 5)},.*)");
+                Match sallybotMatch = Regex.Match(inputMsg, @$"(?:.*{botName.ToLower()}\?.*|{botName.ToLower()},.*)");
 
                 if (Msg.MentionedUsers.Contains(MainGlobal.Server.GetUser(botUserId))
                     || sallybotMatch.Success // sallybot, or sallybot? query detected
@@ -458,7 +458,7 @@ namespace SallyBot
                     || (Msg.Content.ToLower().Contains($"{botName.ToLower()}") && Msg.Content.Length < 25)) // or very short sentences mentioning sally
                 {
                     // this makes the bot only reply to one person at a time and ignore all requests while it is still typing a message.
-                    oobaboogaThinking = 2; // enable this by uncommenting this line here
+                    oobaboogaThinking = 3;
 
                     if (dalaiConnected)
                     {
@@ -812,7 +812,8 @@ namespace SallyBot
                 Console.WriteLine("Removed banned or similar words from Oobabooga generated reply.");
             }
 
-            string llmMsgBeginTrimmed = botReply.Replace(oobaboogaInputPrompt, ""); // trim off the input prompt off the final message
+            // trim off the input prompt AND any immediate newlines from the final message
+            string llmMsgBeginTrimmed = botReply.Replace(oobaboogaInputPrompt, "").Trim();
             if (takeAPicMatch) // if this was detected as a picture request
             {
                 var promptEndMatch = Regex.Match(llmMsgBeginTrimmed, promptEndDetectionRegexStr);
