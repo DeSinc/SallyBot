@@ -789,8 +789,9 @@ namespace SallyBot
             // detect if this exact sentence has already been said before by sally
             if (oobaboogaChatHistory.Contains(botReply) && loopCounts < 6)
             {
-                loopCounts++;
                 // LOOPING!! CLEAR HISTORY and try again
+                loopCounts++;
+                Console.WriteLine("Bot tried to send the same message! Clearing some lines in chat history and retrying...");
                 var lines = oobaboogaChatHistory.Split('\n');
                 oobaboogaChatHistory = string.Join("\n", lines.Skip(lines.Length - 4));
 
