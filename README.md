@@ -26,7 +26,7 @@ or
 
 Click the 'Code' drop-down at the top right corner of this webpage and select 'Download ZIP' and place the contents into a folder called SallyBot (changing the name risks issues with the Visual Studio environment)
 
-Double click sallybot.csproj and open with Visual Studio
+Double click sallybot.csproj and open with Visual Studio Community (ideally 2022)
 
 It should open up the whole project and make a .sln file, etc.
 
