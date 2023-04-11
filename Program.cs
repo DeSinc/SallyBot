@@ -38,6 +38,8 @@ namespace SallyBot
         static internal int typingTicks = 0;
         static internal int oobaboogaErrorCount = 0;
 
+        static internal string botLastReply = string.Empty;
+
         static internal string oobServer = "127.0.0.1";
         static internal int oobServerPort = 5000;
 
@@ -135,6 +137,7 @@ namespace SallyBot
                 Client.Log += Client_Log;
                 Client.Ready += MainLoop.StartLoop;
                 Client.MessageReceived += Client_MessageReceived;
+                Client.GuildMemberUpdated += Client_GuildMemberUpdated;
 
                 await Client.LoginAsync(TokenType.Bot, MainGlobal.conS);
 
@@ -205,9 +208,24 @@ namespace SallyBot
                 Console.WriteLine($"|{DateTime.Now} - {Msg.Source}| {Msg.Message}");
         }
 
+        private Task Client_GuildMemberUpdated(Cacheable<SocketGuildUser, ulong> arg1, SocketGuildUser arg2)
+        {
+            if (arg1.Value.Id == 438634979862511616)
+            {
+                if (arg1.Value.Nickname != arg2?.Nickname) // checks if nick is different
+                {
+                    botName = arg2.Nickname; // sets new nickname
+                }
+                else if (arg1.Value.Username != arg2?.Username) // checks if username is different
+                {
+                    botName = arg2.Username; // sets new username if no nickname is present
+                }
+            }
+            return null;
+        }
+
         private static async void Tick(object sender, ElapsedEventArgs e)
         {
-            botName = MainGlobal.Server.GetUser(botUserId).Nickname;
 
             if (typing > 0)
             {
@@ -251,6 +269,8 @@ namespace SallyBot
                 MatchCollection matches;
                 // get only unique matches
                 List<string> uniqueMatches;
+
+                botName = MainGlobal.Server.GetUser(botUserId).Nickname;
 
                 // downloads recent chat messages and puts them into the bot's memory
                 if (chatHistoryDownloaded == false && dalaiConnected == false) // don't log history if dalai is connected
@@ -753,21 +773,14 @@ namespace SallyBot
             else
                 Console.WriteLine("No response from Oobabooga server.");
 
-            // detect if this exact sentence has already been said before by sally
-            if (oobaboogaChatHistory.Contains(botReply) && loopCounts < 6)
+            if (botReply == botLastReply)
             {
-                loopCounts++;
                 // LOOPING!! CLEAR HISTORY and try again
                 var lines = oobaboogaChatHistory.Split('\n');
                 oobaboogaChatHistory = string.Join("\n", lines.Skip(lines.Length - 4));
 
                 OobaboogaReply(Msg, inputMsgFiltered); // try again
                 return;
-            }
-            else if (loopCounts >= 6)
-            {
-                loopCounts = 0;
-                return; // give up lol
             }
 
             string oobaBoogaImgPromptDetectedWords = Functions.IsSimilarToBannedWords(botReply, bannedWords);
