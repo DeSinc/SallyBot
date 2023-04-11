@@ -379,7 +379,6 @@ namespace SallyBot
                         }
                         removedWords = " Removed all banned or similar words.";
                     }
-                    oobaboogaChatHistory = oobaboogaChatHistory.Replace("#", ""); // prevent hashtag psychosis (it gets bad)
 
                     // show the full downloaded chat message history in the console
                     Console.WriteLine(oobaboogaChatHistory.Trim());
@@ -439,7 +438,7 @@ namespace SallyBot
                     Console.WriteLine($"{inputMsgFiltered}{imagePresent}");
                 }
 
-                // put new message in the history (also remove hashtags so bot doesn't see them, prevents hashtag psychosis)
+                // put new message in the history
                 oobaboogaChatHistory += $"{inputMsgFiltered.Replace("#", "")}{imagePresent}\n";
                 if (oobaboogaThinking > 0 // don't pass go if it's already responding
                     || typing > 0 
