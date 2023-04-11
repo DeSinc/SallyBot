@@ -459,7 +459,7 @@ namespace SallyBot
                     || (Msg.Content.ToLower().Contains($"{botName.ToLower()}") && Msg.Content.Length < 25)) // or very short sentences mentioning sally
                 {
                     // this makes the bot only reply to one person at a time and ignore all requests while it is still typing a message.
-                    //oobaboogaThinking = 2; // enable this by uncommenting this line here
+                    oobaboogaThinking = 2; // enable this by uncommenting this line here
 
                     if (dalaiConnected)
                     {
@@ -612,7 +612,7 @@ namespace SallyBot
             // max allowed prompt length (you can go to like ~5000 ish before errors with oobabooga)
             int maxLength = 5000;
             // amount to subtract from history if needed
-            int subtractAmount = inputPromptLength - maxLength;
+            int subtractAmount = maxLength - inputPromptLength;
 
             if (inputPromptLength > maxLength
                 && subtractAmount > 0) // make sure we aren't subtracting a negative value lol
