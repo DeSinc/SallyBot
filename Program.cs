@@ -787,25 +787,6 @@ namespace SallyBot
                 return;
             }
 
-            // detect if this exact sentence has already been said before by sally
-            if (oobaboogaChatHistory.Contains(botReply) && loopCounts < 6)
-            {
-                // LOOPING!! CLEAR HISTORY and try again
-                loopCounts++;
-                Console.WriteLine("Bot tried to send the same message! Clearing some lines in chat history and retrying...");
-                var lines = oobaboogaChatHistory.Split('\n');
-                oobaboogaChatHistory = string.Join("\n", lines.Skip(lines.Length - 4));
-
-                OobaboogaReply(Msg, inputMsgFiltered); // try again
-                return;
-            }
-            else if (loopCounts >= 6)
-            {
-                loopCounts = 0;
-                oobaboogaThinking = 0; // reset thinking flag after error
-                return; // give up lol
-            }
-
             string oobaBoogaImgPromptDetectedWords = Functions.IsSimilarToBannedWords(botReply, bannedWords);
 
             if (oobaBoogaImgPromptDetectedWords.Length > 2) // Threshold set to 2
@@ -907,6 +888,26 @@ namespace SallyBot
                 }
                 else
                     llmMsg = llmMsgBeginTrimmed;
+
+                // detect if this exact sentence has already been said before by sally
+                if (oobaboogaChatHistory.Contains(llmMsg) && loopCounts < 6)
+                {
+                    // LOOPING!! CLEAR HISTORY and try again
+                    loopCounts++;
+                    Console.WriteLine("Bot tried to send the same message! Clearing some lines in chat history and retrying...");
+                    var lines = oobaboogaChatHistory.Split('\n');
+                    oobaboogaChatHistory = string.Join("\n", lines.Skip(lines.Length - 4));
+
+                    OobaboogaReply(Msg, inputMsgFiltered); // try again
+                    return;
+                }
+                else if (loopCounts >= 6)
+                {
+                    loopCounts = 0;
+                    oobaboogaThinking = 0; // reset thinking flag after error
+                    Console.WriteLine("Bot tried to loop too many times... Giving up lol");
+                    return; // give up lol
+                }
 
                 await Msg.ReplyAsync(llmMsg); // send bot msg as a reply to the user's message
                 //oobaboogaChatHistory += $"[{botName}]: {llmMsg}\n"; // writes bot's reply to the chat history
