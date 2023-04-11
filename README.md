@@ -40,9 +40,7 @@ Use this guide: https://autocode.com/discord/threads/what-are-discord-privileged
 
 * Join the bot to your server, follow this guide if you don't know how: https://discordjs.guide/preparations/adding-your-bot-to-servers.html#bot-invite-links
 
-Put your bot API key in the MainGlobal.cs file
-
-Put your server's ID into the MainLoop.cs file
+Put your bot API key and your server's ID in the MainGlobal.cs file (they will error out until you fill them in to show you where to put them)
 
 Press F5 to build it and run and see what happens (it should work first try)
 
