@@ -101,7 +101,7 @@ namespace SallyBot
                 };
 
         static internal string takeAPicRegexStr = @"\b(take|paint|generate|make|draw|create|show|give|snap|capture|send|display|share|shoot|see|provide|another)\b.*(\S\s{0,10})?(image|picture|painting|pic|photo|portrait|selfie)\b";
-        string promptEndDetectionRegexStr = @"(?:\r\n?|\n)(?:(?![.\-*]).){2}|(\[end|<end|]:|>:|\[human|\[chat|\[sally|\[cc|<chat|<cc|\[@chat|\[@cc|bot\]:|<@chat|<@cc|\[.*]: |\[.*] : |\[[^\]]+\]\s*:)";
+        string promptEndDetectionRegexStr = @"(?:\r\n?|\n)(?:(?![.\-*]).){2}|(\n\[|\[end|<end|]:|>:|\[human|\[chat|\[sally|\[cc|<chat|<cc|\[@chat|\[@cc|bot\]:|<@chat|<@cc|\[.*]: |\[.*] : |\[[^\]]+\]\s*:)";
         string promptSpoofDetectionRegexStr = @"\[[^\]]+[\]:\\]\:|\:\]|\[^\]]";
 
         // detects ALL types of links, useful for detecting scam links that need to be copied and pasted but don't format to clickable URLs
