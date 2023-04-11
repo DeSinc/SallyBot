@@ -37,6 +37,7 @@ namespace SallyBot
         static internal int typing = 0;
         static internal int typingTicks = 0;
         static internal int oobaboogaErrorCount = 0;
+        static internal int loopCounts = 0;
         static internal int maxChatHistoryStrLength = 500; // max chat history length (you can go to like 4800 before errors with oobabooga)(subtract character prompt length if you are using one)
 
         static internal string botLastReply = string.Empty;
@@ -227,7 +228,6 @@ namespace SallyBot
 
         private static async void Tick(object sender, ElapsedEventArgs e)
         {
-
             if (typing > 0)
             {
                 typing--;       // Lower typing tick over time until it's back to 0 - used below for sending "Is typing..." to discord.
@@ -243,14 +243,16 @@ namespace SallyBot
                     if (token == string.Empty)
                     {
                         dalaiConnected = false; // not sure if Dalai server is still connected at this stage, so we set this to false to try other LLM servers like Oobabooga.
-                        Console.WriteLine();
                         Console.WriteLine("No data was detected from any Dalai server. Is it switched on?"); // bot is cleared for requests again.
                     }
                     else
                     {
-                        Console.WriteLine();
                         Console.WriteLine("Dalai lock timed out"); // bot is cleared for requests again.
                     }
+                }
+                else if (oobaboogaThinking == 0)
+                {
+                    Console.WriteLine("Oobabooga lock timed out"); // bot is cleared for requests again.
                 }
             }
         }
@@ -740,6 +742,9 @@ namespace SallyBot
                             Console.WriteLine($"Cannot find oobabooga server on backup port {oobServerPort}");
                             if (dalaiConnected == false)
                                 Console.WriteLine($"No Dalai server connected");
+                            oobaboogaThinking = 0; // reset thinking flag after error
+                            dalaiThinking = 0;
+                            typing = 0; // reset typing flag after error
                             return;
                         }
                     }
@@ -749,6 +754,9 @@ namespace SallyBot
                     Console.WriteLine($"Super error detected on Oobabooga server, port {oobServerPort}: {ex}");
                     if (dalaiConnected == false)
                         Console.WriteLine($"No Dalai server connected");
+                    oobaboogaThinking = 0; // reset thinking flag after error
+                    dalaiThinking = 0;
+                    typing = 0; // reset typing flag after error
                     return;
                 }
             }
@@ -771,16 +779,28 @@ namespace SallyBot
                 }
             }
             else
-                Console.WriteLine("No response from Oobabooga server.");
-
-            if (botReply == botLastReply)
             {
+                Console.WriteLine("No response from Oobabooga server.");
+                oobaboogaThinking = 0; // reset thinking flag after error
+                dalaiThinking = 0;
+                typing = 0; // reset typing flag after error
+            }
+
+            // detect if this exact sentence has already been said before by sally
+            if (oobaboogaChatHistory.Contains(botReply) && loopCounts < 6)
+            {
+                loopCounts++;
                 // LOOPING!! CLEAR HISTORY and try again
                 var lines = oobaboogaChatHistory.Split('\n');
                 oobaboogaChatHistory = string.Join("\n", lines.Skip(lines.Length - 4));
 
                 OobaboogaReply(Msg, inputMsgFiltered); // try again
                 return;
+            }
+            else if (loopCounts >= 6)
+            {
+                loopCounts = 0;
+                return; // give up lol
             }
 
             string oobaBoogaImgPromptDetectedWords = Functions.IsSimilarToBannedWords(botReply, bannedWords);
