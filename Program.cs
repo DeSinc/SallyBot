@@ -38,8 +38,6 @@ namespace SallyBot
         static internal int typingTicks = 0;
         static internal int oobaboogaErrorCount = 0;
 
-        static internal string botLastReply = string.Empty;
-
         static internal string oobServer = "127.0.0.1";
         static internal int oobServerPort = 5000;
 
@@ -755,14 +753,21 @@ namespace SallyBot
             else
                 Console.WriteLine("No response from Oobabooga server.");
 
-            if (botReply == botLastReply)
+            // detect if this exact sentence has already been said before by sally
+            if (oobaboogaChatHistory.Contains(botReply) && loopCounts < 6)
             {
+                loopCounts++;
                 // LOOPING!! CLEAR HISTORY and try again
                 var lines = oobaboogaChatHistory.Split('\n');
                 oobaboogaChatHistory = string.Join("\n", lines.Skip(lines.Length - 4));
 
                 OobaboogaReply(Msg, inputMsgFiltered); // try again
                 return;
+            }
+            else if (loopCounts >= 6)
+            {
+                loopCounts = 0;
+                return; // give up lol
             }
 
             string oobaBoogaImgPromptDetectedWords = Functions.IsSimilarToBannedWords(botReply, bannedWords);
