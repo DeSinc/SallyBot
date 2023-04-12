@@ -85,9 +85,9 @@ Once installed, you need to enable API access on Oobabooga. The API only works w
 
 So for example:
 1. REMOVE the --chat or --cai-chat arguments (API does not function with these enabled at the time of writing this)
-2. ADD the --no-stream argument
+2. ADD these args instead: --extensions api --no-stream --notebook
 
-Example: --no-stream --listen-port 7861    <-- I coded it so that it is expecting chat server on this port since stable diffusion uses 7860 by default too
+Example: --extensions api --no-stream --notebook
 
 Once the Oobabooga server is running NOT in chat mode, it should start accepting queries from Sallybot immediately!
 
