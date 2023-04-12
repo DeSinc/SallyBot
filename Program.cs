@@ -191,7 +191,8 @@ namespace SallyBot
 
         private async Task Client_Log(LogMessage Msg)
         {
-            if (!Msg.Message.ToString().Contains("PRESENCE_UPDATE")
+            if (Msg.Message != null
+              && !Msg.Message.ToString().Contains("PRESENCE_UPDATE")
               && !Msg.Message.ToString().Contains("TYPING_START")
               && !Msg.Message.ToString().Contains("MESSAGE_CREATE")
               && !Msg.Message.ToString().Contains("MESSAGE_DELETE")
@@ -208,6 +209,8 @@ namespace SallyBot
               && !Msg.Message.ToString().Contains("Latency = ")
               && !Msg.Message.ToString().Contains("handler is blocking the"))
                 Console.WriteLine($"|{DateTime.Now} - {Msg.Source}| {Msg.Message}");
+            else if (Msg.Exception != null)
+                Console.WriteLine($"|{DateTime.Now} - {Msg.Source}| {Msg.Exception}");
         }
 
         private Task Client_GuildMemberUpdated(Cacheable<SocketGuildUser, ulong> arg1, SocketGuildUser arg2)
