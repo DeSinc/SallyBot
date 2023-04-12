@@ -214,13 +214,13 @@ namespace SallyBot
         {
             if (arg1.Value.Id == 438634979862511616)
             {
-                if (arg1.Value.Nickname != arg2?.Nickname) // checks if nick is different
-                {
-                    botName = arg2.Nickname; // sets new nickname
-                }
-                else if (arg1.Value.Username != arg2?.Username) // checks if username is different
+                if (arg2.Nickname == null || arg1.Value.Username != arg2?.Username)
                 {
                     botName = arg2.Username; // sets new username if no nickname is present
+                }
+                else if (arg1.Value.Nickname != arg2?.Nickname) // checks if nick is different
+                {
+                    botName = arg2.Nickname; // sets new nickname
                 }
             }
             return null;
@@ -272,8 +272,6 @@ namespace SallyBot
                 MatchCollection matches;
                 // get only unique matches
                 List<string> uniqueMatches;
-
-                botName = MainGlobal.Server.GetUser(botUserId).Nickname;
 
                 // downloads recent chat messages and puts them into the bot's memory
                 if (chatHistoryDownloaded == false && dalaiConnected == false) // don't log history if dalai is connected
@@ -446,13 +444,13 @@ namespace SallyBot
 
                 // detect when a user types the bot name and a questionmark, or the bot name followed by a comma.
                 // Examples: 
-                // ok ->sally,<- it's go time. tell me a story
+                // ->sallybot<- tell me a story
                 // how many miles is a kilometre ->sallybot?<-
                 // hey ->sallybot,<- are you there?
-                Match sallybotMatch = Regex.Match(inputMsg, @$"(?:.*{botName.ToLower()}\?.*|{botName.ToLower()},.*)");
+                Match botNameMatch = Regex.Match(inputMsg, @$"(?:.*{botName.ToLower()}\?.*|{botName.ToLower()},.*)");
 
                 if (Msg.MentionedUsers.Contains(MainGlobal.Server.GetUser(botUserId))
-                    || sallybotMatch.Success // sallybot, or sallybot? query detected
+                    || botNameMatch.Success // sallybot, or sallybot? query detected
                     || Msg.Content.StartsWith(botName.ToLower())
                     || (lastLineWasSallyBot && Msg.Content.EndsWith("?")) // if last msg was sallybot and user followed up with question
                     || (Msg.Content.ToLower().Contains($"{botName.ToLower()}") && Msg.Content.Length < 25)) // or very short sentences mentioning sally
