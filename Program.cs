@@ -144,6 +144,8 @@ namespace SallyBot
                 await Client.LoginAsync(TokenType.Bot, MainGlobal.conS);
 
                 await Client.StartAsync();
+                
+                await Client.SetActivityAsync(new Game("with AI", ActivityType.Playing));
 
                 Loop = new Timer()
                 {
