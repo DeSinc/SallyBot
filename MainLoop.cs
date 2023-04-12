@@ -20,9 +20,8 @@ namespace SallyBot
 
             while (MainGlobal.Server == null || MainGlobal.Server.Name == null || MainGlobal.Server.Name.Length < 1)
             {
-                var delayVar = Task.Delay(1200);
-                delayVar.Wait();
                 Console.WriteLine($"| Waiting for connection to be established by Discord...");
+                Task.Delay(1200);
             }
 
             Program.botUserId = MainGlobal.Client.CurrentUser.Id; // <--- bot's user ID is detected and filled in automatically
