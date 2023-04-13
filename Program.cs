@@ -1165,10 +1165,6 @@ namespace SallyBot
 
                 if (imgListening)
                 {
-                    Console.Write(token);
-                    //    .Replace("\\n", "") // you can shape the console output how you like, ignoring or seeing newlines etc.
-                    //.Replace("\\r", ""));
-
                     cursorPosition = Console.GetCursorPosition();
                     if (cursorPosition.Left == 120)
                     {
