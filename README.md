@@ -165,7 +165,7 @@ Oobabooga has an issue at the moment with its default built-in API (this is why 
 
 The result of these params being set wrong is that the bot enters a state known only as Hashtag Psychosis. If the bot sees a single hashtag anywhere it will begin to put a few hashtags on the end of their msg.. then 4.. then 10... and it sees its own messages in the history and causes it to spiral and become actually unusable.
 
-~~No known cure exists~~ Edit: the cure is to use the `--extensions api`` flag instead of the default API that doesn't work right.
+~~No known cure exists~~ Edit: the cure is to use the ``--extensions api`` flag instead of the default API that doesn't work right.
 
 ### Dalai tends to ramble even after your bot has already sent the message.
 
