@@ -87,7 +87,7 @@ Once installed and model downloaded, you need to enable the ``--extensions API -
 
 If you're having issues starting it, take this example that for sure works:
 
-``call python server.py --model alpaca-native-4bit --wbits 4 --groupsize 128 --extensions api --notebook --listen-port 7862 --xformers``
+``call python server.py --model ozcur_alpaca-native-4bit --wbits 4 --groupsize 128 --extensions api --notebook --listen-port 7862 --xformers``
 
 --xformers is a very good optimiser that reduces your vram usage for free, but you need to install it by typing ``pip install xformers==0.0.18`` in command prompt before it'll be doing anything for you.
 
