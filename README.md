@@ -81,15 +81,17 @@ If you wish to modify the LLM parameters, it's this section here:
 
 Download and install Oobabooga from their repo [here](https://github.com/oobabooga/text-generation-webui). You can use the 1-click windows installer zip file or clone their repo, both work fine. Follow their guide on installing it and then come back here.
 
-Once installed, you need to enable API access on Oobabooga. The API only works when Chat Mode is OFF and no-stream is enabled.
+If you don't have a language model yet, run the ``Download-model.bat`` file, pick L for none of the above, and enter ``ozcur/alpaca-native-4bit`` and let it download.
 
-So for example:
-1. REMOVE the --chat or --cai-chat arguments (API does not function with these enabled at the time of writing this)
-2. ADD these args instead: --extensions api --no-stream --notebook
+Once installed and model downloaded, you need to enable the ``--extensions API --notebook`` args in the start-webui.bat file.
 
-Example: --extensions api --no-stream --notebook
+If you're having issues starting it, take this example that for sure works:
 
-Once the Oobabooga server is running NOT in chat mode, it should start accepting queries from Sallybot immediately!
+``call python server.py --model alpaca-native-4bit --wbits 4 --groupsize 128 --extensions api --notebook --listen-port 7862 --xformers``
+
+--xformers is a very good optimiser that reduces your vram usage for free, but you need to install it by typing ``pip install xformers==0.0.18`` in command prompt before it'll be doing anything for you.
+
+Once the Oobabooga server is running NOT in --chat-mode (turn this arg off!) it should start accepting queries from Sallybot immediately!
 
 If you'd like to modify the parameters for Oobabooga, it's this section here:
 ```
