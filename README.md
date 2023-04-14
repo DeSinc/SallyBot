@@ -52,7 +52,7 @@ If it does not repeat your message back to you, then message intents might not b
 
 Feel free to use or remove this line of code entirely after testing the bot is up and running and able to read your messages.
 
-## AI Text Generation with Dalai Alpaca
+## AI Text Generation with Dalai Alpaca (Run on the CPU) -- EASY
 
 This bot doesn't generate the AI text but just sends requests off to a language learning model of your choice. At the moment I made the requests send out in the format for [Dalai Alpaca 7B](https://github.com/cocktailpeanut/dalai)
 
@@ -77,7 +77,7 @@ If you wish to modify the LLM parameters, it's this section here:
     };          
 ```
 
-## Using Oobabooga Text Generation Webui
+## Using Oobabooga Text Generation Webui (Run on the GPU) -- A little more involved but still easy if you're lucky
 
 Download and install Oobabooga from their repo [here](https://github.com/oobabooga/text-generation-webui). You can use the 1-click windows installer zip file or clone their repo, both work fine. Follow their guide on installing it and then come back here.
 
