@@ -161,11 +161,11 @@ With Windows 11, Microsoft made PowerShell the default terminal, make sure to us
 
 ### Emoji Psychosis / Hashtag Psychosis
 
-Oobabooga has an issue at the moment with its default built-in API (haven't tested the API extension as of yet) where for some reason any data that is sent in the request ends up not setting params correctly. For example, seed -1 literally uses -1 as the seed, it does not generate a random seed value.
+Oobabooga has an issue at the moment with its default built-in API (this is why you use ``--extension api``) where for some reason any data that is sent in the request ends up not setting params correctly and somewhere somehow this is causing the bot to want to spam ever lengthening repeating twitter hashtags and long long strings of emojis incessantly.
 
 The result of these params being set wrong is that the bot enters a state known only as Hashtag Psychosis. If the bot sees a single hashtag anywhere it will begin to put a few hashtags on the end of their msg.. then 4.. then 10... and it sees its own messages in the history and causes it to spiral and become actually unusable.
 
-No known cure exists, although doctors are looking into using the [API extension here](https://github.com/oobabooga/text-generation-webui/blob/main/extensions/api/script.py) instead of the default one.
+~~No known cure exists~~ Edit: the cure is to use the `--extensions api`` flag instead of the default API that doesn't work right.
 
 ### Dalai tends to ramble even after your bot has already sent the message.
 
