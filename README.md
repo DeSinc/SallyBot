@@ -121,7 +121,7 @@ var parameters = new
 
 If you're using another AI text generator, check its github page for instructions on how to format the data and change the format of the request to what it needs. You might also need to change the way it sends the request in, which could be a lot of code changes depending. This bot sends via SocketIO to Dalai Alpaca which is the easiest to set up imo and runs on anything with very good speed. I mean anything. It runs on a raspberry pi 4B. Some guy got it running on a texas instruments calculator I heard. You still need 4gb of ram for the model to load though.
 
-## Generate images with Stable Diffusion
+## Generate images with Stable Diffusion (runs on the GPU and needs probably minimum 4GB vram, more like 6GB to not have to hack around getting it to work)
 Download [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui)  
 Follow their installation steps, then find either `webui-user.bat` on Windows or `webui-user.sh` on Linux.  
 Edit the file and modify the `COMMANDLINE_ARGS` line.
