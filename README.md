@@ -134,7 +134,19 @@ Linux:
 ```sh
 export COMMANDLINE_ARGS="--api"
 ```
-Save the file and run it.  The API is now ready to receive request right from Sally!
+Save the file and run it.  The API is now ready to receive request right from SallyBot.
+
+It will send it to a default model of some kind, most likely it comes with Stable Diffusion 1.5 model which is a real-life images model.
+
+Go to Civitai (warning: look out for NSFW imagery if you make an account) and then look for an anime model you like on the homepage.
+
+Download that model, put it in \models\stablediffusion\ where the text file is that says "Place checkpoints here.txt"
+
+Open the stable diffusion Web ui by going to localhost:7860 in your web browser url bar
+
+Select the drop-down at the top left and pick the model you just downloaded, or the one you want to try out.
+
+Now the next image request you send from SallyBot will be in that model.
 
 ## Known Issues
 
