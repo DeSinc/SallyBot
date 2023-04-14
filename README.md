@@ -89,7 +89,9 @@ If you're having issues starting it, take this example that for sure works:
 
 ``call python server.py --model ozcur_alpaca-native-4bit --wbits 4 --groupsize 128 --extensions api --notebook --listen-port 7862 --xformers``
 
---xformers is a very good optimiser that reduces your vram usage for free, but you need to install it by typing ``pip install xformers==0.0.18`` in command prompt before it'll be doing anything for you.
+``--listen-port`` is set to 7862 because we ARE NOT USING default API. It is BROKEN. We are instead using ``--extensions api`` which runs on port 5000.
+
+``--xformers`` is a very good optimiser that reduces your vram usage for free, but you need to install it by typing ``pip install xformers==0.0.18`` in command prompt before it'll be doing anything for you.
 
 Once the Oobabooga server is running NOT in --chat-mode (turn this arg off! replace it with ``--notebook``) it should start accepting queries from Sallybot immediately!
 
