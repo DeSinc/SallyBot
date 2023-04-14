@@ -91,7 +91,7 @@ If you're having issues starting it, take this example that for sure works:
 
 --xformers is a very good optimiser that reduces your vram usage for free, but you need to install it by typing ``pip install xformers==0.0.18`` in command prompt before it'll be doing anything for you.
 
-Once the Oobabooga server is running NOT in --chat-mode (turn this arg off!) it should start accepting queries from Sallybot immediately!
+Once the Oobabooga server is running NOT in --chat-mode (turn this arg off! replace it with ``--notebook``) it should start accepting queries from Sallybot immediately!
 
 If you'd like to modify the parameters for Oobabooga, it's this section here:
 ```
