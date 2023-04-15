@@ -1313,6 +1313,7 @@ namespace SallyBot
             var overrideSettings = new JObject
             {
                 { "filter_nsfw", true } // this doesn't work, if you can figure out why feel free to tell me :OMEGALUL:
+                // { "sd_model_checkpoint", "modelname.safetensors [hash]" } // Force a specific model to be used, overriding the selected model in the Stable Diffusion WebUI
             };
 
             var payload = new JObject
