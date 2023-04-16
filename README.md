@@ -128,13 +128,13 @@ Edit the file and modify the `COMMANDLINE_ARGS` line.
 
 Windows:
 ```bat
-set COMMANDLINE_ARGS="--api"
+set COMMANDLINE_ARGS=--api --xformers
 ```
 Linux:
 ```sh
-export COMMANDLINE_ARGS="--api"
+export COMMANDLINE_ARGS=--api --xformers
 ```
-Save the file and run it.  The API is now ready to receive request right from SallyBot.
+Save the file and run it.  The API is now ready to receive request right from SallyBot. If you get an error with xformers just remove --xformers from the args and save the file and run it again.
 
 It will send it to a default model of some kind, most likely it comes with Stable Diffusion 1.5 model which is a real-life images model.
 
