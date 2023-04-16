@@ -651,7 +651,7 @@ namespace SallyBot
                 length_penalty = 1,
                 no_repeat_ngram_size = 1,
                 early_stopping = true,
-                stopping_strings = new string[] { "\\n[", "\n[", "]:", "##", "###", "<noinput>", "\\end" },
+                custom_stopping_strings = new string[] { "\\n[", "\n[", "]:", "##", "###", "<noinput>", "\\end" },
                 seed = -1,
                 add_bos_token = true
             };
