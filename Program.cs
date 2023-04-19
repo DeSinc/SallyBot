@@ -1312,7 +1312,6 @@ namespace SallyBot
 
             var overrideSettings = new JObject
             {
-                { "filter_nsfw", true } // this doesn't work, if you can figure out why feel free to tell me :OMEGALUL:
                 // { "sd_model_checkpoint", "modelname.safetensors [hash]" } // Force a specific model to be used, overriding the selected model in the Stable Diffusion WebUI
             };
 
@@ -1324,7 +1323,7 @@ namespace SallyBot
                 { "height", 688 },
                 { "send_images", true },
                 { "sampler_name", "DDIM" },
-                { "filter_nsfw", true }
+                { "override_settings", overrideSettings },
             };
 
             // here are the json tags you can send to the stable diffusion image generator
