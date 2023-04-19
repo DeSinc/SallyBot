@@ -1323,7 +1323,7 @@ namespace SallyBot
                 { "height", 688 },
                 { "send_images", true },
                 { "sampler_name", "DDIM" },
-                { "filter_nsfw", true }
+                { "override_settings", overrideSettings },
             };
 
             // here are the json tags you can send to the stable diffusion image generator
