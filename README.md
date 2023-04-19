@@ -58,7 +58,7 @@ This bot doesn't generate the AI text but just sends requests off to a language 
 
 Just follow their quick and easy instructions and the bot will automatically connect and start sending Dalai requests when you ping the bot.
 
-If you wish to modify the LLM parameters, it's this section here:
+If you wish to modify the LLM parameters, it's this section here for Dalai:
 ```c#
     var dalaiRequest = new
     {
@@ -99,22 +99,24 @@ If you'd like to modify the parameters for Oobabooga, it's this section here:
 ```
 var parameters = new
             {
+                prompt = oobaboogaInputPrompt,
                 max_new_tokens = 200,
-                do_sample = true,
-                temperature = 0.8,
-                top_p = 0.1,
+                do_sample = false,
+                temperature = 0.85,
+                top_p = 0.9,
                 typical_p = 1,
-                repetition_penalty = 1.18,
-                encoder_repetition_penalty = 1.0,
-                top_k = 50,
-                min_length = 0,
-                no_repeat_ngram_size = 0,
+                repetition_penalty = 1.1,
+                encoder_repetition_penalty = 1,
+                top_k = 40,
                 num_beams = 1,
                 penalty_alpha = 0,
+                min_length = 0,
                 length_penalty = 1,
-                early_stopping = false,
-                stopping_strings = new string[] { "\\n[", "\n[", "]:", "##", "###", "<noinput>", "\\end" },
-                seed = -1
+                no_repeat_ngram_size = 0,
+                early_stopping = true,
+                custom_stopping_strings = new string[] { "\n[", "\\n[", "]:", "\n#", "##", "###", "000000000000", "1111111111", "0.0.0.0.", "1.1.1.1.", "2.2.2.2.", "3.3.3.3.", "4.4.4.4.", "5.5.5.5.", "6.6.6.6.", "7.7.7.7.", "8.8.8.8.", "9.9.9.9.", "22222222222222", "33333333333333", "4444444444444444", "5555555555555", "66666666666666", "77777777777777", "888888888888888", "999999999999999999", "01010101", "0123456789", "<noinput>", "<nooutput>" },
+                seed = -1,
+                add_bos_token = true
             };
 ```
 ## Other AI text generators as yet unsupported
