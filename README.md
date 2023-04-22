@@ -85,11 +85,23 @@ After unzipping the 1-click installer, start `start_windows.bat`. It will ask fo
 
 If the bat detects that you do not have a model(Like if you ran it for the first time), it will ask what model you want to download. Pick L for none of the above, and enter ozcur/alpaca-native-4bit and let it download.
 
-Once installed and model downloaded, you need to enable the ``--extensions API --notebook`` args in the webui.py file.
+Once installed and model downloaded, you need to enable the ``--extensions API --notebook`` args in the webui.py file in the same folder as the rest of the .bat files. Right click / Edit (or open with Notepad) and it's near the bottom of the file.
 
-If you're having issues starting it, take this example that for sure works:
+Replace this line here:
 
-``python server.py --model ozcur_alpaca-native-4bit --wbits 4 --groupsize 128 --extensions api --notebook --listen-port 7862 --xformers``
+![image](https://user-images.githubusercontent.com/12345584/233764210-c57cdd24-5e92-4894-aa92-9107cb13c975.png)
+
+with this:
+
+![image](https://user-images.githubusercontent.com/12345584/233764251-f2317829-c60f-4845-96c6-9bbc83482da7.png)
+
+Here's the text to copy directly:
+
+``--model ozcur_alpaca-native-4bit --wbits 4 --groupsize 128 --extensions api --notebook --listen-port 7862 --xformers``
+
+If you know what you're doing you can remove whichever ones you don't need. like ``--groupsize 128`` if you are using a non 128 groupsize model, or ``--wbits 4`` if you are not running a 4-bit quantized model, for instance. The one I linked above, Ozcur native 4bit, is 4bit quantized, so you'll need this arg to run that model.
+
+### Explanation of args
 
 ``--listen-port`` is set to 7862 because we ARE NOT USING default API. It is BROKEN. We are instead using ``--extensions api`` which runs on port 5000.
 
@@ -116,7 +128,7 @@ var parameters = new
                 length_penalty = 1,
                 no_repeat_ngram_size = 0,
                 early_stopping = true,
-                custom_stopping_strings = new string[] { "\n[", "\\n[", "]:", "\n#", "##", "###", "000000000000", "1111111111", "0.0.0.0.", "1.1.1.1.", "2.2.2.2.", "3.3.3.3.", "4.4.4.4.", "5.5.5.5.", "6.6.6.6.", "7.7.7.7.", "8.8.8.8.", "9.9.9.9.", "22222222222222", "33333333333333", "4444444444444444", "5555555555555", "66666666666666", "77777777777777", "888888888888888", "999999999999999999", "01010101", "0123456789", "<noinput>", "<nooutput>" },
+                custom_stopping_strings = new string[] { "\n[", "\\n[", "]:", "\n#", "##", "###" },
                 seed = -1,
                 add_bos_token = true
             };
