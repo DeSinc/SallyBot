@@ -81,17 +81,19 @@ If you wish to modify the LLM parameters, it's this section here for Dalai:
 
 Download and install Oobabooga from their repo [here](https://github.com/oobabooga/text-generation-webui). You can use the 1-click windows installer zip file or clone their repo, both work fine. Follow their guide on installing it and then come back here.
 
-If you don't have a language model yet, run the ``Download-model.bat`` file, pick L for none of the above, and enter ``ozcur/alpaca-native-4bit`` and let it download.
+After unzipping the 1-click installer, start `start_windows.bat`. It will ask for your GPU. Press A/B/C/D depending on what GPU you use or if you want to use CPU instead (Not recommend using CPU).
 
-Once installed and model downloaded, you need to enable the ``--extensions API --notebook`` args in the start-webui.bat file.
+If the bat detects that you do not have a model(Like if you ran it for the first time), it will ask what model you want to download. Pick L for none of the above, and enter ozcur/alpaca-native-4bit and let it download.
+
+Once installed and model downloaded, you need to enable the ``--extensions API --notebook`` args in the webui.py file.
 
 If you're having issues starting it, take this example that for sure works:
 
-``call python server.py --model ozcur_alpaca-native-4bit --wbits 4 --groupsize 128 --extensions api --notebook --listen-port 7862 --xformers``
+``python server.py --model ozcur_alpaca-native-4bit --wbits 4 --groupsize 128 --extensions api --notebook --listen-port 7862 --xformers``
 
 ``--listen-port`` is set to 7862 because we ARE NOT USING default API. It is BROKEN. We are instead using ``--extensions api`` which runs on port 5000.
 
-``--xformers`` is a very good optimiser that reduces your vram usage for free, but you need to install it by typing ``pip install xformers==0.0.18`` in command prompt before it'll be doing anything for you.
+``--xformers`` is a very good optimiser that reduces your vram usage for free, but you need to install it. Run the `cmd_windows.bat`, and install xformers by typing ``pip install xformers==0.0.18`` in command prompt.
 
 Once the Oobabooga server is running NOT in --chat-mode (turn this arg off! replace it with ``--notebook``) it should start accepting queries from Sallybot immediately!
 
