@@ -615,7 +615,7 @@ namespace SallyBot
             if (inputPromptLength > maxChatHistoryStrLength
                 && subtractAmount > 0) // make sure we aren't subtracting a negative value lol
             {
-                oobaboogaChatHistory = oobaboogaChatHistory.Substring(inputPromptLength - maxLength);
+                oobaboogaChatHistory = oobaboogaChatHistory.Substring(inputPromptLength - maxChatHistoryStrLength);
                 int indexOfNextChatMsg = oobaboogaChatHistory.IndexOf("\n[");
                 oobaboogaChatHistory = characterPrompt + // add character prompt to start of history
                                         oobaboogaChatHistory.Substring(indexOfNextChatMsg + 1); // start string at the next newline bracket + 1 to ignore the newline
