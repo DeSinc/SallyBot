@@ -442,7 +442,7 @@ namespace SallyBot
                 // put new message in the history
                 oobaboogaChatHistory += $"{inputMsgFiltered.Replace("#", "")}{imagePresent}\n";
                 if (oobaboogaThinking > 0 // don't pass go if it's already responding
-                    || typing > 0 
+                    || typing > 0
                     || Msg.Author.IsBot) return; // don't listen to bot messages, including itself
 
                 // detect when a user types the bot name and a questionmark, or the bot name followed by a comma.
@@ -671,102 +671,29 @@ namespace SallyBot
             {
                 await Msg.Channel.TriggerTypingAsync(); // Typing...
 
-                // try other commonly used ports - flip flop between them with each failed attempt till it finds the right one
-                if (oobApiEndpoint == "/api/v1/generate") // new better API, use this with the oob arg --extensions api
+                if (oobApiEndpoint == "/api/v1/generate") // new better API, use this with the oob args --extensions api --notebook
                 {
                     var content = new StringContent(JsonConvert.SerializeObject(parameters), Encoding.UTF8, "application/json");
                     response = await httpClient.PostAsync(apiUrl, content);
                 }
+
+                // DEPRACATED old crap busted not-working default API. Use this Oobabooga .bat launch arg instead: --extensions api --notebook
                 else if (oobApiEndpoint == "/run/textgen") // old default API (busted but it kinda works)
                 {
                     var payload = JsonConvert.SerializeObject(new object[] { oobaboogaInputPrompt, parameters });
                     var content = new StringContent(JsonConvert.SerializeObject(new { data = new[] { payload } }), Encoding.UTF8, "application/json");
-                    response = await httpClient.PostAsync($"http://{oobServer}:{oobServerPort}/run/textgen", content); // try other commonly used port 7860
+                    response = await httpClient.PostAsync($"http://{oobServer}:{oobServerPort}/run/textgen", content);
                 }
             }
             catch
             {
-                Console.WriteLine($"Warning: Oobabooga server not found on port {oobServerPort}, trying alternates.");
-                try
-                {
-                    // try other commonly used ports - flip flop between them with each failed attempt till it finds the right one
-                    if (oobServerPort == 5000)
-                    {
-                        oobServerPort = 7861;
-                        oobApiEndpoint = "/run/textgen";
-                    }
-                    else if (oobServerPort == 7861)
-                        oobServerPort = 7860;
-                    else if (oobServerPort == 7860)
-                    {
-                        oobServerPort = 5000;
-                        oobApiEndpoint = "/api/v1/generate";
-                    }
+                Console.WriteLine($"Warning: Oobabooga server not found on port {oobServerPort}.\n" +
+                    $"In Oobabooga start-webui.bat, enable these args: --extensions api --notebook");
 
-                    try
-                    {
-                        // try other commonly used ports - flip flop between them with each failed attempt till it finds the right one
-                        if (oobApiEndpoint == "/api/v1/generate") // new better API, use this with the oob arg --extensions api
-                        {
-                            var content = new StringContent(JsonConvert.SerializeObject(parameters), Encoding.UTF8, "application/json");
-                            response = await httpClient.PostAsync(apiUrl, content);
-                        }
-                        else if (oobApiEndpoint == "/run/textgen") // old default API (busted but it kinda works)
-                        {
-                            var payload = JsonConvert.SerializeObject(new object[] { oobaboogaInputPrompt, parameters });
-                            var content = new StringContent(JsonConvert.SerializeObject(new { data = new[] { payload } }), Encoding.UTF8, "application/json");
-                            response = await httpClient.PostAsync($"http://{oobServer}:{oobServerPort}/run/textgen", content); // try other commonly used port 7860
-                        }
-                    }
-                    catch
-                    {
-                        // try other commonly used ports - flip flop between them with each failed attempt till it finds the right one
-                        if (oobServerPort == 5000)
-                        {
-                            oobServerPort = 7861;
-                            oobApiEndpoint = "/run/textgen";
-                        }
-                        else if (oobServerPort == 7861)
-                            oobServerPort = 7860;
-                        else if (oobServerPort == 7860)
-                        {
-                            oobServerPort = 5000;
-                            oobApiEndpoint = "/api/v1/generate";
-                        }
-
-                        try
-                        {
-                            // try other commonly used ports - flip flop between them with each failed attempt till it finds the right one
-                            if (oobApiEndpoint == "/api/v1/generate") // new better API, use this with the oob arg --extensions api
-                            {
-                                var content = new StringContent(JsonConvert.SerializeObject(parameters), Encoding.UTF8, "application/json");
-                                response = await httpClient.PostAsync(apiUrl, content);
-                            }
-                            else if (oobApiEndpoint == "/run/textgen") // old default API (busted but it kinda works)
-                            {
-                                var payload = JsonConvert.SerializeObject(new object[] { oobaboogaInputPrompt, parameters });
-                                var content = new StringContent(JsonConvert.SerializeObject(new { data = new[] { payload } }), Encoding.UTF8, "application/json");
-                                response = await httpClient.PostAsync($"http://{oobServer}:{oobServerPort}/run/textgen", content); // try other commonly used port 7860
-                            }
-                        }
-                        catch
-                        {
-                            Console.WriteLine($"Cannot find oobabooga server on backup port {oobServerPort}");
-                            if (dalaiConnected == false)
-                                Console.WriteLine($"No Dalai server connected");
-                            oobaboogaThinking = 0; // reset thinking flag after error
-                            return;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Super error detected on Oobabooga server, port {oobServerPort}: {ex}");
-                    if (dalaiConnected == false)
-                        Console.WriteLine($"No Dalai server connected");
-                    oobaboogaThinking = 0; // reset thinking flag after error
-                    return;
-                }
+                if (dalaiConnected == false)
+                    Console.WriteLine($"No Dalai server connected");
+                oobaboogaThinking = 0; // reset thinking flag after error
+                return;
             }
             if (response != null)
                 result = await response.Content.ReadAsStringAsync();
@@ -775,16 +702,8 @@ namespace SallyBot
             {
                 JsonDocument jsonDocument = JsonDocument.Parse(result);
 
-                if (oobApiEndpoint == "/api/v1/generate")
-                {
-                    JsonElement dataArray = jsonDocument.RootElement.GetProperty("results");
-                    botReply = dataArray[0].GetProperty("text").ToString(); // get just the response part of the json
-                }
-                else if (oobApiEndpoint == "/run/textgen")
-                {
-                    JsonElement dataArray = jsonDocument.RootElement.GetProperty("data");
-                    botReply = dataArray[0].GetString(); // get just the response part of the json
-                }
+                JsonElement dataArray = jsonDocument.RootElement.GetProperty("results");
+                botReply = dataArray[0].GetProperty("text").ToString(); // get just the response part of the json
             }
             else
             {
