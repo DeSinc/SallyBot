@@ -609,12 +609,10 @@ namespace SallyBot
 
             // current input prompt string length
             int inputPromptLength = oobaboogaInputPrompt.Length - characterPrompt.Length;
-            // max allowed prompt length (you can go to like ~5000 ish before errors with oobabooga)
-            int maxLength = 5000;
             // amount to subtract from history if needed
-            int subtractAmount = maxLength - inputPromptLength;
+            int subtractAmount = inputPromptLength - maxChatHistoryStrLength;
 
-            if (inputPromptLength > maxLength
+            if (inputPromptLength > maxChatHistoryStrLength
                 && subtractAmount > 0) // make sure we aren't subtracting a negative value lol
             {
                 oobaboogaChatHistory = oobaboogaChatHistory.Substring(inputPromptLength - maxLength);
