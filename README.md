@@ -46,12 +46,6 @@ Put your bot API key and your server's ID in the MainGlobal.cs file (they will e
 
 Press F5 to build it and run and see what happens (it should work first try)
 
-There is a disabled line of code that you can enable which replies to any message the bot sees. This can be used to test if the bot works in your server by sending a message back to you. CTRL + F search for "Hello!!" to find that commented-out line of code, and use it/remove it/change it however you like.
-
-If it does not repeat your message back to you, then message intents might not be enabled. See the steps above with pictures to fix that.
-
-Feel free to use or remove this line of code entirely after testing the bot is up and running and able to read your messages.
-
 ## AI Text Generation with Dalai Alpaca (Run on the CPU) -- EASY
 
 This bot doesn't generate the AI text but just sends requests off to a language learning model of your choice. At the moment I made the requests send out in the format for [Dalai Alpaca 7B](https://github.com/cocktailpeanut/dalai)
