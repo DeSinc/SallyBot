@@ -397,7 +397,7 @@ namespace SallyBot
 
                 // strip weird characters from nicknames, only leave letters and digits
                 string msgUserName;
-                if (user.Nickname != null)
+                if (user != null && user.Nickname != null) // check to make sure the bot was able to fetch the user's data first
                     msgUserName = user.Nickname;
                 else
                     msgUserName = Msg.Author.Username;
