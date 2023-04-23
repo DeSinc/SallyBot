@@ -73,6 +73,8 @@ If you wish to modify the LLM parameters, it's this section here for Dalai:
 
 ## Using Oobabooga Text Generation Webui (Run on the GPU) -- A little more involved but still easy if you're lucky
 
+Warning: For the average 7B model, it requires at least a 6GB card. If you're willing to run on the inferior smaller parameter count models like Pythia-2.8B-deduped or something then it'll work on 4GB cards, but the output is untested and frankly likely to be bad.
+
 Download and install Oobabooga from their repo [here](https://github.com/oobabooga/text-generation-webui). You can use the 1-click windows installer zip file or clone their repo, both work fine. Follow their guide on installing it and then come back here.
 
 After unzipping the 1-click installer, start `start_windows.bat`. It will ask for your GPU. Press A/B/C/D depending on what GPU you use or if you want to use CPU instead (Not recommend using CPU).
