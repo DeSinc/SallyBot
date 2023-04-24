@@ -1189,12 +1189,7 @@ namespace SallyBot
 
                 if (userPrompt.Contains("selfie"))
                 {
-                    if (userPrompt.Contains(" with"))
-                        imgFormatString = " looking into the camera, a selfie with ";
-                    else if (userPrompt.Contains(" of"))
-                        imgFormatString = " looking into the camera, a selfie of ";
-                    else if (userPrompt.Contains(" next to"))
-                        imgFormatString = " looking into the camera, a selfie next to ";
+                    imgFormatString = ", looking into the camera, ";
                 }
                 else if (userPrompt.Contains("person")
                         || userPrompt.Contains("you as")
@@ -1202,26 +1197,26 @@ namespace SallyBot
                         || userPrompt.Contains("you cosplaying")
                         || userPrompt.Contains("yourself cosplaying"))
                     imgFormatString = "";   // don't say "standing next to (( A person ))" when it's just meant to be SallyBot
-                else if (userPrompt.Contains(" of "))
-                    imgFormatString = " She is next to";
-                else if (userPrompt.Contains(" of a"))
-                    imgFormatString = " She is next to";
-                else if (userPrompt.Contains(" with "))
-                    imgFormatString = " She is with";
+                //else if (userPrompt.Contains(" of "))
+                //    imgFormatString = ", she is next to ";
+                //else if (userPrompt.Contains(" of a"))
+                //    imgFormatString = ", she is next to ";
+                //else if (userPrompt.Contains(" with "))
+                //    imgFormatString = ", she is with ";
                 else if (userPrompt.Contains(" with a"))
-                    imgFormatString = " She has";
+                    imgFormatString = ", she has ";
                 else if (userPrompt.Contains(" of you with "))
-                    imgFormatString = " She is with";
+                    imgFormatString = ", she is with ";
                 else if (userPrompt.Contains(" of you with a"))
-                    imgFormatString = " She has";
+                    imgFormatString = ", she has";
 
                 if (userPrompt.Contains("holding"))
                 {
-                    imgFormatString = imgFormatString + " holding";
+                    imgFormatString = imgFormatString + ", holding ";
                 }
             }
 
-            string imgPrompt = $"A 25 year old anime woman smiling, looking into the camera, long hair, blonde hair, blue eyes{timeOfDayStr}"; // POSITIVE PROMPT - put what you want the image to look like generally. The AI will put its own prompt after this.
+            string imgPrompt = $"A 25 year old anime woman smiling, looking into the camera, long hair, blonde hair, blue eyes{timeOfDayStr}{imgFormatString}"; // POSITIVE PROMPT - put what you want the image to look like generally. The AI will put its own prompt after this.
             string imgNegPrompt = $"(worst quality, low quality:1.4), 3d, cgi, 3d render, naked, nude"; // NEGATIVE PROMPT HERE - put what you don't want to see
 
             //if (Msg.Author == MainGlobal.Server.Owner) // only owner
