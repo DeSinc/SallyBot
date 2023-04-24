@@ -285,7 +285,7 @@ namespace SallyBot
                     // THIS WORKS, but it polls each user with a GetUser() individually which is SLOW and can rate limit you
                     foreach (var downloadedMsg in downloadedMsges)
                     {
-                        if (downloadedMsg.Id != Msg.Id) // don't double up the last msg that the user just sent
+                        if (downloadedMsg != null && downloadedMsg.Id != Msg.Id) // don't double up the last msg that the user just sent
                         {
                             IGuild serverIGuild = MainGlobal.Server;
                             var downloadedMsgUser = await serverIGuild.GetUserAsync(downloadedMsg.Author.Id);
