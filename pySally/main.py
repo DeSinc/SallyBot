@@ -136,7 +136,6 @@ def oobabooga_modified(msg): # modified version of oobabooga() that only generat
     params_oobabooga["prompt"] = msg
     params_oobabooga["max_new_tokens"] = 7
     payload = json.dumps(params_oobabooga, ensure_ascii=True)
-    print(payload)
     response = requests.post(f"http://{oobabooga_Server}:5000/api/v1/generate", data=payload)
     response = response.json()
     reply = response["results"][0]["text"]
@@ -150,7 +149,6 @@ def oobabooga(msg): # send the prompt to oobabooga and return the generated text
     params_oobabooga["prompt"] = msg
     params_oobabooga["max_new_tokens"] = 150
     payload = json.dumps(params_oobabooga, ensure_ascii=True)
-    print(payload)
     response = requests.post(f"http://{oobabooga_Server}:5000/api/v1/generate", data=payload)
     response = response.json()
     reply = response["results"][0]["text"]
@@ -188,12 +186,12 @@ def print_config(): # print the current config for the startup (not many options
 
 
 def stable_diff(stable_prompt, msg): # send the prompt to stable diffusion and save the generated image
-    print("stable diff image requested:")
+    print("Stable Diffusion image requested:")
     payload = params_stableDiff
     time = get_daytime()
     user_msg = filter_message(cleaner(clean_user_prompt(msg)))
     full_prompt = re.sub('\s+', ' ',sally_description + time + user_msg + stable_prompt).strip()
-    print(full_prompt)
+    print("Prompt" + full_prompt)
     payload["prompt"] = full_prompt
     response = requests.post(f"http://127.0.0.1:7860/sdapi/v1/txt2img", json=payload)
     response = response.json()

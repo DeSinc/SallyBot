@@ -25,7 +25,7 @@ stableDiffUrl= "http://127.0.0.1:7860" # set the stable diff url
 oobabooga_Server = "127.0.0.1"
 file_endings = [".png", ".jpg", ".jpeg", ".webp" ]
 dalai_is_used= False # use dalai instead of oobabooga
-oobabooga_is_used= True # use oobabooga instead of dalai
+oobabooga_is_used= True # use oobabooga instead of dalai (must be True since dalai is not implemented yet)
 stable_diff_is_used= True # use stable diff to make images (on or off, no alternative)
 ping_regex_pattern = r"<@(\d+)>"
 ##############################################################################################################################################
