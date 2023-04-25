@@ -432,6 +432,9 @@ async def on_message(message):
 
                                     response = response
                                 await message.channel.send(content=response, reference=message)
+
+                        else: 
+                            print("Image got uploaded but didn't contain text, passing..")
             
 
 
