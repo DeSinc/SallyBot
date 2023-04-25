@@ -7,7 +7,7 @@ activity = "Neural network brain stuff" # set the bot activity
 memory_amount = 15
 ignore_mode= False # ignore messages containing bad shit, otherwise just strip the messages 
                    # and feed that to the bot. Messages containing links will always be ignored.
-bot_token= "OTY3Njc2MTUyNjk1MDk1MzA2.GtTE7C.5sdTAeYs7i2NVq2GdFf-rvCcprKF9mgpO8PBLw" # set the bot token
+bot_token= "" # set the bot token
 ##############################################################################################################################################
 
 
