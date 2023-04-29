@@ -9,13 +9,23 @@ from PIL import Image
 import base64
 import io
 from bots_config import *
-
-
+import os
+from dotenv import load_dotenv
+load_dotenv()
+user_whitelist = []
+user_blacklist = []
+ub = os.getenv("user_blacklist").split(',')
+uw = os.getenv("user_whitelist").split(',')
+try: 
+    for i in ub:
+        user_blacklist.append(int(i))
+    for i in uw:
+        user_whitelist.append(int(i))
+except: pass
 
 client = discord.Client(intents=discord.Intents.all())
-history = []
 load_dc_messages = False 
-
+history = []
 
 
 def build_prompt_on_history(history): # build prompt string from the history list
@@ -149,6 +159,7 @@ def oobabooga(msg): # send the prompt to oobabooga and return the generated text
     params_oobabooga["prompt"] = msg
     params_oobabooga["max_new_tokens"] = 150
     payload = json.dumps(params_oobabooga, ensure_ascii=True)
+    print(payload)
     response = requests.post(f"http://{oobabooga_Server}:5000/api/v1/generate", data=payload)
     response = response.json()
     reply = response["results"][0]["text"]
@@ -216,15 +227,21 @@ async def on_ready():
 
 @client.event # all of the funny stuff that happens as soon as the bot detects a message is been sent
 async def on_message(message):
+    global history
     global load_dc_messages
 
+    try:
+        if message.author.id in user_blacklist: # I can't trust people that they don't have an empty list here at this point..
+            return
+    except: pass
 
-    if message.author == client.user or message.author.id in user_blacklist: # if the message is from the bot or the user is blacklisted,
+    if message.author == client.user: # if the message is from the bot or the user is blacklisted,
                                                                              # then just completely ignore the message
         return
 
 
-    elif 'sally' in message.content.lower() or client.user.mentioned_in(message): # if the bot is mentioned in the message, then
+    elif 'sally' in message.content.lower() or client.user.mentioned_in(message) or respond_to_everything: # if the bot is mentioned 
+                                                                    # in the message or if you want it to respond to all messages, then..
 
         if load_dc_messages: # if discord messages are loaded already
 
@@ -329,11 +346,13 @@ async def on_message(message):
             elif check_for_image_request(message.content): # if the text is a request for an image
 
 
-                if message.author.id not in user_whitelist: # if the user is not whitelisted, then ignore the message
+                try:
+                    if message.author.id not in user_whitelist: # if the user is not whitelisted, then ignore the message
 
-                    print(f"{message.author} tried to request an image, but is not whitelisted. Ignoring.")
-                    return
-                
+                        print(f"{message.author} tried to request an image, but is not whitelisted. Ignoring.")
+                        return
+                except: 
+                    pass
 
                 if stable_diff_is_used: # if stable diff is enabled, do the funny
 
@@ -361,7 +380,7 @@ async def on_message(message):
                         f.close()
 
                         # to explain this, content is always the message text, file is the attachment and reference is the message that the bot is replying to
-                        await message.channel.send(content="Here you go! ^^",file=selfie, reference=message) 
+                        await message.channel.send(file=selfie, reference=message) 
 
                 else:
 
@@ -440,11 +459,13 @@ async def on_message(message):
 
             elif check_for_image_request(message.content): # explained above..
 
-                if message.author.id not in user_whitelist:
+                try:
+                    if message.author.id not in user_whitelist:
 
-                    print(f"{message.author} tried to request an image, but is not whitelisted. Ignoring.")
-                    return
-                
+                        print(f"{message.author} tried to request an image, but is not whitelisted. Ignoring.")
+                        return
+                except: 
+                    pass
 
                 if stable_diff_is_used:
 
@@ -472,7 +493,7 @@ async def on_message(message):
                             selfie = discord.File(f, filename="selfie.png")
                         f.close()
 
-                        await message.channel.send(content="Here you go! ^^", file=selfie, reference=message)
+                        await message.channel.send(file=selfie, reference=message)
 
                 else:
                     print("stable diff is not enabled, ignoring image request..")
@@ -506,4 +527,4 @@ async def on_message(message):
         return # if the message is random ignore it
             
 
-client.run(bot_token) # run the bot
+client.run(os.getenv('bot_token')) # run the bot

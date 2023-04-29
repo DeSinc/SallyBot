@@ -26,7 +26,7 @@ Context: [I Made a Discord Chat Bot that Can Take Selfies](https://www.youtube.c
 Install python (I use 3.10.10) and install all the necessary requirements like so:
 
 ```cmd
-pip install discord pytz pytesseract pillow
+pip install -r requirements.txt
 ```
 
 Now you need to edit bots_config.py, add you bot token, select if you want to use SD or not, add User ID's to your white / blacklist, edit the bot's displayed activity, change the memory amount (history, with memory I don't mean RAM here), and for everything else in there, only change it if you know what you're doing and if you have questions I would love to answer them to you.

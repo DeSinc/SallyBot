@@ -1,19 +1,17 @@
 # Discord Stuff
 ##############################################################################################################################################
 Bot_Name= "Sally"
-user_whitelist = [629341201170038785] # whitelist for image request
-user_blacklist = [629341201170034485] # complete blacklist
 activity = "Neural network brain stuff" # set the bot activity
-memory_amount = 15
+memory_amount = 20
+respond_to_everything = True
 ignore_mode= False # ignore messages containing bad shit, otherwise just strip the messages 
                    # and feed that to the bot. Messages containing links will always be ignored.
-bot_token= "" # set the bot token
 ##############################################################################################################################################
 
 
 # Sally stuff
 ##############################################################################################################################################
-sally_description = 'A 25 year old anime woman smiling, looking into the camera, short hair, brown hair, brown eyes, blushing, '
+sally_description = 'A 25 year old anime woman smiling, looking into the camera, short hair, brown hair, brown eyes, golden earrings, blushing, '
 Image_input_prompt= "[Sally]: Let me describe the picture with 4 adjectives: "
 ##############################################################################################################################################
 
@@ -26,7 +24,7 @@ oobabooga_Server = "127.0.0.1"
 file_endings = [".png", ".jpg", ".jpeg", ".webp" ]
 dalai_is_used= False # use dalai instead of oobabooga
 oobabooga_is_used= True # use oobabooga instead of dalai (must be True since dalai is not implemented yet)
-stable_diff_is_used= True # use stable diff to make images (on or off, no alternative)
+stable_diff_is_used= False # use stable diff to make images (on or off, no alternative)
 ping_regex_pattern = r"<@(\d+)>"
 ##############################################################################################################################################
 
