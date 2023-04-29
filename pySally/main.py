@@ -121,8 +121,8 @@ def filter_message(msg): # filter these thingys because DeSinc said those are ba
     msg = msg.replace("’", "'")
     msg = msg.replace("`", "\\`")
     msg = msg.replace("$", "")
-    msg = msg.replace(f"{client.user.name}", "sally")
-    msg = msg.replace(f'{client.user.name}', "sally")
+    msg = msg.replace(f"{client.user.name}", f"{Bot_Name}")
+    msg = msg.replace(f'{client.user.name}', f"{Bot_Name}")
     return msg
 
 
@@ -240,7 +240,7 @@ async def on_message(message):
         return
 
 
-    elif 'sally' in message.content.lower() or client.user.mentioned_in(message) or respond_to_everything: # if the bot is mentioned 
+    elif f'{Bot_Name}'.lower() in message.content.lower() or client.user.mentioned_in(message) or respond_to_everything: # if the bot is mentioned 
                                                                     # in the message or if you want it to respond to all messages, then..
 
         if load_dc_messages: # if discord messages are loaded already
@@ -267,7 +267,7 @@ async def on_message(message):
             except:
 
                 print("No messages in channel yet, skipping and adding artificial message") # I- no clue
-                history.append(["random_user", "hello sally, what's up?"])
+                history.append(["random_user", f"hello {Bot_Name}, what's up?"])
 
 
         if not load_dc_messages: # if the discord messages aren't loaded yet, then load them
@@ -328,7 +328,7 @@ async def on_message(message):
                             filtered_history = filter_message(cleaned_history) # do the thingys to the history
                             async with message.channel.typing():
 
-                                response = oobabooga(filtered_history + f'*[{message.author.name}]: {image_text}*\n' f'[sally]: ') # add history 4 context + img text
+                                response = oobabooga(filtered_history + f'*[{message.author.name}]: {image_text}*\n' f'[{Bot_Name}]: ') # add history 4 context + img text
 
                                 try:
 
@@ -395,7 +395,7 @@ async def on_message(message):
                                                                                           # so that the bot thinks it is replying to the message
                 async with message.channel.typing():
 
-                    response = oobabooga(filtered_history + f'*[{message.author.name}]: {reply_to_msg}*\n[sally]: ')
+                    response = oobabooga(filtered_history + f'*[{message.author.name}]: {reply_to_msg}*\n[{Bot_Name}]: ')
 
                     try:
 
@@ -438,7 +438,7 @@ async def on_message(message):
 
                             async with message.channel.typing():
 
-                                response = oobabooga(filtered_history + f'*[{message.author.name}]: {image_text}*\n' f'[sally]: ')
+                                response = oobabooga(filtered_history + f'*[{message.author.name}]: {image_text}*\n' f'[{Bot_Name}]: ')
 
                                 try:
 
@@ -508,7 +508,7 @@ async def on_message(message):
 
                 async with message.channel.typing():
 
-                    response = oobabooga(filtered_history + f'*[{message.author.name}]: {reply_to_msg}*\n[sally]: ')
+                    response = oobabooga(filtered_history + f'*[{message.author.name}]: {reply_to_msg}*\n[{Bot_Name}]: ')
 
                     try:
 
