@@ -129,40 +129,6 @@ namespace SallyBot.Extras
             return d[s.Length, t.Length];
         }
 
-        public static int LevenshteinDistance2(string s, string t)
-        {
-            if (string.IsNullOrEmpty(s) || string.IsNullOrEmpty(t))
-            {
-                return 0;
-            }
-
-            int[,] d = new int[s.Length + 1, t.Length + 1];
-
-            for (int i = 0; i <= s.Length; i++)
-            {
-                d[i, 0] = i;
-            }
-
-            for (int j = 0; j <= t.Length; j++)
-            {
-                d[0, j] = j;
-            }
-
-            for (int i = 1; i <= s.Length; i++)
-            {
-                for (int j = 1; j <= t.Length; j++)
-                {
-                    int cost = GetSubstitutionCost(s[i - 1], t[j - 1]);
-
-                    d[i, j] = Math.Min(
-                        Math.Min(d[i - 1, j] + 1, d[i, j - 1] + 1),
-                        d[i - 1, j - 1] + cost);
-                }
-            }
-
-            return d[s.Length, t.Length];
-        }
-
         private static int GetSubstitutionCost(char a, char b)
         {
             if (a == b) return 0;

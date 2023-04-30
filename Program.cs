@@ -862,7 +862,7 @@ namespace SallyBot
                 foreach (var line in recentLines.Split("\n"))
                 {
                     if (line.Length > 0
-                        && Functions.LevenshteinDistance2(Regex.Replace(llmMsg, @"\s+", ""), Regex.Replace(line, @"\s+", "")) < llmMsg.Length / 2)
+                        && Functions.LevenshteinDistance(Regex.Replace(llmMsg, @"\s+", ""), Regex.Replace(line, @"\s+", "")) < llmMsg.Length / 2)
                     {
                         botLooping = true; break;
                     }
