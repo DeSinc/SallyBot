@@ -229,8 +229,6 @@ namespace SallyBot.Extras
                     imgFormatString = ", she has ";
                 else if (userPrompt.Contains(" of you with "))
                     imgFormatString = ", she is with ";
-                else if (userPrompt.Contains(" of you with a"))
-                    imgFormatString = ", she has";
 
                 if (userPrompt.Contains("holding"))
                 {
