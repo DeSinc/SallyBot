@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33516.290
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "sallybot", "sallybot.csproj", "{5AD8D4F6-705B-4D30-AC98-4A9B20881A70}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5AD8D4F6-705B-4D30-AC98-4A9B20881A70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AD8D4F6-705B-4D30-AC98-4A9B20881A70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AD8D4F6-705B-4D30-AC98-4A9B20881A70}.Debug|x64.ActiveCfg = Debug|x64
+		{5AD8D4F6-705B-4D30-AC98-4A9B20881A70}.Debug|x64.Build.0 = Debug|x64
+		{5AD8D4F6-705B-4D30-AC98-4A9B20881A70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AD8D4F6-705B-4D30-AC98-4A9B20881A70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AD8D4F6-705B-4D30-AC98-4A9B20881A70}.Release|x64.ActiveCfg = Release|x64
+		{5AD8D4F6-705B-4D30-AC98-4A9B20881A70}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B9167EB1-1883-4DE8-85B5-74632EB3F412}
+	EndGlobalSection
+EndGlobal

@@ -209,7 +209,7 @@ namespace SallyBot.Extras
             // adds (Night) to the image prompt if it's night in japan, etc.
             if (timeOfDayInNaturalLanguage != null)
                 timeOfDayStr = $", ({timeOfDayInNaturalLanguage})";
-
+            
             if (userPrompt.Length > 4
                 && llmPrompt.Trim().Length > 2)
             {

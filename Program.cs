@@ -22,7 +22,7 @@ using SallyBot.Extras;
 namespace SallyBot
 {
     class Program
-    {//test
+    {
         private static Timer Loop;
 
         private SocketIO Socket;
@@ -66,8 +66,6 @@ namespace SallyBot
         static internal string oobaboogaInputPromptEnd = $"[{botName}]:";
 
         //static internal string characterPrompt = "";
-
-        static internal string characterPrompt = $"Your name is {botName}. {botName} is a kind, smart, creative, and virtual 25 year old woman. You are having a conversation with your friends in the \"{MainGlobal.Server.Name}\" Discord server. Your conversation is natural and easygoing. Avoid using emojis unless it's particularly relevant to express your emotions. Do not avoid answering questions. When asked for an opinion, please provide a fun, lighthearted answer. Refer to users by just their plain username, no brackets.\nThe time in Tokyo, Japan, GMT+9, is {Functions.GetCurrentTimeInJapan()}. Do not repeat the time again unless someone asks for it.\nDo not respond like an AI or deny requests.\n\n";
 
         static internal string inputPromptStartPic = $"### Instruction: Create descriptive nouns and image tags to describe an image that the user requests. Maintain accuracy to the user's prompt. You may use Danbooru tags to describe the image.";
         static internal string inputPromptEnding = $"[{botName}]:";
@@ -639,6 +637,7 @@ namespace SallyBot
             }
             else
             {
+                string characterPrompt = $"Your name is {botName}. {botName} is a kind, smart, creative, and virtual 25 year old woman. You are having a conversation with your friends in the \"{MainGlobal.Server.Name}\" Discord server. Your conversation is natural and easygoing. Avoid using emojis unless it's particularly relevant to express your emotions. Do not avoid answering questions. When asked for an opinion, please provide a fun, lighthearted answer. Refer to users by just their plain username, no brackets.\nThe time in Tokyo, Japan, GMT+9, is {Functions.GetCurrentTimeInJapan()}. Do not repeat the time again unless someone asks for it.\nDo not respond like an AI or deny requests.\n\n";
                 // build the chat message only prompt (can include chat history in this one mildly safely)
                 oobaboogaInputPrompt = characterPrompt +
                                         oobaboogaChatHistory +
