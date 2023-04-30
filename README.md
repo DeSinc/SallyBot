@@ -124,7 +124,7 @@ var parameters = new
                 length_penalty = 1,
                 no_repeat_ngram_size = 0,
                 early_stopping = true,
-                custom_stopping_strings = new string[] { "\n[", "\\n[", "]:", "\n#", "##", "###" },
+                stopping_strings = new string[] { "\n[", "\\n[", "]:", "\n#", "##", "###" },
                 seed = -1,
                 add_bos_token = true
             };

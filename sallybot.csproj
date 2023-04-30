@@ -16,16 +16,10 @@
     <PackageReference Include="Discord.Net.Commands" Version="3.9.0" />
     <PackageReference Include="Discord.Net.Core" Version="3.9.0" />
     <PackageReference Include="Discord.Net.WebSocket" Version="3.9.0" />
-    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="7.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.4" />
-    <PackageReference Include="NetCoreExtensions" Version="0.0.15" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="RestSharp" Version="109.0.1" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.0.0" />
     <PackageReference Include="SocketIOClient" Version="3.0.8" />
-    <PackageReference Include="System.Collections" Version="4.3.0" />
     <PackageReference Include="System.Regex" Version="1.0.0" />
   </ItemGroup>
 
