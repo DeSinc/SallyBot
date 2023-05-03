@@ -74,12 +74,6 @@ namespace SallyBot
         static internal string botReply = string.Empty;
         static internal string botLastReply = "<noinput>";
 
-        static internal string botLoopingFirstLetter = string.Empty;
-        static internal int botLoopingFirstLetterCount = 1;
-
-        static internal string botLoopingLastLetter = string.Empty;
-        static internal int botLoopingLastLetterCount = 0;
-
         static internal string token = string.Empty;
 
         static internal List<string> bannedWords = new List<string>
@@ -920,6 +914,12 @@ namespace SallyBot
 
                 string llmMsgRepeatLetterTrim = llmMsgFiltered;
 
+                string botLoopingFirstLetter = string.Empty;
+                int botLoopingFirstLetterCount = 1;
+
+                string botLoopingLastLetter = string.Empty;
+                int botLoopingLastLetterCount = 0;
+
                 // Check if first and last character are exact matches of the bot's last message and remove them if they keep repeating.
                 // This prevents the bot from looping the same random 3 characters over and over on the start or end of messages.
                 if (llmMsgFiltered.Length >= botLoopingFirstLetterCount
@@ -933,7 +933,6 @@ namespace SallyBot
 
                         // trim ALL the letters at the start of the msg that were identical to the previous message
                         llmMsgRepeatLetterTrim = llmMsgFiltered[(botLoopingFirstLetterCount - 1)..]; // trim repeated start off sentence (minus 1 because start index starts 1 char in)
-                        botLoopingFirstLetterCount = 1;
                     }
 
                     if (llmMsgFiltered[^botLoopingLastLetterCount..] == botLastReply[^botLoopingLastLetterCount..])
@@ -944,7 +943,6 @@ namespace SallyBot
 
                         // trim ALL the letters at the END of the msg that were identical to the previous message
                         llmMsgRepeatLetterTrim = llmMsgFiltered[..^botLoopingLastLetterCount]; // cuts off the repeated last characters
-                        botLoopingLastLetterCount = 0;
                     }
                 }
 
