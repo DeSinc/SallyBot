@@ -923,27 +923,29 @@ namespace SallyBot
                 // Check if first and last character are exact matches of the bot's last message and remove them if they keep repeating.
                 // This prevents the bot from looping the same random 3 characters over and over on the start or end of messages.
                 if (llmMsgFiltered.Length >= botLoopingFirstLetterCount
-                    && llmMsgFiltered[..botLoopingFirstLetterCount] == botLastReply[..botLoopingFirstLetterCount])
+                    && botLastReply.Length >= botLoopingFirstLetterCount)
                 {
-                    // keep checking 1 more letter into the string until we find a letter that isn't identical to the previous msg
-                    while (llmMsgFiltered[..botLoopingFirstLetterCount] == botLastReply[..botLoopingFirstLetterCount])
-                        botLoopingFirstLetterCount++;
+                    if (llmMsgFiltered[..botLoopingFirstLetterCount] == botLastReply[..botLoopingFirstLetterCount])
+                    {
+                        // keep checking 1 more letter into the string until we find a letter that isn't identical to the previous msg
+                        while (llmMsgFiltered[..botLoopingFirstLetterCount] == botLastReply[..botLoopingFirstLetterCount])
+                            botLoopingFirstLetterCount++;
 
-                    // trim ALL the letters at the start of the msg that were identical to the previous message
-                    llmMsgRepeatLetterTrim = llmMsgFiltered[(botLoopingFirstLetterCount-1)..];
-                    botLoopingFirstLetterCount = 0;
-                }
+                        // trim ALL the letters at the start of the msg that were identical to the previous message
+                        llmMsgRepeatLetterTrim = llmMsgFiltered[(botLoopingFirstLetterCount - 1)..]; // trim repeated start off sentence (minus 1 because start index starts 1 char in)
+                        botLoopingFirstLetterCount = 0;
+                    }
 
-                if (llmMsgFiltered.Length >= botLoopingLastLetterCount
-                    && llmMsgFiltered[^botLoopingLastLetterCount..] == botLastReply[^botLoopingLastLetterCount..])
-                {
-                    // keep checking 1 more letter into the string until we find a letter that isn't identical to the previous msg
-                    while (llmMsgFiltered[^botLoopingLastLetterCount..] == botLastReply[^botLoopingLastLetterCount..])
-                        botLoopingLastLetterCount++;
+                    if (llmMsgFiltered[^botLoopingLastLetterCount..] == botLastReply[^botLoopingLastLetterCount..])
+                    {
+                        // keep checking 1 more letter into the string until we find a letter that isn't identical to the previous msg
+                        while (llmMsgFiltered[^botLoopingLastLetterCount..] == botLastReply[^botLoopingLastLetterCount..])
+                            botLoopingLastLetterCount++;
 
-                    // trim ALL the letters at the END of the msg that were identical to the previous message
-                    llmMsgRepeatLetterTrim = llmMsgFiltered[..^botLoopingLastLetterCount]; // cuts off the repeated last characters
-                    botLoopingLastLetterCount = 0;
+                        // trim ALL the letters at the END of the msg that were identical to the previous message
+                        llmMsgRepeatLetterTrim = llmMsgFiltered[..^botLoopingLastLetterCount]; // cuts off the repeated last characters
+                        botLoopingLastLetterCount = 0;
+                    }
                 }
 
                 botLastReply = llmMsgRepeatLetterTrim;
