@@ -75,10 +75,10 @@ namespace SallyBot
         static internal string botLastReply = "<noinput>";
 
         static internal string botLoopingFirstLetter = string.Empty;
-        static internal int botLoopingFirstLetterCount = 1;
+        static internal int botLoopingFirstLetterCount = 0;
 
         static internal string botLoopingLastLetter = string.Empty;
-        static internal int botLoopingLastLetterCount = 1;
+        static internal int botLoopingLastLetterCount = 0;
 
         static internal string token = string.Empty;
 
@@ -930,8 +930,8 @@ namespace SallyBot
                         botLoopingFirstLetterCount++;
 
                     // trim ALL the letters at the start of the msg that were identical to the previous message
-                    llmMsgRepeatLetterTrim = llmMsgFiltered[botLoopingFirstLetterCount..];
-                    botLoopingFirstLetterCount = 1;
+                    llmMsgRepeatLetterTrim = llmMsgFiltered[(botLoopingFirstLetterCount-1)..];
+                    botLoopingFirstLetterCount = 0;
                 }
 
                 if (llmMsgFiltered.Length >= botLoopingLastLetterCount
@@ -943,7 +943,7 @@ namespace SallyBot
 
                     // trim ALL the letters at the END of the msg that were identical to the previous message
                     llmMsgRepeatLetterTrim = llmMsgFiltered[..^botLoopingLastLetterCount]; // cuts off the repeated last characters
-                    botLoopingLastLetterCount = 1;
+                    botLoopingLastLetterCount = 0;
                 }
 
                 botLastReply = llmMsgRepeatLetterTrim;
