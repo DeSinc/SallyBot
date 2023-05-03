@@ -75,7 +75,7 @@ namespace SallyBot
         static internal string botLastReply = "<noinput>";
 
         static internal string botLoopingFirstLetter = string.Empty;
-        static internal int botLoopingFirstLetterCount = 0;
+        static internal int botLoopingFirstLetterCount = 1;
 
         static internal string botLoopingLastLetter = string.Empty;
         static internal int botLoopingLastLetterCount = 0;
@@ -933,7 +933,7 @@ namespace SallyBot
 
                         // trim ALL the letters at the start of the msg that were identical to the previous message
                         llmMsgRepeatLetterTrim = llmMsgFiltered[(botLoopingFirstLetterCount - 1)..]; // trim repeated start off sentence (minus 1 because start index starts 1 char in)
-                        botLoopingFirstLetterCount = 0;
+                        botLoopingFirstLetterCount = 1;
                     }
 
                     if (llmMsgFiltered[^botLoopingLastLetterCount..] == botLastReply[^botLoopingLastLetterCount..])
