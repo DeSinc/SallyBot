@@ -944,7 +944,7 @@ namespace SallyBot
                             botLoopingLastLetterCount++;
 
                         // trim ALL the letters at the END of the msg that were identical to the previous message
-                        if (llmMsgFiltered[..^botLoopingLastLetterCount].Length > llmMsgFiltered[..^botLoopingFirstLetterCount].Length)
+                        if (llmMsgFiltered[..^botLoopingLastLetterCount].Length > botLastReply[..^botLoopingFirstLetterCount].Length)
                             llmMsgRepeatLetterTrim = llmMsgFiltered[..^botLoopingLastLetterCount]; // cuts off the repeated last characters
                     }
                 }
