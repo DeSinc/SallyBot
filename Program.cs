@@ -925,20 +925,22 @@ namespace SallyBot
                 if (llmMsgFiltered.Length >= botLoopingFirstLetterCount
                     && botLastReply.Length >= botLoopingFirstLetterCount)
                 {
-                    if (llmMsgFiltered[..botLoopingFirstLetterCount] == botLastReply[..botLoopingFirstLetterCount])
+                    if (llmMsgFiltered[..botLoopingFirstLetterCount].ToLower() == botLastReply[..botLoopingFirstLetterCount].ToLower())
                     {
                         // keep checking 1 more letter into the string until we find a letter that isn't identical to the previous msg
-                        while (llmMsgFiltered[..botLoopingFirstLetterCount] == botLastReply[..botLoopingFirstLetterCount])
+                        while (botLoopingFirstLetterCount < llmMsgFiltered.Length && botLoopingFirstLetterCount < botLastReply.Length
+                            && llmMsgFiltered[..botLoopingFirstLetterCount].ToLower() == botLastReply[..botLoopingFirstLetterCount].ToLower())
                             botLoopingFirstLetterCount++;
 
                         // trim ALL the letters at the start of the msg that were identical to the previous message
                         llmMsgRepeatLetterTrim = llmMsgFiltered[(botLoopingFirstLetterCount - 1)..]; // trim repeated start off sentence (minus 1 because start index starts 1 char in)
                     }
 
-                    if (llmMsgFiltered[^botLoopingLastLetterCount..] == botLastReply[^botLoopingLastLetterCount..])
+                    if (llmMsgFiltered[^botLoopingLastLetterCount..].ToLower() == botLastReply[^botLoopingLastLetterCount..].ToLower())
                     {
                         // keep checking 1 more letter into the string until we find a letter that isn't identical to the previous msg
-                        while (llmMsgFiltered[^botLoopingLastLetterCount..] == botLastReply[^botLoopingLastLetterCount..])
+                        while (botLoopingLastLetterCount < llmMsgFiltered.Length && botLoopingLastLetterCount < botLastReply.Length
+                            && llmMsgFiltered[^botLoopingLastLetterCount..].ToLower() == botLastReply[^botLoopingLastLetterCount..].ToLower())
                             botLoopingLastLetterCount++;
 
                         // trim ALL the letters at the END of the msg that were identical to the previous message
