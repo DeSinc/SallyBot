@@ -48,34 +48,11 @@ Put your bot API key and your server's ID in the MainGlobal.cs file (they will e
 
 Press F5 to build it and run and see what happens (it should work first try)
 
-## AI Text Generation with Dalai Alpaca (Run on the CPU) -- EASY
+## Using Oobabooga Text Generation Webui -- Runs on the GPU - much faster - OR the CPU depending on what you choose in the installer
 
-This bot doesn't generate the AI text but just sends requests off to a language learning model of your choice. At the moment I made the requests send out in the format for [Dalai Alpaca 7B](https://github.com/cocktailpeanut/dalai)
+Warning: For the average 7B model, it requires a card with at least 6GB of VRAM. If you're running on CPU you need at least 6-8GB of ram.
 
-Just follow their quick and easy instructions and the bot will automatically connect and start sending Dalai requests when you ping the bot.
-
-If you wish to modify the LLM parameters, it's this section here for Dalai:
-```c#
-    var dalaiRequest = new
-    {
-        seed = -1,
-        threads = 4,   <--(btw, change this to your thread count minus 2 for more speed)
-        n_predict = 200,
-        top_k = 40,
-        top_p = 0.9,
-        temp = 0.8,
-        repeat_last_n = 64,
-        repeat_penalty = 1.1,
-        debug = false,
-        model = "alpaca.7B",
-
-        prompt = inputPrompt
-    };          
-```
-
-## Using Oobabooga Text Generation Webui (Run on the GPU) -- A little more involved but still easy if you're lucky
-
-Warning: For the average 7B model, it requires at least a 6GB card. If you're willing to run on the inferior smaller parameter count models like Pythia-2.8B-deduped or something then it'll work on 4GB cards, but the output is untested and frankly likely to be bad.
+If you're willing to run on the inferior smaller parameter count models like Pythia-2.8B-deduped or something then it'll work on less RAM/VRAM, but the output is untested and frankly likely to be bad.
 
 Download and install Oobabooga from their repo [here](https://github.com/oobabooga/text-generation-webui). You can use the 1-click windows installer zip file or clone their repo, both work fine. Follow their guide on installing it and then come back here.
 
@@ -131,6 +108,32 @@ var parameters = new
                 add_bos_token = true
             };
 ```
+
+## AI Text Generation with Dalai Alpaca (Run on the CPU) -- Easier to install but has long-standing BUGS that are not getting fixed (project seems abandoned)
+
+This bot doesn't generate the AI text but just sends requests off to a language learning model of your choice. At the moment I made the requests send out in the format for [Dalai Alpaca 7B](https://github.com/cocktailpeanut/dalai)
+
+Just install [this](https://nodejs.org/en/download) first and then follow the quick and easy 2-step instructions on the Dalai github link above. The bot will automatically connect and start sending Dalai requests when you ping the bot.
+
+If you wish to modify the LLM parameters, it's this section here for Dalai:
+```c#
+    var dalaiRequest = new
+    {
+        seed = -1,
+        threads = 4,   <--(btw, change this to your thread count minus 2 for more speed)
+        n_predict = 200,
+        top_k = 40,
+        top_p = 0.9,
+        temp = 0.8,
+        repeat_last_n = 64,
+        repeat_penalty = 1.1,
+        debug = false,
+        model = "alpaca.7B",
+
+        prompt = inputPrompt
+    };          
+```
+
 ## Other AI text generators as yet unsupported
 
 If you're using another AI text generator, check its github page for instructions on how to format the data and change the format of the request to what it needs. You might also need to change the way it sends the request in, which could be a lot of code changes depending. This bot sends via SocketIO to Dalai Alpaca which is the easiest to set up imo and runs on anything with very good speed. I mean anything. It runs on a raspberry pi 4B. Some guy got it running on a texas instruments calculator I heard. You still need 4gb of ram for the model to load though.
