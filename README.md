@@ -64,7 +64,7 @@ Here's an example of what a username/modelname looks like on huggingface:
 
 ![image](https://github.com/DeSinc/SallyBot/assets/12345584/2c3b91d4-44da-4e9a-8ab2-66ef03d4be5b)
 
-Once installed and model downloaded, you need to enable the ``--extensions API --notebook`` args in the webui.py file in the same folder as the rest of the .bat files. Right click / Edit (or open with Notepad) and it's near the bottom of the file.
+Once installed and model downloaded, you need to enable the ``--extensions API --chat`` args in the webui.py file in the same folder as the rest of the .bat files. Right click / Edit (or open with Notepad) and it's near the bottom of the file.
 
 Replace this line here:
 
@@ -76,17 +76,17 @@ with this:
 
 Here's the text to copy directly:
 
-``--model ozcur_alpaca-native-4bit --wbits 4 --groupsize 128 --extensions api --notebook --listen-port 7862 --xformers``
+``--model folder_name_of_model --wbits 4 --groupsize 128 --extensions api --chat --listen-port 7862 --xformers``
 
-If you know what you're doing you can remove whichever ones you don't need. like ``--groupsize 128`` if you are using a non 128 groupsize model, or ``--wbits 4`` if you are not running a 4-bit quantized model, for instance. The one I linked above, Ozcur native 4bit, is 4bit quantized, so you'll need this arg to run that model.
+If you know what you're doing you can remove whichever ones you don't need. like ``--groupsize 128`` if you are using a non 128 groupsize model, or ``--wbits 4`` if you are not running a 4-bit quantized model, for instance. Most of the consumer running ones are 4bit quantized to run on normal amounts of vram, so you'll need this arg to run those models.
 
 ### Explanation of args
 
-``--listen-port`` is set to 7862 because we ARE NOT USING default API. It is BROKEN. We are instead using ``--extensions api`` which runs on port 5000.
+``--listen-port`` is set to 7862 because we ARE NOT USING default API. We are instead using ``--extensions api`` which runs on port 5000. Port 7862 can still be used to view the web interface if you like.
 
 ``--xformers`` is a very good optimiser that reduces your vram usage for free, but you need to install it. Run the `cmd_windows.bat`, and install xformers by typing ``pip install xformers==0.0.18`` in command prompt.
 
-Once the Oobabooga server is running NOT in --chat-mode (turn this arg off! replace it with ``--notebook``) it should start accepting queries from Sallybot immediately!
+``--chat`` sets the web interface to chat mode which is better. This arg isn't necessary it just makes the web interface look nicer if you choose to browse to it on localhost:7862 in your web browser.
 
 If you'd like to modify the parameters for Oobabooga, it's this section here:
 ```
