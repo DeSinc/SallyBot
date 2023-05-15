@@ -58,7 +58,11 @@ Download and install Oobabooga from their repo [here](https://github.com/oobaboo
 
 After unzipping the 1-click installer, start `start_windows.bat`. It will ask for your GPU. Press A/B/C/D depending on what GPU you use or if you want to use CPU instead (Not recommend using CPU).
 
-If the bat detects that you do not have a model(Like if you ran it for the first time), it will ask what model you want to download. Pick L for none of the above, and enter ozcur/alpaca-native-4bit and let it download.
+If the bat detects that you do not have a model(Like if you ran it for the first time), it will ask what model you want to download. Pick L for none of the above, and enter the username/modelname of a model you like on HuggingFace and let it download.
+
+Here's an example of what a username/modelname looks like on huggingface:
+
+![image](https://github.com/DeSinc/SallyBot/assets/12345584/2c3b91d4-44da-4e9a-8ab2-66ef03d4be5b)
 
 Once installed and model downloaded, you need to enable the ``--extensions API --notebook`` args in the webui.py file in the same folder as the rest of the .bat files. Right click / Edit (or open with Notepad) and it's near the bottom of the file.
 
