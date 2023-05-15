@@ -28,9 +28,11 @@ Click the 'Code' drop-down at the top right corner of this webpage and select 'D
 
 Download and install Visual Studio Community WITH C# dotNET development modules ticked. Look up guides if you are confused - when installing Visual Studio Community, it will ask with big squares with tickboxes in the corners which types of coding packages you want to install. Pick the C#/Dot NET ones.
 
-Double click sallybot.csproj and open with Visual Studio Community (ideally 2022)
+Double click on the sallybot.sln file and open with Visual Studio Community
 
-It should open up the whole project and make a .sln file, etc.
+(If that doesn't work try open sallybot.csproj with Visual Studio Community. It should open up the whole project and make a .sln file, etc.)
+
+(If that doesn't work you likely need to install the C# dotNET packages with the Visual Studio Installer window. You can run this by typing Visual Studio Installer into the start menu and hitting enter.)
 
 If you don't have a bot already:
 
