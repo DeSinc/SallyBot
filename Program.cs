@@ -939,20 +939,19 @@ namespace SallyBot
                         llmMsgRepeatLetterTrim = llmMsgFiltered[(botLoopingFirstLetterCount - 1)..]; // trim repeated start off sentence (minus 1 because start index starts 1 char in)
                     }
 
-                    if (llmMsgFiltered.Substring(llmMsgFiltered.Length - botLoopingLastLetterCount).ToLower()
-                        == botLastReply.Substring(botLastReply.Length - botLoopingLastLetterCount).ToLower())
+                    string textToRemove = llmMsgFiltered.Substring(llmMsgFiltered.Length - botLoopingLastLetterCount).ToLower().Trim();
+
+                    if (textToRemove == botLastReply.Substring(botLastReply.Length - botLoopingLastLetterCount).ToLower())
                     {
                         // keep checking 1 more letter into the string until we find a letter that isn't identical to the previous msg
                         while (botLoopingLastLetterCount < llmMsgFiltered.Length && botLoopingLastLetterCount < botLastReply.Length
                             && llmMsgFiltered[^botLoopingLastLetterCount..].ToLower() == botLastReply[^botLoopingLastLetterCount..].ToLower())
                             botLoopingLastLetterCount++;
 
-                        string textToRemove = llmMsgFiltered.Substring(llmMsgFiltered.Length - botLoopingLastLetterCount).ToLower().Trim();
-
                         // wipe out all instances of this annoying looping text in the entire chat history log
                         if (textToRemove.Length > 1)
                         {
-                            oobaboogaChatHistory.Replace(llmMsgFiltered.Substring(llmMsgFiltered.Length - botLoopingLastLetterCount).ToLower().Trim(), "");
+                            oobaboogaChatHistory.Replace(textToRemove, "");
                         }
 
                         botLoopingLastLetterCount--;
