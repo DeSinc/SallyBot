@@ -908,9 +908,9 @@ namespace SallyBot
                     return; // give up lol
                 }
 
-                string llmMsgFiltered = llmMsg
-                                        .Replace("\\", "\\\\") // replace single backslashes with an escaped backslash, so it's not invisible in discord chat
-                                        .Replace("*", "\\*"); // replace * characters with escaped star so it doesn't interpret as bold or italics in discord
+                string llmMsgFiltered = llmMsg;
+                //.Replace("\\", "\\\\") // replace single backslashes with an escaped backslash, so it's not invisible in discord chat
+                //.Replace("*", "\\*"); // replace * characters with escaped star so it doesn't interpret as bold or italics in discord
 
                 string llmMsgRepeatLetterTrim = llmMsgFiltered;
 
@@ -932,6 +932,9 @@ namespace SallyBot
                             && llmMsgFiltered[..botLoopingFirstLetterCount].ToLower() == botLastReply[..botLoopingFirstLetterCount].ToLower())
                             botLoopingFirstLetterCount++;
 
+                        // wipe out all instances of this annoying looping text in the entire chat history log
+                        oobaboogaChatHistory.Replace(llmMsgFiltered[..botLoopingFirstLetterCount].ToLower().Trim(), "");
+
                         // trim ALL the letters at the start of the msg that were identical to the previous message
                         llmMsgRepeatLetterTrim = llmMsgFiltered[(botLoopingFirstLetterCount - 1)..]; // trim repeated start off sentence (minus 1 because start index starts 1 char in)
                     }
@@ -944,6 +947,14 @@ namespace SallyBot
                             && llmMsgFiltered[^botLoopingLastLetterCount..].ToLower() == botLastReply[^botLoopingLastLetterCount..].ToLower())
                             botLoopingLastLetterCount++;
 
+                        string textToRemove = llmMsgFiltered.Substring(llmMsgFiltered.Length - botLoopingLastLetterCount).ToLower().Trim();
+
+                        // wipe out all instances of this annoying looping text in the entire chat history log
+                        if (textToRemove.Length > 1)
+                        {
+                            oobaboogaChatHistory.Replace(llmMsgFiltered.Substring(llmMsgFiltered.Length - botLoopingLastLetterCount).ToLower().Trim(), "");
+                        }
+
                         botLoopingLastLetterCount--;
                         // trim ALL the letters at the END of the msg that were identical to the previous message
                         if (llmMsgFiltered[..^botLoopingLastLetterCount].Length > botLastReply[..^botLoopingFirstLetterCount].Length)
@@ -951,12 +962,15 @@ namespace SallyBot
                     }
                 }
 
-                botLastReply = llmMsgRepeatLetterTrim;
+                botLastReply = llmMsgFiltered;
 
                 await Msg.ReplyAsync(llmMsgFiltered); // send bot msg as a reply to the user's message
 
-                botChatLineFormatted = $"{oobaboogaInputPromptEnd}{llmMsgRepeatLetterTrim}\n"; // format the msg from the bot into a formatted chat line
-                oobaboogaChatHistory += botChatLineFormatted; // writes bot's reply to the chat history
+                if (!botLooping)
+                {
+                    botChatLineFormatted = $"{oobaboogaInputPromptEnd}{llmMsgRepeatLetterTrim}\n"; // format the msg from the bot into a formatted chat line
+                    oobaboogaChatHistory += Regex.Replace(botChatLineFormatted, linkDetectionRegexStr, "url removed"); // writes bot's reply to the chat history
+                }
                 Console.WriteLine(botChatLineFormatted.Trim()); // write in console so we can see it too
 
                 float messageToRambleRatio = llmMsgBeginTrimmed.Length / llmMsg.Length;
