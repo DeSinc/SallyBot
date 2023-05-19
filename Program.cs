@@ -936,13 +936,15 @@ namespace SallyBot
                         llmMsgRepeatLetterTrim = llmMsgFiltered[(botLoopingFirstLetterCount - 1)..]; // trim repeated start off sentence (minus 1 because start index starts 1 char in)
                     }
 
-                    if (llmMsgFiltered[^botLoopingLastLetterCount..].ToLower() == botLastReply[^botLoopingLastLetterCount..].ToLower())
+                    if (llmMsgFiltered.Substring(llmMsgFiltered.Length - botLoopingLastLetterCount).ToLower()
+                        == botLastReply.Substring(botLastReply.Length - botLoopingLastLetterCount).ToLower())
                     {
                         // keep checking 1 more letter into the string until we find a letter that isn't identical to the previous msg
                         while (botLoopingLastLetterCount < llmMsgFiltered.Length && botLoopingLastLetterCount < botLastReply.Length
                             && llmMsgFiltered[^botLoopingLastLetterCount..].ToLower() == botLastReply[^botLoopingLastLetterCount..].ToLower())
                             botLoopingLastLetterCount++;
 
+                        botLoopingLastLetterCount--;
                         // trim ALL the letters at the END of the msg that were identical to the previous message
                         if (llmMsgFiltered[..^botLoopingLastLetterCount].Length > botLastReply[..^botLoopingFirstLetterCount].Length)
                             llmMsgRepeatLetterTrim = llmMsgFiltered[..^botLoopingLastLetterCount]; // cuts off the repeated last characters
