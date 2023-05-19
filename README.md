@@ -28,9 +28,11 @@ Click the 'Code' drop-down at the top right corner of this webpage and select 'D
 
 Download and install Visual Studio Community WITH C# dotNET development modules ticked. Look up guides if you are confused - when installing Visual Studio Community, it will ask with big squares with tickboxes in the corners which types of coding packages you want to install. Pick the C#/Dot NET ones.
 
-Double click sallybot.csproj and open with Visual Studio Community (ideally 2022)
+Double click on the sallybot.sln file and open with Visual Studio Community
 
-It should open up the whole project and make a .sln file, etc.
+(If that doesn't work try open sallybot.csproj with Visual Studio Community. It should open up the whole project and make a .sln file, etc.)
+
+(If that doesn't work you likely need to install the C# dotNET packages with the Visual Studio Installer window. You can run this by typing Visual Studio Installer into the start menu and hitting enter.)
 
 If you don't have a bot already:
 
@@ -46,42 +48,23 @@ Put your bot API key and your server's ID in the MainGlobal.cs file (they will e
 
 Press F5 to build it and run and see what happens (it should work first try)
 
-## AI Text Generation with Dalai Alpaca (Run on the CPU) -- EASY
+## Using Oobabooga Text Generation Webui -- Runs on the GPU - much faster - OR the CPU depending on what you choose in the installer
 
-This bot doesn't generate the AI text but just sends requests off to a language learning model of your choice. At the moment I made the requests send out in the format for [Dalai Alpaca 7B](https://github.com/cocktailpeanut/dalai)
+Warning: For the average 7B model, it requires a card with at least 6GB of VRAM. If you're running on CPU you need at least 6-8GB of ram.
 
-Just follow their quick and easy instructions and the bot will automatically connect and start sending Dalai requests when you ping the bot.
-
-If you wish to modify the LLM parameters, it's this section here for Dalai:
-```c#
-    var dalaiRequest = new
-    {
-        seed = -1,
-        threads = 4,   <--(btw, change this to your thread count minus 2 for more speed)
-        n_predict = 200,
-        top_k = 40,
-        top_p = 0.9,
-        temp = 0.8,
-        repeat_last_n = 64,
-        repeat_penalty = 1.1,
-        debug = false,
-        model = "alpaca.7B",
-
-        prompt = inputPrompt
-    };          
-```
-
-## Using Oobabooga Text Generation Webui (Run on the GPU) -- A little more involved but still easy if you're lucky
-
-Warning: For the average 7B model, it requires at least a 6GB card. If you're willing to run on the inferior smaller parameter count models like Pythia-2.8B-deduped or something then it'll work on 4GB cards, but the output is untested and frankly likely to be bad.
+If you're willing to run on the inferior smaller parameter count models like Pythia-2.8B-deduped or something then it'll work on less RAM/VRAM, but the output is untested and frankly likely to be bad.
 
 Download and install Oobabooga from their repo [here](https://github.com/oobabooga/text-generation-webui). You can use the 1-click windows installer zip file or clone their repo, both work fine. Follow their guide on installing it and then come back here.
 
 After unzipping the 1-click installer, start `start_windows.bat`. It will ask for your GPU. Press A/B/C/D depending on what GPU you use or if you want to use CPU instead (Not recommend using CPU).
 
-If the bat detects that you do not have a model(Like if you ran it for the first time), it will ask what model you want to download. Pick L for none of the above, and enter ozcur/alpaca-native-4bit and let it download.
+If the bat detects that you do not have a model(Like if you ran it for the first time), it will ask what model you want to download. Pick L for none of the above, and enter the username/modelname of a model you like on HuggingFace and let it download.
 
-Once installed and model downloaded, you need to enable the ``--extensions API --notebook`` args in the webui.py file in the same folder as the rest of the .bat files. Right click / Edit (or open with Notepad) and it's near the bottom of the file.
+Here's an example of what a username/modelname looks like on huggingface:
+
+![image](https://github.com/DeSinc/SallyBot/assets/12345584/2c3b91d4-44da-4e9a-8ab2-66ef03d4be5b)
+
+Once installed and model downloaded, you need to enable the ``--extensions API --chat`` args in the webui.py file in the same folder as the rest of the .bat files. Right click / Edit (or open with Notepad) and it's near the bottom of the file.
 
 Replace this line here:
 
@@ -93,17 +76,17 @@ with this:
 
 Here's the text to copy directly:
 
-``--model ozcur_alpaca-native-4bit --wbits 4 --groupsize 128 --extensions api --notebook --listen-port 7862 --xformers``
+``--model folder_name_of_model --wbits 4 --groupsize 128 --extensions api --chat --listen-port 7862 --xformers``
 
-If you know what you're doing you can remove whichever ones you don't need. like ``--groupsize 128`` if you are using a non 128 groupsize model, or ``--wbits 4`` if you are not running a 4-bit quantized model, for instance. The one I linked above, Ozcur native 4bit, is 4bit quantized, so you'll need this arg to run that model.
+If you know what you're doing you can remove whichever ones you don't need. like ``--groupsize 128`` if you are using a non 128 groupsize model, or ``--wbits 4`` if you are not running a 4-bit quantized model, for instance. Most of the consumer running ones are 4bit quantized to run on normal amounts of vram, so you'll need this arg to run those models.
 
 ### Explanation of args
 
-``--listen-port`` is set to 7862 because we ARE NOT USING default API. It is BROKEN. We are instead using ``--extensions api`` which runs on port 5000.
+``--listen-port`` is set to 7862 because we ARE NOT USING default API. We are instead using ``--extensions api`` which runs on port 5000. Port 7862 can still be used to view the web interface if you like.
 
 ``--xformers`` is a very good optimiser that reduces your vram usage for free, but you need to install it. Run the `cmd_windows.bat`, and install xformers by typing ``pip install xformers==0.0.18`` in command prompt.
 
-Once the Oobabooga server is running NOT in --chat-mode (turn this arg off! replace it with ``--notebook``) it should start accepting queries from Sallybot immediately!
+``--chat`` sets the web interface to chat mode which is better. This arg isn't necessary it just makes the web interface look nicer if you choose to browse to it on localhost:7862 in your web browser.
 
 If you'd like to modify the parameters for Oobabooga, it's this section here:
 ```
@@ -129,6 +112,32 @@ var parameters = new
                 add_bos_token = true
             };
 ```
+
+## AI Text Generation with Dalai Alpaca (Run on the CPU) -- Easier to install but has long-standing BUGS that are not getting fixed (project seems abandoned)
+
+This bot doesn't generate the AI text but just sends requests off to a language learning model of your choice. At the moment I made the requests send out in the format for [Dalai Alpaca 7B](https://github.com/cocktailpeanut/dalai)
+
+Just install [this](https://nodejs.org/en/download) first and then follow the quick and easy 2-step instructions on the Dalai github link above. The bot will automatically connect and start sending Dalai requests when you ping the bot.
+
+If you wish to modify the LLM parameters, it's this section here for Dalai:
+```c#
+    var dalaiRequest = new
+    {
+        seed = -1,
+        threads = 4,   <--(btw, change this to your thread count minus 2 for more speed)
+        n_predict = 200,
+        top_k = 40,
+        top_p = 0.9,
+        temp = 0.8,
+        repeat_last_n = 64,
+        repeat_penalty = 1.1,
+        debug = false,
+        model = "alpaca.7B",
+
+        prompt = inputPrompt
+    };          
+```
+
 ## Other AI text generators as yet unsupported
 
 If you're using another AI text generator, check its github page for instructions on how to format the data and change the format of the request to what it needs. You might also need to change the way it sends the request in, which could be a lot of code changes depending. This bot sends via SocketIO to Dalai Alpaca which is the easiest to set up imo and runs on anything with very good speed. I mean anything. It runs on a raspberry pi 4B. Some guy got it running on a texas instruments calculator I heard. You still need 4gb of ram for the model to load though.
