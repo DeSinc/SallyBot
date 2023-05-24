@@ -941,7 +941,8 @@ namespace SallyBot
 
                     string textToRemove = llmMsgFiltered.Substring(llmMsgFiltered.Length - botLoopingLastLetterCount).ToLower().Trim();
 
-                    if (textToRemove == botLastReply.Substring(botLastReply.Length - botLoopingLastLetterCount).ToLower())
+                    if (textToRemove == botLastReply.Substring(botLastReply.Length - botLoopingLastLetterCount).ToLower()
+                        && textToRemove != ".") // don't remove repeated full stops, they literally always repeat
                     {
                         // keep checking 1 more letter into the string until we find a letter that isn't identical to the previous msg
                         while (botLoopingLastLetterCount < llmMsgFiltered.Length && botLoopingLastLetterCount < botLastReply.Length
