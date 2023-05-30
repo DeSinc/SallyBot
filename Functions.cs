@@ -247,7 +247,7 @@ namespace SallyBot.Extras
 
             if (selfie)
             {
-                imgPrompt = sallyPrompt + imgPrompt;
+                imgPrompt = characterPromptImage + imgPrompt;
                 width = 488;
                 height = 688;
             }
