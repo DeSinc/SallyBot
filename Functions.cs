@@ -175,7 +175,19 @@ namespace SallyBot.Extras
             // adds (Night) to the image prompt if it's night in japan, etc.
             if (timeOfDayInNaturalLanguage != null)
                 timeOfDayStr = $", ({timeOfDayInNaturalLanguage})";
+
+            // POSITIVE PROMPT - put what you want YOUR bot to look like when it takes a selfie or appears in the image. The AI will put its own prompt AFTER this.
+            string characterPromptImage = "A 25 year old anime woman smiling, looking into the camera, long hair, blonde hair, blue eyes";
+            string imgPrompt = string.Empty; 
             
+            // NEGATIVE prompt - write what you DON'T want to see in the image here
+            string imgNegPrompt = $"negative_hand-neg:1, (nsfw, naked, nude:1.6), (easynegative:1.0), (negative_hand-neg:0.9), (worst quality, low quality:1.4), 3 arms, extra arms, extra limbs";
+
+            int width = 688;
+            int height = 488;
+            bool selfie = false;
+            //customdscode
+
             if (userPrompt.Length > 4
                 && llmPrompt.Trim().Length > 2)
             {
@@ -183,27 +195,62 @@ namespace SallyBot.Extras
 
                 if (userPrompt.Contains("selfie"))
                 {
-                    imgFormatString = ", looking into the camera, "; // specifies to look into camera if you ask for a selfie
+                    selfie = true;
+                    imgFormatString = ", looking into the camera, ";
                 }
                 else if (userPrompt.Contains("person")
                         || userPrompt.Contains("you as")
                         || userPrompt.Contains("yourself as")
                         || userPrompt.Contains("you cosplaying")
                         || userPrompt.Contains("yourself cosplaying"))
-                    imgFormatString = "";   // don't say "standing next to (( A person ))" when it's just meant to be SallyBot
-                else if (userPrompt.Contains(" with a"))
-                    imgFormatString = ", she has ";
+                {
+                    selfie = true;
+                }
+                else if (userPrompt.Contains(" of you"))
+                {
+                    selfie = true;
+                }
                 else if (userPrompt.Contains(" of you with "))
+                {
+                    selfie = true;
                     imgFormatString = ", she is with ";
+                }
+                else if (userPrompt.Contains(" at you"))
+                {
+                    selfie = true;
+                }
+                else if (userPrompt.Contains(" in you"))
+                {
+                    selfie = true;
+                }
+                else if (userPrompt.Contains(" for you"))
+                {
+                    selfie = true;
+                }
+                else if (userPrompt.Contains(" by you"))
+                {
+                    selfie = true;
+                }
+                else if (userPrompt.Contains(" and you"))
+                {
+                    selfie = true;
+                }
 
                 if (userPrompt.Contains("holding"))
                 {
-                    imgFormatString = imgFormatString + ", holding ";
+                    selfie = true;
+                    imgFormatString += ", holding ";
                 }
             }
 
-            string imgPrompt = $"A 25 year old anime woman smiling, looking into the camera, long hair, blonde hair, blue eyes{timeOfDayStr}{imgFormatString}"; // POSITIVE PROMPT - put what you want the image to look like generally. The AI will put its own prompt after this.
-            string imgNegPrompt = $"(worst quality, low quality:1.4), 3d, cgi, 3d render, naked, nude"; // NEGATIVE PROMPT HERE - put what you don't want to see
+            imgPrompt += imgFormatString;
+
+            if (selfie)
+            {
+                imgPrompt = sallyPrompt + imgPrompt;
+                width = 488;
+                height = 688;
+            }
 
             if (llmPrompt.Length > 0)
             {
@@ -223,10 +270,10 @@ namespace SallyBot.Extras
                 { "prompt", imgPrompt },
                 { "negative_prompt", imgNegPrompt},
                 { "steps", 20 },
-                { "width", 512 },
-                { "height", 688 },
+                { "width", width },
+                { "height", height },
                 { "send_images", true },
-                { "sampler_name", "DDIM" },
+                { "sampler_name", "DDIM" }, // set this to "DPM++ SDE Karras" if you want slightly higher quality images, but slower image generation
                 { "override_settings", overrideSettings }
             };
 
