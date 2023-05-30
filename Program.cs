@@ -65,8 +65,6 @@ namespace SallyBot
         static internal string oobaboogaInputPromptStart = $"";
         static internal string oobaboogaInputPromptEnd = $"[{botName}]:";
 
-        //static internal string characterPrompt = "";
-
         static internal string inputPromptStartPic = $"### Instruction: Create descriptive nouns and image tags to describe an image that the user requests. Maintain accuracy to the user's prompt. You may use Danbooru tags to describe the image.";
         static internal string inputPromptEnding = $"[{botName}]:";
         static internal string inputPromptEndingPic = $"### Description of the requested image:";
@@ -82,7 +80,7 @@ namespace SallyBot
             // This filter uses special code to match any word you fill in this list even if they misspell it a little bit
             // The misspelling feature only works for 5 letter words and above.
             "p0rnography", "h3ntai"
-            // You don't need to misspell the word in this list, I just did that because I don't want github banning me.
+            // You don't need to misspell the word in this list, it detects misspellings automatically. I just did that because I don't want github banning me.
         };
 
 
