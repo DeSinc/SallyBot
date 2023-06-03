@@ -61,7 +61,7 @@ The install script will also ask you if you want to install a model, it offers s
 
 Here's an example of what a username/modelname looks like on HuggingFace:
 
-![Example of a model on HuggingFace](https://github.com/DeSinc/SallyBot/assets/36467674/d67bad10-717f-4ba2-bfeb-50c5d96cea8b)
+![Example of a model on HuggingFace](https://github.com/DeSinc/SallyBot/assets/36467674/becc58e0-8e96-42f2-bfca-79c1bcc86fae)
 
 You can download a model afterwards with the downloader script, open the console in the text-generation-webui folder and run `python download-model.py <name of model>`.
 
@@ -84,9 +84,9 @@ Arguments to be added here include:
 `--wbits 4` and `--groupsize 128` specify details about the model. If you know what you're doing you can remove whichever ones you don't need. `--groupsize 128` if you are using a non 128 groupsize model, or `--wbits 4` if you are not running a 4-bit quantized model, for instance. Most of the consumer running ones are 4bit quantized to run on normal amounts of vram, so you'll need this arg to run those models.
 
 Example of args:
-`--model mayaeary_pygmalion-6b_dev-4bit-128g --extension api --listen-port 7862 --wbits 4 --groupsize 128`
+`--model TheBloke/WizardLM-7B-uncensored-GPTQ --extension api --listen-port 7862 --wbits 4 --groupsize 128`
 
-![Image showing example of args](https://github.com/DeSinc/SallyBot/assets/36467674/997ddd3e-90e0-477d-bdfe-73704ba7aeff)
+![Image showing example of args](https://github.com/DeSinc/SallyBot/assets/36467674/eaa1caf1-0285-4c87-98f9-b45ba65d6df6)
 
 If you'd like to modify the parameters for Oobabooga, it's this section here:
 ```c#
