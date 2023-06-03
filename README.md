@@ -1,30 +1,29 @@
 # SallyBot
 AI Chatbot that uses locally-ran large language models to talk to you (No Chat-GPT! Runs on your PC! It even runs on a raspberry pi 4B!)
 
-It also uses [Stable Diffusion](https://github.com/AUTOMATIC1111/stable-diffusion-webui) to take real selfies, running on your local GPU
+It also utilises [Stable Diffusion](https://github.com/AUTOMATIC1111/stable-diffusion-webui) to take real selfies, running on your local GPU
 
-Coded in Discord.net C# 
+Coded in Discord.net C#
 
 Context: [I Made a Discord Chat Bot that Can Take Selfies](https://www.youtube.com/watch?v=KM4a7RGG270)  
 [![](https://markdown-videos.deta.dev/youtube/KM4a7RGG270)](https://youtu.be/KM4a7RGG270)
 
 ### Supported LLM interfaces:
 
-[Oobabooga Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)
-
-[Dalai Alpaca](https://github.com/cocktailpeanut/dalai) 
+[Oobabooga Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)  
+[Dalai Alpaca](https://github.com/cocktailpeanut/dalai)
 
 ### Examples
 
-![image](https://user-images.githubusercontent.com/12345584/230606279-cb741c83-ebb9-4e4f-9754-67bee57d1540.png)
+![Image showing examples of SallyBot](https://user-images.githubusercontent.com/12345584/230606279-cb741c83-ebb9-4e4f-9754-67bee57d1540.png)
 
 ## USAGE
 
-Either git clone the repo into a folder called Sallybot
+Either clone the repository using git (look up how to do so if unsure)
 
 or
 
-Click the 'Code' drop-down at the top right corner of this webpage and select 'Download ZIP' and place the contents into a folder called SallyBot (changing the name risks issues with the Visual Studio environment)
+Click the green 'Code' drop-down at the top right corner of this webpage and select 'Download ZIP' and place the contents into a folder called SallyBot (changing the name risks issues with the Visual Studio environment)
 
 Download and install Visual Studio Community WITH C# dotNET development modules ticked. Look up guides if you are confused - when installing Visual Studio Community, it will ask with big squares with tickboxes in the corners which types of coding packages you want to install. Pick the C#/Dot NET ones.
 
@@ -37,10 +36,10 @@ Double click on the sallybot.sln file and open with Visual Studio Community
 If you don't have a bot already:
 
 * Create a new Discord bot on the Discord Developer Portal and make an API key (takes about 2 mins) https://discord.com/developers/applications
-            
-* Make sure you enable message intents and other intents for this bot or you won't see any message content etc.  
+
+* Make sure you enable message intents and other intents for this bot or you won't see any message content etc.
 Use this guide: https://autocode.com/discord/threads/what-are-discord-privileged-intents-and-how-do-i-enable-them-tutorial-0c3f9977/
-![image](https://user-images.githubusercontent.com/11000195/230468248-10b014c7-db1e-4c33-96ef-5305c24c7b27.png)
+![Image showing Discord app permissions](https://user-images.githubusercontent.com/11000195/230468248-10b014c7-db1e-4c33-96ef-5305c24c7b27.png)
 
 * Join the bot to your server, follow this guide if you don't know how: https://discordjs.guide/preparations/adding-your-bot-to-servers.html#bot-invite-links
 
@@ -54,64 +53,68 @@ Warning: For the average 7B model, it requires a card with at least 6GB of VRAM.
 
 If you're willing to run on the inferior smaller parameter count models like Pythia-2.8B-deduped or something then it'll work on less RAM/VRAM, but the output is untested and frankly likely to be bad.
 
-Download and install Oobabooga from their repo [here](https://github.com/oobabooga/text-generation-webui). You can use the 1-click windows installer zip file or clone their repo, both work fine. Follow their guide on installing it and then come back here.
+Download and install [Oobabooga from their repo here](https://github.com/oobabooga/text-generation-webui). Their README has information on how to install it, with two methods: 1-click installer and manual. I heavily recommend the 1-click installer.
 
-After unzipping the 1-click installer, start `start_windows.bat`. It will ask for your GPU. Press A/B/C/D depending on what GPU you use or if you want to use CPU instead (Not recommend using CPU).
+After downloading and unzipping the 1-click installer, run `start_windows.bat`. The installer is interactive and you will need to enter your GPU device when prompted, or select CPU mode. I do not recommend CPU mode.
 
-If the bat detects that you do not have a model(Like if you ran it for the first time), it will ask what model you want to download. Pick L for none of the above, and enter the username/modelname of a model you like on HuggingFace and let it download.
+The install script will also ask you if you want to install a model, it offers some suggested models however I recommend you search for a language model yourself on HuggingFace. Copy the model name to clipboard and paste it into the script.
 
-Here's an example of what a username/modelname looks like on huggingface:
+Here's an example of what a username/modelname looks like on HuggingFace:
 
-![image](https://github.com/DeSinc/SallyBot/assets/12345584/2c3b91d4-44da-4e9a-8ab2-66ef03d4be5b)
+![Example of a model on HuggingFace](https://github.com/DeSinc/SallyBot/assets/36467674/d67bad10-717f-4ba2-bfeb-50c5d96cea8b)
 
-Once installed and model downloaded, you need to enable the ``--extensions API --chat`` args in the webui.py file in the same folder as the rest of the .bat files. Right click / Edit (or open with Notepad) and it's near the bottom of the file.
+You can download a model afterwards with the downloader script, open the console in the text-generation-webui folder and run `python download-model.py <name of model>`.
 
-Replace this line here:
+After the installing has finished you need to set up the arguements in the `webui.py` file to allow SallyBot to communicate with Oobabooga. It can be found near the top of the file.
 
-![image](https://user-images.githubusercontent.com/12345584/233764210-c57cdd24-5e92-4894-aa92-9107cb13c975.png)
+![Showing where to input args](https://github.com/DeSinc/SallyBot/assets/36467674/a7c6e8b0-6644-4c73-878b-9b2cb44c1d3a)
 
-with this:
+Arguments to be added here include:
 
-![image](https://user-images.githubusercontent.com/12345584/233764251-f2317829-c60f-4845-96c6-9bbc83482da7.png)
+`--chat` sets the web interface to chat mode which is better. This arg isn't necessary it just makes the web interface look nicer if you choose to browse to it on localhost:7862 in your web browser.
 
-Here's the text to copy directly:
+`--model <folder_name_of_model>` specifies which model Oobabooga should use, replace `<folder_name_of_model>` it is the name of the folder in text-generation-webui/models.
 
-``--model folder_name_of_model --wbits 4 --groupsize 128 --extensions api --chat --listen-port 7862 --xformers``
+`--extension api` tells Oobabooga to allow SallyBot to integrate together.
 
-If you know what you're doing you can remove whichever ones you don't need. like ``--groupsize 128`` if you are using a non 128 groupsize model, or ``--wbits 4`` if you are not running a 4-bit quantized model, for instance. Most of the consumer running ones are 4bit quantized to run on normal amounts of vram, so you'll need this arg to run those models.
+`--listen-port 7862` is set to 7862 because we ARE NOT USING default API. We are instead using `--extension api` which runs on port 5000. Port 7862 can still be used to view the web interface if you like.
 
-### Explanation of args
+`--xformers` is a very good optimiser that reduces your vram usage for free. This argument is not required but very encouraged. It needs to be installed into Oobabooga to use. Run `cmd_windows.bat` and type `pip install xformers==0.0.18`, when it is done you can type exit.
 
-``--listen-port`` is set to 7862 because we ARE NOT USING default API. We are instead using ``--extensions api`` which runs on port 5000. Port 7862 can still be used to view the web interface if you like.
+`--wbits 4` and `--groupsize 128` specify details about the model. If you know what you're doing you can remove whichever ones you don't need. `--groupsize 128` if you are using a non 128 groupsize model, or `--wbits 4` if you are not running a 4-bit quantized model, for instance. Most of the consumer running ones are 4bit quantized to run on normal amounts of vram, so you'll need this arg to run those models.
 
-``--xformers`` is a very good optimiser that reduces your vram usage for free, but you need to install it. Run the `cmd_windows.bat`, and install xformers by typing ``pip install xformers==0.0.18`` in command prompt.
+Example of args:
+`--model mayaeary_pygmalion-6b_dev-4bit-128g --extension api --listen-port 7862 --wbits 4 --groupsize 128`
 
-``--chat`` sets the web interface to chat mode which is better. This arg isn't necessary it just makes the web interface look nicer if you choose to browse to it on localhost:7862 in your web browser.
+![Image showing example of args](https://github.com/DeSinc/SallyBot/assets/36467674/997ddd3e-90e0-477d-bdfe-73704ba7aeff)
 
 If you'd like to modify the parameters for Oobabooga, it's this section here:
-```
+```c#
 var parameters = new
-            {
-                prompt = oobaboogaInputPrompt,
-                max_new_tokens = 200,
-                do_sample = false,
-                temperature = 0.85,
-                top_p = 0.9,
-                typical_p = 1,
-                repetition_penalty = 1.1,
-                encoder_repetition_penalty = 1,
-                top_k = 40,
-                num_beams = 1,
-                penalty_alpha = 0,
-                min_length = 0,
-                length_penalty = 1,
-                no_repeat_ngram_size = 0,
-                early_stopping = true,
-                stopping_strings = new string[] { "\n[", "\\n[", "]:", "\n#", "##", "###" },
-                seed = -1,
-                add_bos_token = true
-            };
+{
+    prompt = oobaboogaInputPrompt,
+    max_new_tokens = tokenCount,
+    do_sample = false,
+    temperature = 0.5,
+    top_p = 0.1,
+    typical_p = 1,
+    repetition_penalty = 1.18,
+    encoder_repetition_penalty = 1,
+    top_k = 40,
+    num_beams = 1,
+    penalty_alpha = 0,
+    min_length = 0,
+    length_penalty = 1,
+    no_repeat_ngram_size = 0,
+    early_stopping = true,
+    stopping_strings = new string[] { "\n[", "\n>", "]:", "\n#", "\n##", "\n###", "##", "###", "000000000000", "1111111111", "0.0.0.0.", "1.1.1.1.", "2.2.2.2.", "3.3.3.3.", "4.4.4.4.", "5.5.5.5.", "6.6.6.6.", "7.7.7.7.", "8.8.8.8.", "9.9.9.9.", "22222222222222", "33333333333333", "4444444444444444", "5555555555555", "66666666666666", "77777777777777", "888888888888888", "999999999999999999", "01010101", "0123456789", "<noinput>", "<nooutput>" },
+    seed = -1,
+    add_bos_token = true,
+    ban_eos_token = false,
+    skip_special_tokens = true
+};
 ```
+(From Program.cs in the OobaboogaReply() function)
 
 ## AI Text Generation with Dalai Alpaca (Run on the CPU) -- Easier to install but has long-standing BUGS that are not getting fixed (project seems abandoned)
 
@@ -121,21 +124,20 @@ Just install [this](https://nodejs.org/en/download) first and then follow the qu
 
 If you wish to modify the LLM parameters, it's this section here for Dalai:
 ```c#
-    var dalaiRequest = new
-    {
-        seed = -1,
-        threads = 4,   <--(btw, change this to your thread count minus 2 for more speed)
-        n_predict = 200,
-        top_k = 40,
-        top_p = 0.9,
-        temp = 0.8,
-        repeat_last_n = 64,
-        repeat_penalty = 1.1,
-        debug = false,
-        model = "alpaca.7B",
-
-        prompt = inputPrompt
-    };          
+var dalaiRequest = new
+{
+    seed = -1,
+    threads = 4,   <--(btw, change this to your thread count minus 2 for more speed)
+    n_predict = 200,
+    top_k = 40,
+    top_p = 0.9,
+    temp = 0.8,
+    repeat_last_n = 64,
+    repeat_penalty = 1.1,
+    debug = false,
+    model = "alpaca.7B",
+    prompt = inputPrompt
+};
 ```
 
 ## Other AI text generators as yet unsupported
@@ -171,13 +173,16 @@ Now the next image request you send from SallyBot will be in that model.
 
 ## Known Issues
 
-### Stable Diffusion needs to use an older version of Python.  Follow the steps in their repo and install Python 3.10 making sure to add it to your system PATH.  
-Afterwards, assuming you did not change the default install location, modify the `PYTHON` line in your `webui-user.bat` file.  
+### Stable Diffusion needs to use an older version of Python.  Follow the steps in their repo and install Python 3.10 making sure to add it to your system PATH.
+
+Afterwards, assuming you did not change the default install location, modify the `PYTHON` line in your `webui-user.bat` file.
+
 ```bat
 set PYTHON="%LOCALAPPDATA%\Programs\Python\Python310\python.exe"
 ```
 
-### Dalai Alpaca needs to be run in Command Prompt (cmd.exe) and not PowerShell (powershell.exe).  
+### Dalai Alpaca needs to be run in Command Prompt (cmd.exe) and not PowerShell (powershell.exe).
+
 With Windows 11, Microsoft made PowerShell the default terminal, make sure to use Command Prompt to start it instead, an easy way to do that is `WIN + R` `cmd.exe` and then use `cd` to navigate to the Dalai directory.
 
 ### Emoji Psychosis / Hashtag Psychosis
