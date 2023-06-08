@@ -177,7 +177,7 @@ namespace SallyBot.Extras
                 timeOfDayStr = $", ({timeOfDayInNaturalLanguage})";
 
             // POSITIVE PROMPT - put what you want YOUR bot to look like when it takes a selfie or appears in the image. The AI will put its own prompt AFTER this.
-            string characterPromptImage = "A 25 year old anime woman smiling, looking into the camera, long hair, blonde hair, blue eyes";
+            string characterPromptImage = "A 25 year old anime woman smiling, long hair, blonde hair, blue eyes";
             string imgPrompt = string.Empty; 
             
             // NEGATIVE prompt - write what you DON'T want to see in the image here
@@ -363,6 +363,10 @@ namespace SallyBot.Extras
 
                     // Save the image
                     string sdImgFilePath = $"pic.png"; // put whatever file path you like here
+
+                    if (selfie)
+                        sdImgFilePath = $"cutepic.png"; //
+
                     image.Save(sdImgFilePath, new PngEncoder());
 
                     Task.Delay(1000).Wait();
