@@ -533,30 +533,31 @@ namespace SallyBot
             //    Console.WriteLine("Input message was too long and was truncated.");
             //}
 
-            // get reply message if there is one
+            // get reply message if there is one and puts it in the line just before the last chat message
+            // Bot should see it there, then the latest message that is replying to it, and respond accordingly
             var referencedMsg = Msg.ReferencedMessage as SocketUserMessage;
             string truncatedReply = string.Empty;
 
-            //if (referencedMsg != null)
-            //{
-            //    truncatedReply = referencedMsg.Content;
-            //    string replyUsernameClean = string.Empty;
-            //    if (referencedMsg.Author.Id == botUserId)
-            //    {
-            //        replyUsernameClean = botName;
-            //    }
-            //    else
-            //    {
-            //        replyUsernameClean = Regex.Replace(referencedMsg.Author.Username, "[^a-zA-Z0-9]+", "");
-            //    }
+            if (referencedMsg != null)
+            {
+                truncatedReply = referencedMsg.Content;
+                string replyUsernameClean = string.Empty;
+                if (referencedMsg.Author.Id == botUserId)
+                {
+                    replyUsernameClean = botName;
+                }
+                else
+                {
+                    replyUsernameClean = Regex.Replace(referencedMsg.Author.Username, "[^a-zA-Z0-9]+", "");
+                }
 
-            //    var lines = oobaboogaChatHistory.Trim().Split('\n');
-            //    oobaboogaChatHistory = string.Join("\n", lines.Reverse().Skip(1).Reverse());
+                var lines = oobaboogaChatHistory.Trim().Split('\n');
+                oobaboogaChatHistory = string.Join("\n", lines.Reverse().Skip(1).Reverse());
 
-            //    // add back on the last message but with the reply content above it
-            //    oobaboogaChatHistory += $"\n[{replyUsernameClean}]: {truncatedReply}" +
-            //        $"\n{inputMsgFiltered}";
-            //}
+                // add back on the last message but with the reply content above it
+                oobaboogaChatHistory += $"\n[{replyUsernameClean}]: {truncatedReply}" +
+                    $"\n{inputMsgFiltered}\n";
+            }
 
             inputMsgFiltered = Regex.Unescape(inputMsgFiltered) // try unescape to allow for emojis? Isn't working because of Dalai code. I can't figure out how to fix. Emojis are seen by dalai as ??.
                 .Replace("{", "")                       // these symbols don't work in LLMs such as Dalai 0.3.1 for example
