@@ -79,7 +79,7 @@ Arguments to be added here include:
 
 `--listen-port 7862` is set to 7862 because we ARE NOT USING default API. We are instead using `--extension api` which runs on port 5000. Port 7862 can still be used to view the web interface if you like.
 
-`--xformers` is a very good optimiser that reduces your vram usage for free. This argument is not required but very encouraged. It needs to be installed into Oobabooga to use. Run `cmd_windows.bat` and type `pip install xformers==0.0.18`, when it is done you can type exit.
+`--xformers` is a very good optimiser that reduces your vram usage for free. This argument is not required but very encouraged. It needs to be installed into Oobabooga to use. Run `cmd_windows.bat` and type `pip install xformers`, when it is done you can type exit.
 
 `--wbits 4` and `--groupsize 128` specify details about the model. If you know what you're doing you can remove whichever ones you don't need. `--groupsize 128` if you are using a non 128 groupsize model, or `--wbits 4` if you are not running a 4-bit quantized model, for instance. Most of the consumer running ones are 4bit quantized to run on normal amounts of vram, so you'll need this arg to run those models.
 
