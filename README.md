@@ -75,9 +75,11 @@ Arguments to be added here include:
 
 `--model <folder_name_of_model>` specifies which model Oobabooga should use, replace `<folder_name_of_model>` it is the name of the folder in text-generation-webui/models.
 
-`--extension api` tells Oobabooga to allow SallyBot to integrate together.
+`--api` tells Oobabooga to allow SallyBot to integrate together.
 
-`--listen-port 7862` is set to 7862 because we ARE NOT USING default API. We are instead using `--extension api` which runs on port 5000. Port 7862 can still be used to view the web interface if you like.
+`--loader exllama_hf` uses the much updated ExLLAMA model loader which is literally nearly 2x faster than the previously used loader. Might already be default by the time you see and run this.
+
+`--listen-port 7862` is set to 7862 to not overlap with stable diffusion. `--api` opens a separate port for sallybot to interface with which runs on port 5000. Port 7862 can still be used to view the web interface if you like.
 
 `--xformers` is a very good optimiser that reduces your vram usage for free. This argument is not required but very encouraged. It needs to be installed into Oobabooga to use. Run `cmd_windows.bat` and type `pip install xformers`, when it is done you can type exit.
 
@@ -191,7 +193,7 @@ Oobabooga has an issue at the moment with its default built-in API (this is why 
 
 The result of these params being set wrong is that the bot enters a state known only as Hashtag Psychosis. If the bot sees a single hashtag anywhere it will begin to put a few hashtags on the end of their msg.. then 4.. then 10... and it sees its own messages in the history and causes it to spiral and become actually unusable.
 
-~~No known cure exists~~ Edit: the cure is to use the ``--extensions api`` flag instead of the default API that doesn't work right.
+~~No known cure exists~~ Edit: the cure is to remove the leading space on your prompt since ooba seemed to add its own space and cause a double space, making it see emojis as the next likely character for some reason. probably already fixed nowadays though. this is old bug I just left here because it's funny
 
 ### Dalai tends to ramble even after your bot has already sent the message.
 
