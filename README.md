@@ -84,7 +84,7 @@ Arguments to be added here include:
 `--wbits 4` and `--groupsize 128` specify details about the model. If you know what you're doing you can remove whichever ones you don't need. `--groupsize 128` if you are using a non 128 groupsize model, or `--wbits 4` if you are not running a 4-bit quantized model, for instance. Most of the consumer running ones are 4bit quantized to run on normal amounts of vram, so you'll need this arg to run those models.
 
 Example of args:
-`--model TheBloke/WizardLM-7B-uncensored-GPTQ --extension api --listen-port 7862 --wbits 4 --groupsize 128`
+`--model TheBloke/WizardLM-7B-uncensored-GPTQ --loader exllama_hf --api --listen-port 7862 --wbits 4 --groupsize 128`
 
 ![Image showing example of args](https://github.com/DeSinc/SallyBot/assets/36467674/eaa1caf1-0285-4c87-98f9-b45ba65d6df6)
 
