@@ -61,9 +61,15 @@ The install script will also ask you if you want to install a model, it offers s
 
 Here's an example of what a username/modelname looks like on HuggingFace:
 
-![Example of a model on HuggingFace](https://github.com/DeSinc/SallyBot/assets/36467674/becc58e0-8e96-42f2-bfca-79c1bcc86fae)
+![Example of a model on HuggingFace](https://github.com/DeSinc/SallyBot/assets/12345584/987c2e91-4fd2-4f82-8eb1-fbf63db76abb)
 
-You can download a model afterwards with the downloader script, open the console in the text-generation-webui folder and run `python download-model.py <name of model>`.
+You can download a model afterwards with the web interface:
+* Open a browser and go to 127.0.0.1:7682 in the URL address bar and hit enter
+* Click the 'Models' tab at the top of the page
+* Enter the ``UserName/ModelName`` of the model to download from Huggingface in the Download Model box
+* Hit 'Download' and wait for the model to finish downloading
+* Click the little blue 'Refresh' icon next to the model selection drop-down box at the top left corner of the webpage
+* Select the model from the drop-down list, as it should now be present
 
 After the installing has finished you need to set up the arguements in the `webui.py` file to allow SallyBot to communicate with Oobabooga. It can be found near the top of the file.
 
