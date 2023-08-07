@@ -57,16 +57,18 @@ Download and install [Oobabooga from their repo here](https://github.com/oobaboo
 
 After downloading and unzipping the 1-click installer, run `start_windows.bat`. The installer is interactive and you will need to enter your GPU device when prompted, or select CPU mode. I do not recommend CPU mode.
 
-The install script will also ask you if you want to install a model, it offers some suggested models however I recommend you search for a language model yourself on HuggingFace. Copy the model name to clipboard and paste it into the script.
+Once the install script is installed, you will need to download a model.
+
+Search for a language model yourself on HuggingFace. Once you have found one to your liking, copy the username/modelname.
 
 Here's an example of what a username/modelname looks like on HuggingFace:
 
 ![Example of a model on HuggingFace](https://github.com/DeSinc/SallyBot/assets/12345584/987c2e91-4fd2-4f82-8eb1-fbf63db76abb)
 
-You can download a model afterwards with the web interface:
+You then download the model with the web interface:
 * Open a browser and go to 127.0.0.1:7682 in the URL address bar and hit enter
 * Click the 'Models' tab at the top of the page
-* Enter the ``UserName/ModelName`` of the model to download from Huggingface in the Download Model box
+* Paste the ``UserName/ModelName`` of the model to download from Huggingface in the Download Model box
 * Hit 'Download' and wait for the model to finish downloading
 * Click the little blue 'Refresh' icon next to the model selection drop-down box at the top left corner of the webpage
 * Select the model from the drop-down list, as it should now be present
