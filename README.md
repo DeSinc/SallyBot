@@ -96,7 +96,7 @@ Arguments to be added here include:
 Example of args:
 `--model TheBloke_Llama-2-7B-Chat-GGML --loader exllama_hf --api --listen-port 7862 --wbits 4 --groupsize 128`
 
-![Image showing example of args](https://github.com/DeSinc/SallyBot/assets/117759431/23ed964c-13c3-4984-ad74-0f5e1657c67e)
+![Image showing example of args](https://github.com/DeSinc/SallyBot/assets/117759431/935b57a9-3dde-402f-bd20-a2ea2bfe4aae)
 
 If you'd like to modify the parameters for Oobabooga, it's this section here:
 ```c#
