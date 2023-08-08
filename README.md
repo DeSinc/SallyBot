@@ -85,7 +85,7 @@ Arguments to be added here include:
 
 `--api` tells Oobabooga to allow SallyBot to integrate together.
 
-`--loader exllama_hf` uses the much updated ExLLAMA model loader which is literally nearly 2x faster than the previously used loader. Might already be default by the time you see and run this.
+`--loader exllama` uses the much updated ExLLAMA model loader which is literally nearly 2x faster than the previously used loader. Might already be default by the time you see and run this.
 
 `--listen-port 7862` is set to 7862 to not overlap with stable diffusion. `--api` opens a separate port for sallybot to interface with which runs on port 5000. Port 7862 can still be used to view the web interface if you like.
 
@@ -94,9 +94,10 @@ Arguments to be added here include:
 `--wbits 4` and `--groupsize 128` specify details about the model. If you know what you're doing you can remove whichever ones you don't need. `--groupsize 128` if you are using a non 128 groupsize model, or `--wbits 4` if you are not running a 4-bit quantized model, for instance. Most of the consumer running ones are 4bit quantized to run on normal amounts of vram, so you'll need this arg to run those models.
 
 Example of args:
-`--model TheBloke_Llama-2-7B-Chat-GGML --loader exllama_hf --api --listen-port 7862 --wbits 4 --groupsize 128`
+`--model TheBloke_Llama-2-7B-Chat-GGML --loader exllama --api --listen-port 7862 --wbits 4 --groupsize 128`
 
-![Image showing example of args](https://github.com/DeSinc/SallyBot/assets/117759431/935b57a9-3dde-402f-bd20-a2ea2bfe4aae)
+![Image showing example of args](https://github.com/DeSinc/SallyBot/assets/12345584/74e76872-94e2-46e8-901d-a1bffc7be9c2)
+
 
 If you'd like to modify the parameters for Oobabooga, it's this section here:
 ```c#
