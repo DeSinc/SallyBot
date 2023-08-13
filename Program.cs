@@ -28,32 +28,32 @@ namespace SallyBot
         private SocketIO Socket;
         private DiscordSocketClient Client;
 
-        static internal bool dalaiConnected = false;
-        static internal int dalaiThinking = 0;
-        static internal int oobaboogaThinking = 0;
-        static internal int typing = 0;
-        static internal int typingTicks = 0;
-        static internal int oobaboogaErrorCount = 0;
-        static internal int loopCounts = 0;
-        static internal int maxChatHistoryStrLength = 500; // max chat history length (you can go to like 4800 before errors with oobabooga)(subtract character prompt length if you are using one)
+        private static bool dalaiConnected = false;
+        private static int dalaiThinking = 0;
+        private static int oobaboogaThinking = 0;
+        private static int typing = 0;
+        private static int typingTicks = 0;
+        internal static int oobaboogaErrorCount = 0;
+        private static int loopCounts = 0;
+        private static int maxChatHistoryStrLength = 500; // max chat history length (you can go to like 4800 before errors with oobabooga)(subtract character prompt length if you are using one)
 
-        static internal string oobServer = "127.0.0.1";
-        static internal int oobServerPort = 5000;
+        private const string oobServer = "127.0.0.1";
+        private const int oobServerPort = 5000;
 
         // by default, use extension API not the default API
-        static internal string oobApiEndpoint = "/api/v1/generate"; // default api is busted atm. enable this with --extensions api in launch args
+        private static string oobApiEndpoint = "/api/v1/generate"; // default api is busted atm. enable this with --extensions api in launch args
 
-        public static bool longMsgWarningGiven = false; // gives a warning for a long msg, but only once
+        private static bool longMsgWarningGiven = false; // gives a warning for a long msg, but only once
 
-        static internal ulong botUserId = 0; // <-- this is your bot's client ID number inside discord (not the token) and gets set in MainLoop after initialisation
+        internal static ulong botUserId = 0; // <-- this is your bot's client ID number inside discord (not the token) and gets set in MainLoop after initialisation
 
-        static internal string botName = "SallyBot";
+        internal static string botName = "SallyBot";
 
-        static internal string oobaboogaChatHistory = string.Empty; // <-- chat history saves to this string over time
-                                                                    //static internal bool chatHistoryDownloaded = false; // Records if you have downloaded chat history before so it only downloads message history once.
+        private static string oobaboogaChatHistory = string.Empty; // <-- chat history saves to this string over time
+       //static internal bool chatHistoryDownloaded = false; // Records if you have downloaded chat history before so it only downloads message history once.
 
         // Set to true to disable chat history
-        static internal bool chatHistoryDownloaded = false; // Records if you have downloaded chat history before so it only downloads message history once.
+        private static bool chatHistoryDownloaded = false; // Records if you have downloaded chat history before so it only downloads message history once.
 
 
         //static internal string oobaboogaInputPromptStart = $"### Instruction:\r\n" +
@@ -62,19 +62,19 @@ namespace SallyBot
         //static internal string oobaboogaInputPromptEnd = $"### Reply to this user with a short message.\r\n" +
         //        $"[{botName}]: ";
 
-        static internal string oobaboogaInputPromptStart = $"";
-        static internal string oobaboogaInputPromptEnd = $"[{botName}]:";
+        private static string oobaboogaInputPromptStart = string.Empty;
+        private static string oobaboogaInputPromptEnd = $"[{botName}]:";
 
-        static internal string inputPromptStartPic = $"### Instruction: Create descriptive nouns and image tags to describe an image that the user requests. Maintain accuracy to the user's prompt. You may use Danbooru tags to describe the image.";
-        static internal string inputPromptEnding = $"[{botName}]:";
-        static internal string inputPromptEndingPic = $"### Description of the requested image:";
+        private const string inputPromptStartPic = "### Instruction: Create descriptive nouns and image tags to describe an image that the user requests. Maintain accuracy to the user's prompt. You may use Danbooru tags to describe the image.";
+        private static readonly string inputPromptEnding = $"[{botName}]:";
+        private const string inputPromptEndingPic = "### Description of the requested image:";
 
-        static internal string botReply = string.Empty;
-        static internal string botLastReply = "<noinput>";
+        private static string botReply = string.Empty;
+        private static string botLastReply = "<noinput>";
 
-        static internal string token = string.Empty;
+        private static string token = string.Empty;
 
-        static internal List<string> bannedWords = new List<string>
+        private static List<string> bannedWords = new List<string>
         {
             // Add your list of banned words here to automatically catch close misspellings
             // This filter uses special code to match any word you fill in this list even if they misspell it a little bit
@@ -87,23 +87,22 @@ namespace SallyBot
         // List of banned words that only detects exact matches.
         // The word "naked", for example, is similar to "taken" etc.
         // so it is better to put it in this list instead of the misspelling detection filter.
-        static internal string bannedWordsExact = @"\b(naked|boobs|explicit|nsfw|p0rn|pron|pr0n|butt|booty|s3x|n4ked|r34)\b";
+        private const string bannedWordsExact = @"\b(naked|boobs|explicit|nsfw|p0rn|pron|pr0n|butt|booty|s3x|n4ked|r34)\b";
 
         // These are the words used to detect when you want to take a photo.
         // For example: When words such as "take" and then another matching word such as "photo" appear in a sentence, a photo is requested.
-        static internal string takeAPicRegexStr = @"\b(take|post|paint|generate|make|draw|create|show|give|snap|capture|send|display|share|shoot|see|provide|another)\b.*(\S\s{0,10})?(image|picture|screenshot|screenie|painting|pic|photo|photograph|portrait|selfie)\b";
-        string promptEndDetectionRegexStr = @"(?:\r\n?)|(\n\[|\n#|\[end|<end|]:|>:|<nooutput|<noinput|\[human|\[chat|\[sally|\[cc|<chat|<cc|\[@chat|\[@cc|bot\]:|<@chat|<@cc|\[.*]: |\[.*] : |\[[^\]]+\]\s*:)";
-        string promptSpoofDetectionRegexStr = @"\[[^\]]+[\]:\\]\:|\:\]|\[^\]]";
+        private const string takeAPicRegexStr = @"\b(take|post|paint|generate|make|draw|create|show|give|snap|capture|send|display|share|shoot|see|provide|another)\b.*(\S\s{0,10})?(image|picture|screenshot|screenie|painting|pic|photo|photograph|portrait|selfie)\b";
+        private const string promptEndDetectionRegexStr = @"(?:\r\n?)|(\n\[|\n#|\[end|<end|]:|>:|<nooutput|<noinput|\[human|\[chat|\[sally|\[cc|<chat|<cc|\[@chat|\[@cc|bot\]:|<@chat|<@cc|\[.*]: |\[.*] : |\[[^\]]+\]\s*:)";
+        private const string promptSpoofDetectionRegexStr = @"\[[^\]]+[\]:\\]\:|\:\]|\[^\]]";
 
         // detects ALL types of links, useful for detecting scam links that need to be copied and pasted but don't format to clickable URLs
-        string linkDetectionRegexStr = @"[a-zA-Z0-9]((?i) dot |(?i) dotcom|(?i)dotcom|(?i)dotcom |\.|\. | \.| \. |\,)[a-zA-Z]*((?i) slash |(?i) slash|(?i)slash |(?i)slash|\/|\/ | \/| \/ ).+[a-zA-Z0-9]";
-        static internal string pingAndChannelTagDetectFilterRegexStr = @"<[@#]\d{15,}>";
-        string botNameMatchRegexStr = @$"(?:{botName}\?|{botName},)";
+        private const string linkDetectionRegexStr = @"[a-zA-Z0-9]((?i) dot |(?i) dotcom|(?i)dotcom|(?i)dotcom |\.|\. | \.| \. |\,)[a-zA-Z]*((?i) slash |(?i) slash|(?i)slash |(?i)slash|\/|\/ | \/| \/ ).+[a-zA-Z0-9]";
+        private const string pingAndChannelTagDetectFilterRegexStr = @"<[@#]\d{15,}>";
+        private readonly string botNameMatchRegexStr = @$"(?:{botName}\?|{botName},)";
 
-        Regex takeAPicRegex = new Regex(takeAPicRegexStr, RegexOptions.IgnoreCase);
+        private readonly Regex takeAPicRegex = new Regex(takeAPicRegexStr, RegexOptions.IgnoreCase);
 
-        static void Main()
-                => new Program().AsyncMain().GetAwaiter().GetResult();
+        public static async Task Main() => await new Program().AsyncMain();
 
         private async Task AsyncMain()
         {
@@ -178,25 +177,29 @@ namespace SallyBot
             }
         }
 
+        private static readonly string[] logBlacklist = new string[]
+        {
+            "PRESENCE_UPDATE",
+            "TYPING_START",
+            "MESSAGE_CREATE",
+            "MESSAGE_DELETE",
+            "MESSAGE_UPDATE",
+            "CHANNEL_UPDATE",
+            "GUILD_",
+            "REACTION_",
+            "VOICE_STATE_UPDATE",
+            "DELETE channels/",
+            "POST channels/",
+            "Heartbeat",
+            "GET ",
+            "PUT ",
+            "Latency = ",
+            "handler is blocking the"
+        };
         private async Task Client_Log(LogMessage Msg)
         {
             if (Msg.Message != null
-              && !Msg.Message.ToString().Contains("PRESENCE_UPDATE")
-              && !Msg.Message.ToString().Contains("TYPING_START")
-              && !Msg.Message.ToString().Contains("MESSAGE_CREATE")
-              && !Msg.Message.ToString().Contains("MESSAGE_DELETE")
-              && !Msg.Message.ToString().Contains("MESSAGE_UPDATE")
-              && !Msg.Message.ToString().Contains("CHANNEL_UPDATE")
-              && !Msg.Message.ToString().Contains("GUILD_")
-              && !Msg.Message.ToString().Contains("REACTION_")
-              && !Msg.Message.ToString().Contains("VOICE_STATE_UPDATE")
-              && !Msg.Message.ToString().Contains("DELETE channels/")
-              && !Msg.Message.ToString().Contains("POST channels/")
-              && !Msg.Message.ToString().Contains("Heartbeat")
-              && !Msg.Message.ToString().Contains("GET ")
-              && !Msg.Message.ToString().Contains("PUT ")
-              && !Msg.Message.ToString().Contains("Latency = ")
-              && !Msg.Message.ToString().Contains("handler is blocking the"))
+              && logBlacklist.All(x => !Msg.Message.Contains(x)))
                 Console.WriteLine($"|{DateTime.Now} - {Msg.Source}| {Msg.Message}");
             else if (Msg.Exception != null)
                 Console.WriteLine($"|{DateTime.Now} - {Msg.Source}| {Msg.Exception}");
@@ -204,21 +207,20 @@ namespace SallyBot
 
         private Task Client_GuildMemberUpdated(Cacheable<SocketGuildUser, ulong> arg1, SocketGuildUser arg2)
         {
-            if (arg1.Value.Id == 438634979862511616)
+            if (arg1.Value.Id != 438634979862511616)
+                return null;
+            if (arg2.Nickname == null || arg1.Value.Username != arg2?.Username)
             {
-                if (arg2.Nickname == null || arg1.Value.Username != arg2?.Username)
-                {
-                    botName = arg2.Username; // sets new username if no nickname is present
-                }
-                else if (arg1.Value.Nickname != arg2?.Nickname) // checks if nick is different
-                {
-                    botName = arg2.Nickname; // sets new nickname
-                }
+                botName = arg2.Username; // sets new username if no nickname is present
+            }
+            else if (arg1.Value.Nickname != arg2?.Nickname) // checks if nick is different
+            {
+                botName = arg2.Nickname; // sets new nickname
             }
             return null;
         }
 
-        private static async void Tick(object sender, ElapsedEventArgs e)
+        private static void Tick(object sender, ElapsedEventArgs e)
         {
             if (typing > 0)
             {
@@ -719,14 +721,15 @@ namespace SallyBot
                     $"In Oobabooga start-webui.bat, enable these args: --extensions api --notebook");
 
                 if (dalaiConnected == false)
-                    Console.WriteLine($"No Dalai server connected");
+                    Console.WriteLine("No Dalai server connected");
                 oobaboogaThinking = 0; // reset thinking flag after error
                 return;
             }
+
             if (response != null)
                 result = await response.Content.ReadAsStringAsync();
 
-            if (result != null)
+            if (!string.IsNullOrEmpty(result))
             {
                 JsonDocument jsonDocument = JsonDocument.Parse(result);
 
@@ -776,7 +779,6 @@ namespace SallyBot
                 }
                 else if (matchCount > 1)
                 {
-                    string promptEnd2ndMatch = promptEndMatch.Captures[2].Value;
                     int llmImagePromptEndIndex2 = promptEndMatch.Captures[2].Index;
                     int matchLength2 = promptEndMatch.Captures[2].Value.Length;
                     if (llmImagePromptEndIndex == 0
@@ -853,10 +855,7 @@ namespace SallyBot
                 // compare the last 3 lines in chat to see if the bot already said this
                 var recentLines = string.Join("\n", lines.Skip(lines.Count() - 3));
 
-                bool botLooping = false;
-
-                if (llmMsg == promptEndMatch.Value) // message is not JUST a prompt-end string like <nooutput> or something)
-                    botLooping = true;
+                bool botLooping = llmMsg == promptEndMatch.Value; // message is not JUST a prompt-end string like <nooutput> or something)
 
                 foreach (var line in recentLines.Split("\n"))
                 {
@@ -888,12 +887,12 @@ namespace SallyBot
 
                         Console.WriteLine(oobaboogaChatHistory);
                         Console.WriteLine("Bot tried to send the same message! Clearing some lines in chat history and retrying...\n" +
-                            "Bot msg: " + llmMsg);
+                                          "Bot msg: " + llmMsg);
                     }
                     else
                     {
                         Console.WriteLine("Bot tried to send the same message! Retrying...\n" +
-                            "Bot msg: " + llmMsg);
+                                          "Bot msg: " + llmMsg);
                     }
 
                     OobaboogaReply(Msg, inputMsgFiltered); // try again
@@ -913,10 +912,7 @@ namespace SallyBot
 
                 string llmMsgRepeatLetterTrim = llmMsgFiltered;
 
-                string botLoopingFirstLetter = string.Empty;
                 int botLoopingFirstLetterCount = 1;
-
-                string botLoopingLastLetter = string.Empty;
                 int botLoopingLastLetterCount = 0;
 
                 // Check if first and last character are exact matches of the bot's last message and remove them if they keep repeating.
@@ -928,7 +924,7 @@ namespace SallyBot
                     {
                         // keep checking 1 more letter into the string until we find a letter that isn't identical to the previous msg
                         while (botLoopingFirstLetterCount < llmMsgFiltered.Length && botLoopingFirstLetterCount < botLastReply.Length
-                            && llmMsgFiltered[..botLoopingFirstLetterCount].ToLower() == botLastReply[..botLoopingFirstLetterCount].ToLower())
+                               && llmMsgFiltered[..botLoopingFirstLetterCount].ToLower() == botLastReply[..botLoopingFirstLetterCount].ToLower())
                             botLoopingFirstLetterCount++;
 
                         // wipe out all instances of this annoying looping text in the entire chat history log
@@ -945,7 +941,7 @@ namespace SallyBot
                     {
                         // keep checking 1 more letter into the string until we find a letter that isn't identical to the previous msg
                         while (botLoopingLastLetterCount < llmMsgFiltered.Length && botLoopingLastLetterCount < botLastReply.Length
-                            && llmMsgFiltered[^botLoopingLastLetterCount..].ToLower() == botLastReply[^botLoopingLastLetterCount..].ToLower())
+                               && llmMsgFiltered[^botLoopingLastLetterCount..].ToLower() == botLastReply[^botLoopingLastLetterCount..].ToLower())
                             botLoopingLastLetterCount++;
 
                         // wipe out all instances of this annoying looping text in the entire chat history log
@@ -973,7 +969,7 @@ namespace SallyBot
                 Console.WriteLine(botChatLineFormatted.Trim()); // write in console so we can see it too
 
                 float messageToRambleRatio = llmMsgBeginTrimmed.Length / llmMsg.Length;
-                if (longMsgWarningGiven = false && messageToRambleRatio >= 1.5)
+                if (!longMsgWarningGiven && messageToRambleRatio >= 1.5)
                 {
                     longMsgWarningGiven = true;
                     Console.WriteLine($"Warning: The actual message was {messageToRambleRatio}x longer, but was cut off. Considering changing prompts to speed up its replies.");
@@ -981,6 +977,7 @@ namespace SallyBot
             }
             oobaboogaThinking = 0; // reset thinking flag
         }
+
         private async Task DalaiReply(SocketMessage message, string inputMsgFiltered)
         {
             if (dalaiThinking > 0) { return; } // don't run if it's thinking
@@ -1013,8 +1010,7 @@ namespace SallyBot
                 //inputPromptEnding;
             }
 
-            var referencedMsg = Msg.ReferencedMessage as SocketUserMessage;
-            if (referencedMsg != null)
+            if (Msg.ReferencedMessage is SocketUserMessage referencedMsg)
             {
                 string replyUsernameClean = string.Empty;
                 string truncatedReply = referencedMsg.Content;
@@ -1067,13 +1063,11 @@ namespace SallyBot
 
             if (takeAPicMatch)
             {
-                inputMsg = inputMsg +
-                    inputPromptEndingPic;
+                inputMsg += inputPromptEndingPic;
             }
             else
             {
-                inputMsg = inputMsg +
-                    inputPromptEnding;
+                inputMsg += inputPromptEnding;
             }
 
             // dalai alpaca server request
@@ -1292,6 +1286,5 @@ namespace SallyBot
                 dalaiConnected = false;
             });
         }
-
     }
 }
