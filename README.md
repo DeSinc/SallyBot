@@ -177,7 +177,7 @@ set COMMANDLINE_ARGS=--api --xformers
 ```
 Linux:
 ```sh
-export COMMANDLINE_ARGS=--api --xformers
+export COMMANDLINE_ARGS="--api --xformers"
 ```
 
 Save the file and run it.  The API is now ready to receive request right from SallyBot. If you get an error with xformers just remove --xformers from the args and save the file and run it again.
