@@ -61,19 +61,26 @@ Once the install script is installed, you will need to download a model.
 
 Search for a language model yourself on HuggingFace. Once you have found one to your liking, copy the username/modelname.
 
-Here's an example of what a username/modelname looks like on HuggingFace:
+Here's an example of what a 13B model looks like on HuggingFace and where to click to copy the username/modelname:
 
-![Example of a model on HuggingFace](https://github.com/DeSinc/SallyBot/assets/12345584/987c2e91-4fd2-4f82-8eb1-fbf63db76abb)
+![Example of a model on HuggingFace](https://github.com/DeSinc/SallyBot/assets/12345584/0c7e589e-cb5e-42b5-a24b-fa8c99c98c72)
+
+Note: The 13B model listed here requires a 10GB VRAM card to run.
+
+'GPTQ' is the GPU variant. For CPU, find the 'GGML' variant instead.
+
+For lower VRAM usage (6-8GB cards), find a '7B' model to run as this will fit on your card.
 
 You then download the model with the web interface:
-* Open a browser and go to 127.0.0.1:7682 in the URL address bar and hit enter
+* Make sure of course that it is running from the start-windows.bat file you ran earlier
+* Once loaded, open a browser and go to 127.0.0.1:7682 in the URL address bar and hit enter
 * Click the 'Models' tab at the top of the page
 * Paste the ``UserName/ModelName`` of the model to download from Huggingface in the Download Model box
 * Hit 'Download' and wait for the model to finish downloading
 * Click the little blue 'Refresh' icon next to the model selection drop-down box at the top left corner of the webpage
 * Select the model from the drop-down list, as it should now be present
 
-After the installing has finished you need to set up the arguements in the `webui.py` file to allow SallyBot to communicate with Oobabooga. It can be found near the top of the file.
+After the installing has finished you need to set up the arguments in the `webui.py` file to allow SallyBot to communicate with Oobabooga. It can be found near the top of the file.
 
 ![Showing where to input args](https://github.com/DeSinc/SallyBot/assets/36467674/a7c6e8b0-6644-4c73-878b-9b2cb44c1d3a)
 
@@ -93,8 +100,10 @@ Arguments to be added here include:
 
 `--wbits 4` and `--groupsize 128` specify details about the model. If you know what you're doing you can remove whichever ones you don't need. `--groupsize 128` if you are using a non 128 groupsize model, or `--wbits 4` if you are not running a 4-bit quantized model, for instance. Most of the consumer running ones are 4bit quantized to run on normal amounts of vram, so you'll need this arg to run those models.
 
-Example of args:
+See the following example of args for running a Llama 2 GGML (CPU) model:
 `--model TheBloke_Llama-2-7B-Chat-GGML --loader exllama --api --listen-port 7862 --wbits 4 --groupsize 128`
+
+Replace the ``--model NAME`` with your own model name that you downloaded.
 
 ![Image showing example of args](https://github.com/DeSinc/SallyBot/assets/12345584/74e76872-94e2-46e8-901d-a1bffc7be9c2)
 
@@ -127,9 +136,9 @@ var parameters = new
 ```
 (From Program.cs in the OobaboogaReply() function)
 
-## AI Text Generation with Dalai Alpaca (Run on the CPU) -- Easier to install but has long-standing BUGS that are not getting fixed (project seems abandoned)
+## AI Text Generation with Dalai Alpaca (Run on the CPU) -- Easier to install, but has long-standing bugs that are not likely to be fixed (project seems abandoned)
 
-This bot doesn't generate the AI text but just sends requests off to a language learning model of your choice. At the moment I made the requests send out in the format for [Dalai Alpaca 7B](https://github.com/cocktailpeanut/dalai)
+The Dalai section is mostly defunct now but still works on older models like the original Alpaca Native models trained on Llama 1. It sends out json requests to a Dalai server in the format for [Dalai Alpaca 7B](https://github.com/cocktailpeanut/dalai) which is a CPU-only program.
 
 Just install [this](https://nodejs.org/en/download) first and then follow the quick and easy 2-step instructions on the Dalai github link above. The bot will automatically connect and start sending Dalai requests when you ping the bot.
 
@@ -153,11 +162,13 @@ var dalaiRequest = new
 
 ## Other AI text generators as yet unsupported
 
-If you're using another AI text generator, check its github page for instructions on how to format the data and change the format of the request to what it needs. You might also need to change the way it sends the request in, which could be a lot of code changes depending. This bot sends via SocketIO to Dalai Alpaca which is the easiest to set up imo and runs on anything with very good speed. I mean anything. It runs on a raspberry pi 4B. Some guy got it running on a texas instruments calculator I heard. You still need 4gb of ram for the model to load though.
+If you're using another AI text generator, check its github page for instructions on how to format the data and change the format of the request to what it needs. You might also need to change the way it sends the request in, which could be a lot of code changes depending.
 
-## Generate images with Stable Diffusion (runs on the GPU and needs probably minimum 4GB vram, more like 6GB to not have to hack around getting it to work)
-Download [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui)  
-Follow their installation steps, then find either `webui-user.bat` on Windows or `webui-user.sh` on Linux.  
+The format it sends requests in is technically compatible with Kobold AI, but it currently doesn't work as there is a bit of an issue receiving the json response back from Kobold that I haven't worked on yet. It is likely a very simple solve if anyone out there wanted Kobold compatibility desperately.
+
+## Generate images with Stable Diffusion (runs on the GPU and needs probably minimum 3GB vram with some hackery, more like 6GB to not have to hack around getting it to work)
+Download [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui)
+Follow their installation steps, then find either `webui-user.bat` on Windows or `webui-user.sh` on Linux.
 Edit the file and modify the `COMMANDLINE_ARGS` line.
 
 Windows:
@@ -168,23 +179,24 @@ Linux:
 ```sh
 export COMMANDLINE_ARGS=--api --xformers
 ```
+
 Save the file and run it.  The API is now ready to receive request right from SallyBot. If you get an error with xformers just remove --xformers from the args and save the file and run it again.
 
 It will send it to a default model of some kind, most likely it comes with Stable Diffusion 1.5 model which is a real-life images model.
 
-Go to Civitai (warning: look out for NSFW imagery if you make an account) and then look for an anime model you like on the homepage.
+Go to https://civitai.com/ and then look for an image model you like on the homepage. You can pick an anime or even a realism one if you want.
 
 Download that model, put it in \models\stablediffusion\ where the text file is that says "Place checkpoints here.txt"
 
-Open the stable diffusion Web ui by going to localhost:7860 in your web browser url bar
+Open the stable diffusion web UI by going to localhost:7860 in your web browser URL/address bar
 
-Select the drop-down at the top left and pick the model you just downloaded, or the one you want to try out.
+Select the drop-down at the top left and pick the model you just downloaded. (You might need to click the refresh symbol to reload the list of models)
 
-Now the next image request you send from SallyBot will be in that model.
+Now the next image request you send to SallyBot will automatically generate with that image model!
 
 ## Known Issues
 
-### Stable Diffusion needs to use an older version of Python.  Follow the steps in their repo and install Python 3.10 making sure to add it to your system PATH.
+### Stable Diffusion needs to use an older version of Python. Follow the steps in their repo and install Python 3.10.7 making sure to add it to your system PATH.
 
 Afterwards, assuming you did not change the default install location, modify the `PYTHON` line in your `webui-user.bat` file.
 
@@ -198,11 +210,11 @@ With Windows 11, Microsoft made PowerShell the default terminal, make sure to us
 
 ### Emoji Psychosis / Hashtag Psychosis
 
-Oobabooga has an issue at the moment with its default built-in API (this is why you use ``--extension api``) where for some reason any data that is sent in the request ends up not setting params correctly and somewhere somehow this is causing the bot to want to spam ever lengthening repeating twitter hashtags and long long strings of emojis incessantly.
+Oobabooga had an issue where for some reason they added an additional space to the end of the prompt. This causes the bot to want to spam ever lengthening repeating twitter hashtags and long long strings of emojis incessantly.
 
-The result of these params being set wrong is that the bot enters a state known only as Hashtag Psychosis. If the bot sees a single hashtag anywhere it will begin to put a few hashtags on the end of their msg.. then 4.. then 10... and it sees its own messages in the history and causes it to spiral and become actually unusable.
+The cause is thought to be because double-spaces in the LLMs are statistically usually written just before emojis, so the LLM will calculate any double space as likely being followed by an emoji.
 
-~~No known cure exists~~ Edit: the cure is to remove the leading space on your prompt since ooba seemed to add its own space and cause a double space, making it see emojis as the next likely character for some reason. probably already fixed nowadays though. this is old bug I just left here because it's funny
+The fix is to make sure there are no double spaces or any spaces at all at the end of your prompt.
 
 ### Dalai tends to ramble even after your bot has already sent the message.
 
