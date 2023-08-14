@@ -19,11 +19,12 @@ using SixLabors.ImageSharp.Formats.Png;
 
 namespace SallyBot.Extras
 {
-    class Functions
+    public static class Functions
     {
         // here is the default URL for stable diffusion web ui with --API param enabled in the launch parameters
         public static string stableDiffUrl = "http://127.0.0.1:7860";
         public static string imgFormatString = string.Empty;
+
         public static string IsSimilarToBannedWords(string input, List<string> bannedWords)
         {
             int threshold = 0;
@@ -58,6 +59,7 @@ namespace SallyBot.Extras
                 Console.WriteLine(); // finish on a new line ready for the next console message
             return detectedWordsStr;
         }
+
         public static DateTime GetCurrentTimeInAustralia()
         {
             DateTime utcNow = DateTime.UtcNow;
@@ -65,6 +67,7 @@ namespace SallyBot.Extras
             DateTime currentTimeInAu = TimeZoneInfo.ConvertTimeFromUtc(utcNow, auTimeZone);
             return currentTimeInAu;
         }
+
         public static DateTime GetCurrentTimeInJapan()
         {
             DateTime utcNow = DateTime.UtcNow;
@@ -81,18 +84,18 @@ namespace SallyBot.Extras
             {
                 return "Morning";
             }
-            else if (hour >= 12 && hour < 17)
+
+            if (hour >= 12 && hour < 17)
             {
                 return "Afternoon";
             }
-            else if (hour >= 17 && hour < 21)
+
+            if (hour >= 17 && hour < 21)
             {
                 return "Evening";
             }
-            else
-            {
-                return "Night";
-            }
+
+            return "Night";
         }
 
         public static int LevenshteinDistance(string s, string t)
@@ -161,15 +164,15 @@ namespace SallyBot.Extras
         //    }
         //    return response;
         //}
+
         public static async Task TakeAPic(SocketUserMessage Msg, string llmPrompt, string userPrompt)
         {
             var Context = new SocketCommandContext(MainGlobal.Client, Msg);
-            var user = Context.User as SocketGuildUser;
 
             // find the local time in japan right now to change the time of day in the selfie
             // (you can change this to another country if you understand the code)
-            DateTime currentTimeInJapan = Functions.GetCurrentTimeInJapan();
-            string timeOfDayInNaturalLanguage = Functions.GetTimeOfDayInNaturalLanguage(currentTimeInJapan);
+            DateTime currentTimeInJapan = GetCurrentTimeInJapan();
+            string timeOfDayInNaturalLanguage = GetTimeOfDayInNaturalLanguage(currentTimeInJapan);
             string timeOfDayStr = string.Empty;
 
             // adds (Night) to the image prompt if it's night in japan, etc.
@@ -362,23 +365,25 @@ namespace SallyBot.Extras
                     using var image = SixLabors.ImageSharp.Image.Load(imageStream);
 
                     // Save the image
-                    string sdImgFilePath = $"pic.png"; // put whatever file path you like here
+                    string sdImgFilePath = "pic.png"; // put whatever file path you like here
 
                     if (selfie)
-                        sdImgFilePath = $"cutepic.png"; //
+                        sdImgFilePath = "cutepic.png";
 
-                    image.Save(sdImgFilePath, new PngEncoder());
+                    await image.SaveAsync(sdImgFilePath, new PngEncoder());
 
                     Task.Delay(1000).Wait();
 
                     using var fileStream = new FileStream(sdImgFilePath, FileMode.Open, FileAccess.Read);
-                    var file = new FileAttachment(fileStream, "pic.png");
                     if (Msg.Reference != null)
-                        await Context.Channel.SendFileAsync(sdImgFilePath, null, false, null, null, false, null, Msg.Reference);
+                    {
+                        await Context.Channel.SendFileAsync(sdImgFilePath, null, false, null, null, false, null,
+                            Msg.Reference);
+                    }
                     else
                     {
                         var messageReference = new MessageReference(Msg.Id);
-                        await Context.Channel.SendFileAsync(sdImgFilePath, null, false, null, null, false, null, messageReference);
+                        await Context.Channel.SendFileAsync(sdImgFilePath, null, false, null, null, false, null,messageReference);
                     }
                 }
             }

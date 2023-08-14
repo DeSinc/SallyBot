@@ -12,7 +12,6 @@ namespace SallyBot
             {
                 Console.WriteLine("| Server detected: " + MainGlobal.Server.Name);
             }
-
             else
             {
                 Console.WriteLine($"| A server has not yet been defined.");
@@ -20,16 +19,16 @@ namespace SallyBot
 
             while (MainGlobal.Server == null || MainGlobal.Server.Name == null || MainGlobal.Server.Name.Length < 1)
             {
-                Console.WriteLine($"| Waiting for connection to be established by Discord...");
+                Console.WriteLine("| Waiting for connection to be established by Discord...");
                 Task.Delay(1200);
             }
 
             Program.botUserId = MainGlobal.Client.CurrentUser.Id; // <--- bot's user ID is detected and filled in automatically
 
-            if (MainGlobal.Server.GetUser(Program.botUserId).Nickname != null) // check if there is a nickname to set
-            Program.botName = MainGlobal.Server.GetUser(Program.botUserId).Nickname;
-            else                                                               // otherwise, just use username if there is no nickname
-                Program.botName = MainGlobal.Server.GetUser(Program.botUserId).Username;
+            // check if there is a nickname to set
+            Program.botName = MainGlobal.Server.GetUser(Program.botUserId).Nickname ??
+                              // otherwise, just use username if there is no nickname
+                              MainGlobal.Server.GetUser(Program.botUserId).Username;
 
             return Task.CompletedTask;
         }
