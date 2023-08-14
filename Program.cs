@@ -62,11 +62,19 @@ namespace SallyBot
         //static internal string oobaboogaInputPromptEnd = $"### Reply to this user with a short message.\r\n" +
         //        $"[{botName}]: ";
 
-        private static string oobaboogaInputPromptStart = string.Empty;
+        // You can input your input prompt instructions here. This is where system instructions could go. Otherwise leave blank.
+        private static string oobaboogaInputPromptStart = $"";
+
+        // This is the end of the prompt. Default set to the bot's name in chat to prompt a response from the bot.
         private static string oobaboogaInputPromptEnd = $"[{botName}]:";
 
+        // Prompts the bot's name so it knows it is expected to type next
+        private static readonly string dalaiInputPromptEnding = $"[{botName}]:";
+
+        // Instruction prompt for the LLM to generate an image prompt for stable diffusion
         private const string inputPromptStartPic = "### Instruction: Create descriptive nouns and image tags to describe an image that the user requests. Maintain accuracy to the user's prompt. You may use Danbooru tags to describe the image.";
-        private static readonly string inputPromptEnding = $"[{botName}]:";
+
+        // Prompts the llm to write image tags for the image instruction prompt
         private const string inputPromptEndingPic = "### Description of the requested image:";
 
         private static string botReply = string.Empty;
@@ -207,7 +215,7 @@ namespace SallyBot
 
         private Task Client_GuildMemberUpdated(Cacheable<SocketGuildUser, ulong> arg1, SocketGuildUser arg2)
         {
-            if (arg1.Value.Id != 438634979862511616)
+            if (arg1.Value.Id != Client.CurrentUser.Id)
                 return null;
             if (arg2.Nickname == null || arg1.Value.Username != arg2?.Username)
             {
@@ -1067,7 +1075,7 @@ namespace SallyBot
             }
             else
             {
-                inputMsg += inputPromptEnding;
+                inputMsg += dalaiInputPromptEnding;
             }
 
             // dalai alpaca server request
@@ -1200,7 +1208,7 @@ namespace SallyBot
                 }
                 else
                 {
-                    if (humanPrompted && llmMsg.Contains(inputPromptEnding))
+                    if (humanPrompted && llmMsg.Contains(dalaiInputPromptEnding))
                     {
                         llmMsg = string.Empty;
                         listening = true;
