@@ -72,7 +72,7 @@ namespace SallyBot
         private static readonly string dalaiInputPromptEnding = $"[{botName}]:";
 
         // Instruction prompt for the LLM to generate an image prompt for stable diffusion
-        private const string inputPromptStartPic = "### Instruction: Create descriptive nouns and image tags to describe an image that the user requests. Maintain accuracy to the user's prompt. You may use Danbooru tags to describe the image.";
+        private const string inputPromptStartPic = "### Maintain accuracy to the user's prompt. Do not alter the user request. You may use Danbooru tags to describe the image.";
 
         // Prompts the llm to write image tags for the image instruction prompt
         private const string inputPromptEndingPic = "### Description of the requested image:";
