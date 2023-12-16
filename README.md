@@ -92,7 +92,7 @@ Rename or delete the 'api' folder that's already in there from the install, and 
 After the installing has finished you need to set up the arguments in the `start_windows.bat` or `start_linux.sh` file to allow SallyBot to communicate with Oobabooga.
 It can be found near the bottom of the file on the following line: `call python.py`
 
-![Showing where to input args](https://github.com/DeSinc/SallyBot/assets/36467674/a7c6e8b0-6644-4c73-878b-9b2cb44c1d3a)
+![Image showing where to put args](https://github.com/DeSinc/SallyBot/assets/12345584/4a4a3796-898a-4fd9-96d1-6181e6c1dcae)
 
 Arguments to be added here include:
 
