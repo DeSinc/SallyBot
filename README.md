@@ -51,7 +51,9 @@ Press F5 to build it and run and see what happens (it should work first try)
 
 Warning: For the average 7B model, it requires a card with at least 6GB of VRAM. If you're running on CPU you need at least 6-8GB of ram.
 
-If you're willing to run on the inferior smaller parameter count models like Pythia-2.8B-deduped or something then it'll work on less RAM/VRAM, but the output is untested and frankly likely to be bad.
+If you're willing to run on the inferior smaller parameter count models like a 7B Q3_K_S model or something then it'll work on less RAM/VRAM, but the output is untested and frankly likely to be bad.
+
+The current 'meta' is to use GGUF models, which can use up your RAM to load, but offload some of it to your GPU. That way you can run models that are slightly bigger than your VRAM and still get decent speeds.
 
 Download and install [Oobabooga from their repo here](https://github.com/oobabooga/text-generation-webui). Their README has information on how to install it, with two methods: 1-click installer and manual. I heavily recommend the 1-click installer.
 
@@ -80,7 +82,15 @@ You then download the model with the web interface:
 * Click the little blue 'Refresh' icon next to the model selection drop-down box at the top left corner of the webpage
 * Select the model from the drop-down list, as it should now be present
 
-After the installing has finished you need to set up the arguments in the `webui.py` file to allow SallyBot to communicate with Oobabooga. It can be found near the top of the file.
+Updated information: Text Gen Webui moved to the OpenAI API format randomly one day and deleted the old API that sallybot was built on. In order to use the API now, you just need to get the old API from the below snapshot made by Oobabooga (the author of the text gen webui) and take the \extensions\api\ folder out of that and place it in your current folder.
+
+Old Text Gen Webui snapshot with the original API:
+https://github.com/oobabooga/text-generation-webui/archive/refs/tags/snapshot-2023-11-12.zip
+
+Rename or delete the 'api' folder that's already in there from the install, and replace it with the one from that zip file instead.
+
+After the installing has finished you need to set up the arguments in the `start_windows.bat` or `start_linux.sh` file to allow SallyBot to communicate with Oobabooga.
+It can be found near the bottom of the file on the following line: `call python.py`
 
 ![Showing where to input args](https://github.com/DeSinc/SallyBot/assets/36467674/a7c6e8b0-6644-4c73-878b-9b2cb44c1d3a)
 
@@ -90,23 +100,12 @@ Arguments to be added here include:
 
 `--model <folder_name_of_model>` specifies which model Oobabooga should use, replace `<folder_name_of_model>` it is the name of the folder in text-generation-webui/models.
 
-`--api` tells Oobabooga to allow SallyBot to integrate together.
-
-`--loader exllama` uses the much updated ExLLAMA model loader which is literally nearly 2x faster than the previously used loader. Might already be default by the time you see and run this.
+`--extensions api` tells Oobabooga to turn on the API to listen to SallyBot requests.
 
 `--listen-port 7862` is set to 7862 to not overlap with stable diffusion. `--api` opens a separate port for sallybot to interface with which runs on port 5000. Port 7862 can still be used to view the web interface if you like.
 
-`--xformers` is a very good optimiser that reduces your vram usage for free. This argument is not required but very encouraged. It needs to be installed into Oobabooga to use. Run `cmd_windows.bat` and type `pip install xformers`, when it is done you can type exit.
-
-`--wbits 4` and `--groupsize 128` specify details about the model. If you know what you're doing you can remove whichever ones you don't need. `--groupsize 128` if you are using a non 128 groupsize model, or `--wbits 4` if you are not running a 4-bit quantized model, for instance. Most of the consumer running ones are 4bit quantized to run on normal amounts of vram, so you'll need this arg to run those models.
-
-See the following example of args for running a Llama 2 GGML (CPU) model:
-`--model TheBloke_Llama-2-7B-Chat-GGML --loader exllama --api --listen-port 7862 --wbits 4 --groupsize 128`
-
-Replace the ``--model NAME`` with your own model name that you downloaded.
-
-![Image showing example of args](https://github.com/DeSinc/SallyBot/assets/12345584/74e76872-94e2-46e8-901d-a1bffc7be9c2)
-
+See the following example of args:
+`call python one_click.py --extensions api --verbose --listen-port 7862 %*`
 
 If you'd like to modify the parameters for Oobabooga, it's this section here:
 ```c#
