@@ -100,12 +100,12 @@ Arguments to be added here include:
 
 `--model <folder_name_of_model>` specifies which model Oobabooga should use, replace `<folder_name_of_model>` it is the name of the folder in text-generation-webui/models.
 
-`--extensions api` tells Oobabooga to turn on the API to listen to SallyBot requests.
+`--api` tells Oobabooga to turn on the API to listen to SallyBot requests.
 
 `--listen-port 7862` is set to 7862 to not overlap with stable diffusion. `--api` opens a separate port for sallybot to interface with which runs on port 5000. Port 7862 can still be used to view the web interface if you like.
 
 See the following example of args:
-`call python one_click.py --extensions api --verbose --listen-port 7862 %*`
+`call python one_click.py --api --verbose --listen-port 7862 %*`
 
 If you'd like to modify the parameters for Oobabooga, it's this section here:
 ```c#
