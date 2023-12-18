@@ -48,7 +48,7 @@ Put your bot API key and your server's ID in the MainGlobal.cs file (they will e
 
 Press F5 to build it and run and see what happens (it should work first try)
 
-## Using Google's Gemini-Pro model for Free (60 API calls per minute free, no CC or payment method needed)
+## Using Google's Gemini-Pro model (60 API calls per minute free) (keep scrolling for open source CPU/GPU models)
 
 By far the easiest way to use this bot, and it's totally free with no payments or anything.
 
