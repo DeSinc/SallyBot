@@ -84,9 +84,11 @@ Here's an example of what a 13B model looks like on HuggingFace and where to cli
 
 Note: The 13B model listed here requires a 10GB VRAM card to run.
 
-'GPTQ' is the GPU variant. For CPU, find the 'GGML' variant instead.
+'GPTQ' is the GPU variant. For CPU, find the 'GGUF' variant instead, which can run on CPU with your system RAM and also has the option of offloading parts of it to your GPU to help speed up processing.
 
-For lower VRAM usage (6-8GB cards), find a '7B' model to run as this will fit on your card.
+IMO GGUF models are better. As of writing at 2023/12/18 the best type to download for balance of quality and saving space is Q4_K_M. If you need more space you can pick one that is lower but quality takes a big hit at the Q3 variants.
+
+For lower VRAM usage (6-8GB cards), find a '7B' model to run as this will fit on your card. You could possibly get away with something like a 13B GGUF model if you get a Q3_K_S or Q4_K_S variant but quality and speed will both suffer.
 
 You then download the model with the web interface:
 * Make sure of course that it is running from the start-windows.bat file you ran earlier
