@@ -10,6 +10,7 @@ Context: [I Made a Discord Chat Bot that Can Take Selfies](https://www.youtube.c
 
 ### Supported LLM interfaces:
 
+[Google Gemini-Pro API (up to 60 API requests per minute free)](https://ai.google.dev/)
 [Oobabooga Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)  
 [Dalai Alpaca](https://github.com/cocktailpeanut/dalai)
 
@@ -46,6 +47,20 @@ Use this guide: https://autocode.com/discord/threads/what-are-discord-privileged
 Put your bot API key and your server's ID in the MainGlobal.cs file (they will error out until you fill them in to show you where to put them)
 
 Press F5 to build it and run and see what happens (it should work first try)
+
+## Using Google's Gemini-Pro model for Free (60 API calls per minute free, no CC or payment method needed)
+
+By far the easiest way to use this bot, and it's totally free with no payments or anything.
+
+Go to Google's AI studio by clicking this link: https://ai.google.dev/
+
+![image](https://github.com/DeSinc/SallyBot/assets/12345584/f18430cf-7adb-482d-a914-699892bdab8c)
+
+![image](https://github.com/DeSinc/SallyBot/assets/12345584/f58fca18-05bb-4927-94a8-b808b6453cff)
+
+Get your API key and then copy and paste it into the MainGlobal.cs file (inside the folder where you cloned SallyBot into)
+
+Now just start up the bot and type ``enable gemini`` in any discord chat that the bot can see and it will switch over to google's API and be ready to go!
 
 ## Using Oobabooga Text Generation Webui -- Runs on the GPU - much faster - OR the CPU depending on what you choose in the installer
 
