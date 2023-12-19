@@ -11,6 +11,6 @@ namespace SallyBot
         internal static ulong guildId = PASTE_YOUR_DISCORD_SERVER_ID_HERE;
 
         // optional if you want to use Google's Gemini Pro model
-        internal static string googleApiKey = "Google API key goes here";
+        internal static string googleApiKey = "Google API key goes here"; // OPTIONAL (you can leave this as-is if you don't want to use it)
     }
 }

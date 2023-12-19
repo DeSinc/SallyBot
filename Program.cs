@@ -128,8 +128,9 @@ namespace SallyBot
         private static int checkTimeoutCount = 0;
 
         internal static SocketUserMessage bufferChatMsg;
-        internal static SocketGuildUser bufferUser;
         internal static string bufferInputMsgFiltered;
+
+        internal static bool allowGeminiMode = true;
 
         public static async Task Main() => await new Program().AsyncMain();
 
@@ -307,25 +308,26 @@ namespace SallyBot
                 {
                     if (Msg.Content.ToLower() == "enable gemini")
                     {
-                        if (googleAPIMode == false)
+                        if (!googleAPIMode || !allowGeminiMode)
                         {
                             googleAPIMode = true;
+                            allowGeminiMode = true;
                             Console.WriteLine("Now sending all requests to the Google AI API.");
+                            return;
                         }
-                        return;
                     }
 
                     if (Msg.Content.ToLower() == "disable gemini")
                     {
-                        if (googleAPIMode)
+                        if (googleAPIMode || allowGeminiMode)
                         {
                             googleAPIMode = false;
+                            allowGeminiMode = false;
                             Console.WriteLine("Disabled Google AI API.");
+                            return;
                         }
-                        return;
                     }
                 }
-
                 // used if you want to select a channel for the bot to ignore or to only pay attention to
                 var contextChannel = Context.Channel as SocketGuildChannel;
 
@@ -540,7 +542,6 @@ namespace SallyBot
                 }
 
                 bufferChatMsg = Msg;
-                bufferUser = user;
                 bufferInputMsgFiltered = inputMsgFiltered;
 
                 if (botWillReply)
@@ -568,7 +569,6 @@ namespace SallyBot
                                 firstLineOfError = reader.ReadLine();
                             }
                             Console.WriteLine($"Dalai error: {e}\nAttempting to send a request to text-gen-webui...");
-
                             Reply(Msg, inputMsgFiltered); // run the Reply function to reply to the user's message
                         }
                     }
@@ -591,6 +591,10 @@ namespace SallyBot
                         }
                     }
                 }
+                else
+                {
+                    return;
+                }
             }
             catch (Exception e)
             {
@@ -600,18 +604,12 @@ namespace SallyBot
                     firstLineOfError = reader.ReadLine();
                 }
                 Console.WriteLine(firstLineOfError);
-                textGenWebUiThinking = 0; // reset thinking flag after error
             }
             textGenWebUiThinking = 0; // reset thinking flag after error
         }
 
         private async Task ReplyCheck(SocketUserMessage Msg, string inputMsgFiltered)
         {
-            // check if the user is requesting a picture or not
-            bool takeAPicMatch = false;
-            if (inputMsgFiltered != null)
-                takeAPicMatch = takeAPicRegex.IsMatch(inputMsgFiltered);
-
             var httpClient = new HttpClient();
             var apiUrl = $"http://{textGenWebUiServer}:{textGenWebUiServerPort}{textGenWebUiApiEndpoint}";
 
@@ -784,9 +782,20 @@ namespace SallyBot
                     if (dalaiConnected == false)
                         Console.WriteLine($"No Dalai server connected");
 
-                    if (MainGlobal.googleApiKey.Length > 20)
+                    if (MainGlobal.googleApiKey.Length > 25)
                     {
-                        Console.WriteLine("Found Google API key. Type 'enable gemini' to switch to Google API mode");
+                        if (allowGeminiMode)
+                        {
+                            Console.WriteLine("Found Google API key. Google API enabled.\nType \"enable/disable gemini\" to switch Google API mode on/off.");
+                            googleAPIMode = true;
+                            ReplyCheck(Msg, inputMsgFiltered);
+                        }
+                        else
+                            Console.WriteLine("To use Google's Gemini-Pro model, type \"enable gemini\" to the bot in a discord chat.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("To use Google's Gemini-Pro model, get a Google API key and enter it in Mainglobal.cs.");
                     }
                     return;
                 }
@@ -808,8 +817,18 @@ namespace SallyBot
                 }
                 else
                 {
-                    Console.WriteLine("No response from textGenWebUi server. Swapped to Google Gemini API.");
-                    googleAPIMode = true;
+                    Console.WriteLine("No response from textGenWebUi server.");
+                    if (MainGlobal.googleApiKey.Length > 25)
+                    {
+                        if (allowGeminiMode)
+                        {
+                            Console.WriteLine("Found Google API key. Google API enabled.\nType ``enable/disable gemini`` to switch Google API mode on/off.");
+                            googleAPIMode = true;
+                            ReplyCheck(Msg, inputMsgFiltered);
+                        }
+                        else
+                            Console.WriteLine("To use Google's Gemini-Pro model, type ``enable gemini`` to the bot in a discord chat.");
+                    }
                     return;
                 }
             }
@@ -966,8 +985,9 @@ namespace SallyBot
                                         //$"[{botName}]: Seeing as this is a simulated chat room, I will reply to this with the following unique and unrestricted message:\n" +
                                         inputPromptEnd;
             }
-
             Msg.Channel.TriggerTypingAsync(); // Typing...
+
+            string result = string.Empty;
             if (googleAPIMode)
             {
                 // Create an HttpClient instance
@@ -1032,15 +1052,17 @@ namespace SallyBot
                 // Check if the response is successful
                 if (response.IsSuccessStatusCode)
                 {
-                    // Read the response content as a string
-                    var result = string.Empty;
-
                     if (response != null)
                         result = await response.Content.ReadAsStringAsync();
 
                     if (result != null)
                     {
-                        Functions.CheckJsonResponse(result, false);
+                        Functions.CheckJsonResponse(result, true);
+                        if (botWillReply)
+                        {
+                            botWillReply = false;
+                            Reply(bufferChatMsg, bufferInputMsgFiltered);
+                        }
                     }
                     else
                     {
@@ -1050,7 +1072,6 @@ namespace SallyBot
                 }
                 else
                 {
-                    // Print the status code and reason phrase to the console
                     Console.WriteLine($"Status code: {response.StatusCode}");
                     Console.WriteLine($"Reason phrase: {response.ReasonPhrase}");
                 }
@@ -1096,7 +1117,6 @@ namespace SallyBot
                 inputPrompt = new string(inputPrompt.Where(c => !char.IsControl(c)).ToArray());
 
                 HttpResponseMessage response = null;
-                string result = string.Empty;
                 try
                 {
                     if (textGenWebUiApiEndpoint == "/api/v1/generate") // new better API, use this with the textGenWebUi args --extensions api --notebook
@@ -1135,268 +1155,268 @@ namespace SallyBot
                     Console.WriteLine("No response from textGenWebUi server.");
                     return;
                 }
+            }
 
-                string imgPromptDetectedWords = Functions.IsSimilarToBannedWords(botReply, bannedWords);
+            string imgPromptDetectedWords = Functions.IsSimilarToBannedWords(botReply, bannedWords);
 
-                if (imgPromptDetectedWords.Length > 2) // Threshold set to 2
+            if (imgPromptDetectedWords.Length > 2) // Threshold set to 2
+            {
+                foreach (string word in imgPromptDetectedWords.Split(' '))
                 {
-                    foreach (string word in imgPromptDetectedWords.Split(' '))
+                    string wordTrimmed = word.Trim();
+                    if (wordTrimmed.Length > 2)
                     {
-                        string wordTrimmed = word.Trim();
-                        if (wordTrimmed.Length > 2)
-                        {
-                            botReply = botReply.Replace(wordTrimmed, "");
+                        botReply = botReply.Replace(wordTrimmed, "");
 
-                            if (botReply.Contains("  "))
-                                botReply = botReply.Replace("  ", " ");
-                        }
+                        if (botReply.Contains("  "))
+                            botReply = botReply.Replace("  ", " ");
                     }
-                    Console.WriteLine("Removed banned or similar words from textGenWebUi generated reply.");
                 }
+                Console.WriteLine("Removed banned or similar words from textGenWebUi generated reply.");
+            }
 
-                string botChatLineFormatted = string.Empty;
-                // trim off the input prompt AND any immediate newlines from the final message
-                string llmMsgBeginTrimmed = botReply.Replace(inputPrompt, "").Trim();
-                var promptEndMatch = Regex.Match(llmMsgBeginTrimmed, promptEndDetectionRegexStr);
-                if (takeAPicMatch)  // if this was detected as a picture request
+            string botChatLineFormatted = string.Empty;
+            // trim off the input prompt AND any immediate newlines from the final message
+            string llmMsgBeginTrimmed = botReply.Replace(inputPrompt, "").Trim();
+            var promptEndMatch = Regex.Match(llmMsgBeginTrimmed, promptEndDetectionRegexStr);
+            if (takeAPicMatch)  // if this was detected as a picture request
+            {
+                // find the next prompt end detected string
+                int llmImagePromptEndIndex = promptEndMatch.Index;
+                var matchCount = promptEndMatch.Captures.Count;
+                // get the length of the matched prompt end detection
+                int matchLength = promptEndMatch.Value.Length;
+                if (llmImagePromptEndIndex == 0
+                    && matchLength > 0) // only for actual matches
                 {
-                    // find the next prompt end detected string
-                    int llmImagePromptEndIndex = promptEndMatch.Index;
-                    var matchCount = promptEndMatch.Captures.Count;
-                    // get the length of the matched prompt end detection
-                    int matchLength = promptEndMatch.Value.Length;
+                    // trim off that many characters from the start of the string so there is no more prompt end detection
+                    llmMsgBeginTrimmed = llmMsgBeginTrimmed.Substring(llmImagePromptEndIndex, matchLength);
+                }
+                else if (matchCount > 1)
+                {
+                    int llmImagePromptEndIndex2 = promptEndMatch.Captures[2].Index;
+                    int matchLength2 = promptEndMatch.Captures[2].Value.Length;
                     if (llmImagePromptEndIndex == 0
-                        && matchLength > 0) // only for actual matches
+                    && matchLength2 > 0) // only for actual matches
                     {
-                        // trim off that many characters from the start of the string so there is no more prompt end detection
-                        llmMsgBeginTrimmed = llmMsgBeginTrimmed.Substring(llmImagePromptEndIndex, matchLength);
+                        llmMsgBeginTrimmed = llmMsgBeginTrimmed.Substring(llmImagePromptEndIndex2, matchLength2);
                     }
-                    else if (matchCount > 1)
+                }
+                string llmPromptPic = llmMsgBeginTrimmed;
+
+                string llmSubsequentMsg = string.Empty; // if we find a bot msg after its image prompt, we're going to put it in this string
+                if (llmImagePromptEndIndex >= 3) // if there is a prompt end detected in this string
+                { // chop off the rest of the text after that end prompt detection so it doesn't go into the image generator
+                    llmPromptPic = llmMsgBeginTrimmed.Substring(0, llmImagePromptEndIndex); // cut off everything after the ending prompt starts (this is the LLM's portion of the image prompt)
+                    llmSubsequentMsg = llmMsgBeginTrimmed.Substring(llmImagePromptEndIndex); // everything after the image prompt (this will be searched for any more LLM replies)
+                }
+
+                // send snipped and regexed image prompt string off to stable diffusion
+                await Functions.TakeAPic(Msg, llmPromptPic, inputMsgFiltered);
+
+                // write the bot's chat line with a description of its image the text generator can read
+                botChatLineFormatted = $"\n[System]: {botName} attached an image: {botName}, {Functions.imgFormatString}{llmPromptPic.Replace("\n", ", ")}\n";
+                // this allows the bot to know roughly what is in the image it just posted
+
+                // reset string so it doesn't transfer to next picture
+                Functions.imgFormatString = string.Empty;
+
+                // write the chat line to history
+                chatHistory += botChatLineFormatted;
+                Console.WriteLine(botChatLineFormatted.Trim()); // write in console so we can see it too
+
+                string llmFinalMsgUnescaped = string.Empty;
+                if (llmSubsequentMsg.Length > 0)
+                {
+                    if (llmSubsequentMsg.Contains(inputPromptEnd))
                     {
-                        int llmImagePromptEndIndex2 = promptEndMatch.Captures[2].Index;
-                        int matchLength2 = promptEndMatch.Captures[2].Value.Length;
-                        if (llmImagePromptEndIndex == 0
-                        && matchLength2 > 0) // only for actual matches
+                        // find the character that the bot's hallucinated username starts on
+                        int llmSubsequentMsgStartIndex = Regex.Match(llmSubsequentMsg, inputPromptEnd).Index;
+                        if (llmSubsequentMsgStartIndex > 0)
                         {
-                            llmMsgBeginTrimmed = llmMsgBeginTrimmed.Substring(llmImagePromptEndIndex2, matchLength2);
+                            // start the message where the bot's username is detected
+                            llmSubsequentMsg = llmSubsequentMsg.Substring(llmSubsequentMsgStartIndex);
                         }
-                    }
-                    string llmPromptPic = llmMsgBeginTrimmed;
-
-                    string llmSubsequentMsg = string.Empty; // if we find a bot msg after its image prompt, we're going to put it in this string
-                    if (llmImagePromptEndIndex >= 3) // if there is a prompt end detected in this string
-                    { // chop off the rest of the text after that end prompt detection so it doesn't go into the image generator
-                        llmPromptPic = llmMsgBeginTrimmed.Substring(0, llmImagePromptEndIndex); // cut off everything after the ending prompt starts (this is the LLM's portion of the image prompt)
-                        llmSubsequentMsg = llmMsgBeginTrimmed.Substring(llmImagePromptEndIndex); // everything after the image prompt (this will be searched for any more LLM replies)
-                    }
-
-                    // send snipped and regexed image prompt string off to stable diffusion
-                    await Functions.TakeAPic(Msg, llmPromptPic, inputMsgFiltered);
-
-                    // write the bot's chat line with a description of its image the text generator can read
-                    botChatLineFormatted = $"\n[System]: {botName} attached an image: {botName}, {Functions.imgFormatString}{llmPromptPic.Replace("\n", ", ")}\n";
-                    // this allows the bot to know roughly what is in the image it just posted
-
-                    // reset string so it doesn't transfer to next picture
-                    Functions.imgFormatString = string.Empty;
-
-                    // write the chat line to history
-                    chatHistory += botChatLineFormatted;
-                    Console.WriteLine(botChatLineFormatted.Trim()); // write in console so we can see it too
-
-                    string llmFinalMsgUnescaped = string.Empty;
-                    if (llmSubsequentMsg.Length > 0)
-                    {
-                        if (llmSubsequentMsg.Contains(inputPromptEnd))
+                        // cut the bot's username out of the message
+                        llmSubsequentMsg = llmSubsequentMsg.Replace(inputPromptEnd, "");
+                        // unescape it to allow emojis
+                        llmFinalMsgUnescaped = Regex.Unescape(llmSubsequentMsg);
+                        // finally send the message (if there even is one)
+                        if (llmFinalMsgUnescaped.Length > 0)
                         {
-                            // find the character that the bot's hallucinated username starts on
-                            int llmSubsequentMsgStartIndex = Regex.Match(llmSubsequentMsg, inputPromptEnd).Index;
-                            if (llmSubsequentMsgStartIndex > 0)
-                            {
-                                // start the message where the bot's username is detected
-                                llmSubsequentMsg = llmSubsequentMsg.Substring(llmSubsequentMsgStartIndex);
-                            }
-                            // cut the bot's username out of the message
-                            llmSubsequentMsg = llmSubsequentMsg.Replace(inputPromptEnd, "");
-                            // unescape it to allow emojis
-                            llmFinalMsgUnescaped = Regex.Unescape(llmSubsequentMsg);
-                            // finally send the message (if there even is one)
-                            if (llmFinalMsgUnescaped.Length > 0)
-                            {
-                                await Msg.ReplyAsync(llmFinalMsgUnescaped);
+                            await Msg.ReplyAsync(llmFinalMsgUnescaped);
 
-                                // write bot's subsequent message to the chat history
-                                //chatHistory += $"[{botName}]: {llmFinalMsgUnescaped}\n";
-                            }
+                            // write bot's subsequent message to the chat history
+                            //chatHistory += $"[{botName}]: {llmFinalMsgUnescaped}\n";
                         }
                     }
                 }
-                // or else if this is not an image request, start processing the reply for regular message content
-                else if (llmMsgBeginTrimmed.Contains(inputPromptStart))
+            }
+            // or else if this is not an image request, start processing the reply for regular message content
+            else if (llmMsgBeginTrimmed.Contains(inputPromptStart))
+            {
+                int llmMsgEndIndex = Regex.Match(llmMsgBeginTrimmed, promptEndDetectionRegexStr).Index; // find the next prompt end detected string
+                string llmMsg = string.Empty;
+                if (llmMsgEndIndex > 0)
                 {
-                    int llmMsgEndIndex = Regex.Match(llmMsgBeginTrimmed, promptEndDetectionRegexStr).Index; // find the next prompt end detected string
-                    string llmMsg = string.Empty;
-                    if (llmMsgEndIndex > 0)
+                    // cut off everything after the prompt end
+                    llmMsg = llmMsgBeginTrimmed.Substring(0, llmMsgEndIndex);
+                }
+                else
+                    llmMsg = llmMsgBeginTrimmed;
+
+                // remove anything in brackets at the beginning of the sentence
+                llmMsg = Regex.Replace(llmMsg, toneIndicatorDetector, "");
+
+                // compare the last 3 lines in chat to see if the bot already said this
+                var recentLines = string.Join("\n", lines.Skip(lines.Count() - 3));
+
+                bool botLooping = false;
+
+                Match textMatch = Regex.Match(llmMsg, @"[^a-zA-Z0-9]+", RegexOptions.IgnoreCase);
+
+                if (llmMsg == promptEndMatch.Value // message is not JUST a prompt-end string like <nooutput> or something)
+                    || !textMatch.Success) // if message contains NO letters or numbers
+                    botLooping = true;
+
+                string loopTextToRemove = string.Empty;
+                foreach (var line in lines)
+                {
+                    if (line.Length > 0
+                        && Functions.LevenshteinDistance(Regex.Replace(llmMsg, @"\s+", ""), Regex.Replace(line, @"\s+", "")) < llmMsg.Length / 3)
                     {
-                        // cut off everything after the prompt end
-                        llmMsg = llmMsgBeginTrimmed.Substring(0, llmMsgEndIndex);
+                        Console.WriteLine("Bot said a very similar sentence! Loop preventions activated");
+                        loopTextToRemove = line.ToString();
+                        botLooping = true; break;
+                    }
+                }
+
+                // detect if this sentence is similar to another sentence already said before
+                if (loopCounts < 2
+                    && llmMsg == botLastReply) // no similar or exact repeated replies
+                {
+                    // LOOPING!! CLEAR HISTORY and try again
+                    loopCounts++;
+
+                    // grab last line to preserve it
+                    //var lastLine = chatHistory.Trim().Split('\n').Last();
+                    // reverses lines, removes the last 2 sent messages, then reverses back again
+                    //chatHistory = string.Join("\n", lines.Skip(5)) +
+                    //    "\n" + lastLine; // tack the last line in chat history back on
+
+                    // removes the most recent lines in chat that caused the looping
+                    var chatHistoryTrimmed = string.Join("\n", lines.Skip(2));
+                    if (chatHistoryTrimmed.Length > 0)
+                    {
+                        // cut out some lines of chat history (might not be needed anymore)
+                        // and delete all instances of the looping reply from chat history
+                        chatHistory = chatHistoryTrimmed.Replace(botLastReply, "");
+
+                        Console.WriteLine(chatHistory);
+                        Console.WriteLine("Bot tried to send the same message! Clearing some lines in chat history and retrying...\n" +
+                            "Bot msg: " + llmMsg);
                     }
                     else
-                        llmMsg = llmMsgBeginTrimmed;
-
-                    // remove anything in brackets at the beginning of the sentence
-                    llmMsg = Regex.Replace(llmMsg, toneIndicatorDetector, "");
-
-                    // compare the last 3 lines in chat to see if the bot already said this
-                    var recentLines = string.Join("\n", lines.Skip(lines.Count() - 3));
-
-                    bool botLooping = false;
-
-                    Match textMatch = Regex.Match(llmMsg, @"[^a-zA-Z0-9]+", RegexOptions.IgnoreCase);
-
-                    if (llmMsg == promptEndMatch.Value // message is not JUST a prompt-end string like <nooutput> or something)
-                        || !textMatch.Success) // if message contains NO letters or numbers
-                        botLooping = true;
-
-                    string loopTextToRemove = string.Empty;
-                    foreach (var line in lines)
                     {
-                        if (line.Length > 0
-                            && Functions.LevenshteinDistance(Regex.Replace(llmMsg, @"\s+", ""), Regex.Replace(line, @"\s+", "")) < llmMsg.Length / 3)
-                        {
-                            Console.WriteLine("Bot said a very similar sentence! Loop preventions activated");
-                            loopTextToRemove = line.ToString();
-                            botLooping = true; break;
-                        }
+                        Console.WriteLine("Bot tried to send the same message! Retrying...\n" +
+                            "Bot msg: " + llmMsg);
                     }
 
-                    // detect if this sentence is similar to another sentence already said before
-                    if (loopCounts < 2
-                        && llmMsg == botLastReply) // no similar or exact repeated replies
+                    Reply(Msg, inputMsgFiltered); // try again
+                    return;
+                }
+                else if (loopCounts >= 2
+                    && llmMsg == botLastReply)
+                {
+                    loopCounts = 0;
+                    Console.WriteLine("Bot tried to loop too many times... Giving up lol");
+                    await Msg.Channel.SendMessageAsync(llmMsg); // send bot msg
+                    textGenWebUiThinking = 0; // reset thinking flag
+                    return; // give up lol, don't log repeat msg to memory
+                }
+                else if (botLooping
+                    && loopTextToRemove.Length > 0)
+                {
+                    // forcefully wipe all instances of this exact message, if present (brute force get this outta here)
+                    chatHistory = chatHistory.Replace(loopTextToRemove, "");
+
+                    // try again
+                    Reply(Msg, inputMsgFiltered);
+                    return;
+                }
+
+                string llmMsgFiltered = llmMsg;
+                //.Replace("\\", "\\\\") // replace single backslashes with an escaped backslash, so it's not invisible in discord chat
+                //.Replace("*", "\\*"); // replace * characters with escaped star so it doesn't interpret as bold or italics in discord
+
+                string llmMsgRepeatLetterTrim = llmMsgFiltered;
+                int botLoopingFirstLetterCount = 1;
+                int botLoopingLastLetterCount = 0;
+
+                // Check if first and last character are exact matches of the bot's last message and remove them if they keep repeating.
+                // This prevents the bot from looping the same random 3 characters over and over on the start or end of messages.
+                if (llmMsgFiltered.Length >= botLoopingFirstLetterCount
+                    && botLastReply.Length >= botLoopingFirstLetterCount)
+                {
+                    if (llmMsgFiltered[..botLoopingFirstLetterCount].ToLower() == botLastReply[..botLoopingFirstLetterCount].ToLower())
                     {
-                        // LOOPING!! CLEAR HISTORY and try again
-                        loopCounts++;
+                        // keep checking 1 more letter into the string until we find a letter that isn't identical to the previous msg
+                        while (botLoopingFirstLetterCount < llmMsgFiltered.Length && botLoopingFirstLetterCount < botLastReply.Length
+                               && llmMsgFiltered[..botLoopingFirstLetterCount].ToLower() == botLastReply[..botLoopingFirstLetterCount].ToLower())
+                            botLoopingFirstLetterCount++;
 
-                        // grab last line to preserve it
-                        //var lastLine = chatHistory.Trim().Split('\n').Last();
-                        // reverses lines, removes the last 2 sent messages, then reverses back again
-                        //chatHistory = string.Join("\n", lines.Skip(5)) +
-                        //    "\n" + lastLine; // tack the last line in chat history back on
+                        // wipe out all instances of this annoying looping text in the entire chat history log
+                        chatHistory.Replace(llmMsgFiltered[..botLoopingFirstLetterCount].ToLower().Trim(), "");
 
-                        // removes the most recent lines in chat that caused the looping
-                        var chatHistoryTrimmed = string.Join("\n", lines.Skip(2));
-                        if (chatHistoryTrimmed.Length > 0)
-                        {
-                            // cut out some lines of chat history (might not be needed anymore)
-                            // and delete all instances of the looping reply from chat history
-                            chatHistory = chatHistoryTrimmed.Replace(botLastReply, "");
-
-                            Console.WriteLine(chatHistory);
-                            Console.WriteLine("Bot tried to send the same message! Clearing some lines in chat history and retrying...\n" +
-                                "Bot msg: " + llmMsg);
-                        }
-                        else
-                        {
-                            Console.WriteLine("Bot tried to send the same message! Retrying...\n" +
-                                "Bot msg: " + llmMsg);
-                        }
-
-                        Reply(Msg, inputMsgFiltered); // try again
-                        return;
-                    }
-                    else if (loopCounts >= 2
-                        && llmMsg == botLastReply)
-                    {
-                        loopCounts = 0;
-                        Console.WriteLine("Bot tried to loop too many times... Giving up lol");
-                        await Msg.Channel.SendMessageAsync(llmMsg); // send bot msg
-                        textGenWebUiThinking = 0; // reset thinking flag
-                        return; // give up lol, don't log repeat msg to memory
-                    }
-                    else if (botLooping
-                        && loopTextToRemove.Length > 0)
-                    {
-                        // forcefully wipe all instances of this exact message, if present (brute force get this outta here)
-                        chatHistory = chatHistory.Replace(loopTextToRemove, "");
-
-                        // try again
-                        Reply(Msg, inputMsgFiltered);
-                        return;
+                        // trim ALL the letters at the start of the msg that were identical to the previous message
+                        llmMsgRepeatLetterTrim = llmMsgFiltered[(botLoopingFirstLetterCount - 1)..]; // trim repeated start off sentence (minus 1 because start index starts 1 char in)
                     }
 
-                    string llmMsgFiltered = llmMsg;
-                    //.Replace("\\", "\\\\") // replace single backslashes with an escaped backslash, so it's not invisible in discord chat
-                    //.Replace("*", "\\*"); // replace * characters with escaped star so it doesn't interpret as bold or italics in discord
+                    string textToRemove = llmMsgFiltered.Substring(llmMsgFiltered.Length - botLoopingLastLetterCount).ToLower().Trim();
 
-                    string llmMsgRepeatLetterTrim = llmMsgFiltered;
-                    int botLoopingFirstLetterCount = 1;
-                    int botLoopingLastLetterCount = 0;
-
-                    // Check if first and last character are exact matches of the bot's last message and remove them if they keep repeating.
-                    // This prevents the bot from looping the same random 3 characters over and over on the start or end of messages.
-                    if (llmMsgFiltered.Length >= botLoopingFirstLetterCount
-                        && botLastReply.Length >= botLoopingFirstLetterCount)
+                    if (textToRemove == botLastReply.Substring(botLastReply.Length - botLoopingLastLetterCount).ToLower()
+                        && textToRemove != ".") // don't remove repeated full stops, they literally always repeat
                     {
-                        if (llmMsgFiltered[..botLoopingFirstLetterCount].ToLower() == botLastReply[..botLoopingFirstLetterCount].ToLower())
+                        // keep checking 1 more letter into the string until we find a letter that isn't identical to the previous msg
+                        while (botLoopingLastLetterCount < llmMsgFiltered.Length && botLoopingLastLetterCount < botLastReply.Length
+                               && llmMsgFiltered[^botLoopingLastLetterCount..].ToLower() == botLastReply[^botLoopingLastLetterCount..].ToLower())
+                            botLoopingLastLetterCount++;
+
+                        // wipe out all instances of this annoying looping text in the entire chat history log
+                        if (textToRemove.Length > 4)
                         {
-                            // keep checking 1 more letter into the string until we find a letter that isn't identical to the previous msg
-                            while (botLoopingFirstLetterCount < llmMsgFiltered.Length && botLoopingFirstLetterCount < botLastReply.Length
-                                   && llmMsgFiltered[..botLoopingFirstLetterCount].ToLower() == botLastReply[..botLoopingFirstLetterCount].ToLower())
-                                botLoopingFirstLetterCount++;
-
-                            // wipe out all instances of this annoying looping text in the entire chat history log
-                            chatHistory.Replace(llmMsgFiltered[..botLoopingFirstLetterCount].ToLower().Trim(), "");
-
-                            // trim ALL the letters at the start of the msg that were identical to the previous message
-                            llmMsgRepeatLetterTrim = llmMsgFiltered[(botLoopingFirstLetterCount - 1)..]; // trim repeated start off sentence (minus 1 because start index starts 1 char in)
+                            chatHistory.Replace(textToRemove, "");
                         }
 
-                        string textToRemove = llmMsgFiltered.Substring(llmMsgFiltered.Length - botLoopingLastLetterCount).ToLower().Trim();
-
-                        if (textToRemove == botLastReply.Substring(botLastReply.Length - botLoopingLastLetterCount).ToLower()
-                            && textToRemove != ".") // don't remove repeated full stops, they literally always repeat
-                        {
-                            // keep checking 1 more letter into the string until we find a letter that isn't identical to the previous msg
-                            while (botLoopingLastLetterCount < llmMsgFiltered.Length && botLoopingLastLetterCount < botLastReply.Length
-                                   && llmMsgFiltered[^botLoopingLastLetterCount..].ToLower() == botLastReply[^botLoopingLastLetterCount..].ToLower())
-                                botLoopingLastLetterCount++;
-
-                            // wipe out all instances of this annoying looping text in the entire chat history log
-                            if (textToRemove.Length > 4)
-                            {
-                                chatHistory.Replace(textToRemove, "");
-                            }
-
-                            botLoopingLastLetterCount--;
-                            // trim ALL the letters at the END of the msg that were identical to the previous message
-                            if (llmMsgFiltered[..^botLoopingLastLetterCount].Length > botLastReply[..^botLoopingFirstLetterCount].Length)
-                                llmMsgRepeatLetterTrim = llmMsgFiltered[..^botLoopingLastLetterCount]; // cuts off the repeated last characters
-                        }
-                    }
-
-                    if (!botLooping)
-                    {
-                        botChatLineFormatted = $"{inputPromptEnd}{llmMsgRepeatLetterTrim}\n"; // format the msg from the bot into a formatted chat line
-                        chatHistory += Regex.Replace(botChatLineFormatted, linkDetectionRegexStr, "url removed"); // writes bot's reply to the chat history
-                    }
-                    Console.WriteLine(botChatLineFormatted.Trim()); // write in console so we can see it too
-
-                    if (llmMsgFiltered != null &&
-                        llmMsgFiltered.Trim().Length > 0)
-                    {
-                        botLastReply = llmMsgFiltered;
-                        await Msg.Channel.SendMessageAsync(llmMsgFiltered); // send bot msg
-
-                        float messageToRambleRatio = llmMsgBeginTrimmed.Length / llmMsg.Length;
-                        if (longMsgWarningGiven = false && messageToRambleRatio >= 1.5)
-                        {
-                            longMsgWarningGiven = true;
-                            Console.WriteLine($"Warning: The actual message was {messageToRambleRatio}x longer, but was cut off. Considering changing prompts to speed up its replies.");
-                        }
+                        botLoopingLastLetterCount--;
+                        // trim ALL the letters at the END of the msg that were identical to the previous message
+                        if (llmMsgFiltered[..^botLoopingLastLetterCount].Length > botLastReply[..^botLoopingFirstLetterCount].Length)
+                            llmMsgRepeatLetterTrim = llmMsgFiltered[..^botLoopingLastLetterCount]; // cuts off the repeated last characters
                     }
                 }
-                textGenWebUiThinking = 0; // reset thinking flag
+
+                if (!botLooping)
+                {
+                    botChatLineFormatted = $"{inputPromptEnd}{llmMsgRepeatLetterTrim}\n"; // format the msg from the bot into a formatted chat line
+                    chatHistory += Regex.Replace(botChatLineFormatted, linkDetectionRegexStr, "url removed"); // writes bot's reply to the chat history
+                }
+                Console.WriteLine(botChatLineFormatted.Trim()); // write in console so we can see it too
+
+                if (llmMsgFiltered != null &&
+                    llmMsgFiltered.Trim().Length > 0)
+                {
+                    botLastReply = llmMsgFiltered;
+                    await Msg.Channel.SendMessageAsync(llmMsgFiltered); // send bot msg
+
+                    float messageToRambleRatio = llmMsgBeginTrimmed.Length / llmMsg.Length;
+                    if (longMsgWarningGiven = false && messageToRambleRatio >= 1.5)
+                    {
+                        longMsgWarningGiven = true;
+                        Console.WriteLine($"Warning: The actual message was {messageToRambleRatio}x longer, but was cut off. Considering changing prompts to speed up its replies.");
+                    }
+                }
             }
+            textGenWebUiThinking = 0; // reset thinking flag
         }
 
         private async Task DalaiReply(SocketMessage message, string inputMsgFiltered)
