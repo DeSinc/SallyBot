@@ -21,6 +21,7 @@ using Newtonsoft.Json;
 
 // load all functions in the Functions.cs file
 using SallyBot.Extras;
+using Newtonsoft.Json.Linq;
 
 namespace SallyBot
 {
@@ -44,7 +45,7 @@ namespace SallyBot
         private const int textGenWebUiServerPort = 5000;
 
         // by default, use extension API not the default API
-        private static string textGenWebUiApiEndpoint = "/api/v1/generate"; // default api is busted atm. enable this with --extensions api in launch args
+        private static string textGenWebUiApiEndpoint = "/v1/completions"; // default api is busted atm. enable this with --extensions api in launch args
 
         private static bool longMsgWarningGiven = false; // gives a warning for a long msg, but only once
 
@@ -304,7 +305,7 @@ namespace SallyBot
                 var Context = new SocketCommandContext(Client, Msg);
                 var user = Context.User as SocketGuildUser;
 
-                if (Msg.Author == MainGlobal.Server.Owner) // customdscode
+                if (Msg.Author == MainGlobal.Server.Owner)
                 {
                     if (Msg.Content.ToLower() == "enable gemini")
                     {
@@ -735,43 +736,55 @@ namespace SallyBot
                 var parameters = new
                 {
                     prompt = $"### Context: You are a chat-bot named {botName}. Below is an excerpt from a Discord chat room with many users in it. The users are talking amongst themselves. {botName} speaks sometimes.\n\n" +
-                recentLines + "\n" +
-                $"### Instruction: Analyse the last line of chat in the above chat log. Is {botName} being spoken to directly, or mentioned by name such that a reply is warranted? Answer YES if so.\n" +
-                $"### Verdict:",
-                    max_new_tokens = 2,
-                    do_sample = false,
-                    temperature = 0.8,
-                    top_p = 0.9,
+                    recentLines + "\n" +
+                    $"### Instruction: Analyse the last line of chat in the above chat log. Is {botName} being spoken to directly, or mentioned by name such that a reply is warranted? Answer YES if so.\n" +
+                    $"### Verdict:",
+                    max_tokens = 2,
+                    n = 1,
+                    presence_penalty = 0,
+                    stop = new string[] { "\n[", "\n>", "\n#", "\n##", "\n###", "# ", "##", "## ", "###", "### ", "</s>", "</p>", "</div>", "<br>", "<|endoftemplate|>", "000000000000", "1111111111", "0.0.0.0.", "1.1.1.1.", "2.2.2.2.", "3.3.3.3.", "4.4.4.4.", "5.5.5.5.", "6.6.6.6.", "7.7.7.7.", "8.8.8.8.", "9.9.9.9.", "22222222222222", "33333333333333", "4444444444444444", "5555555555555", "66666666666666", "77777777777777", "888888888888888", "999999999999999999", "01010101", "0123456789", "<noinput>", "<nooutput>" },
+                    stream = false,
+                    temperature = 1,
+                    top_p = 1,
+                    min_p = 0,
+                    dynamic_temperature = false,
+                    dynatemp_low = 1,
+                    dynatemp_high = 1,
+                    dynatemp_exponent = 1,
+                    smoothing_factor = 0,
+                    top_k = 0,
+                    repetition_penalty = 1,
+                    repetition_penalty_range = 512,
                     typical_p = 1,
-                    repetition_penalty = 1.17,
-                    encoder_repetition_penalty = 1,
-                    top_k = 40,
-                    num_beams = 1, // customdscode - 1 default to use less vram
+                    tfs = 1,
+                    top_a = 0,
+                    epsilon_cutoff = 0,
+                    eta_cutoff = 0,
+                    guidance_scale = 1,
                     penalty_alpha = 0,
-                    min_length = 0,
-                    length_penalty = 1,
-                    no_repeat_ngram_size = 0,
-                    early_stopping = true,
-                    stopping_strings = new string[] { },
+                    mirostat_mode = 0,
+                    mirostat_tau = 5,
+                    mirostat_eta = 0.1,
+                    temperature_last = false,
+                    do_sample = true,
                     seed = -1,
-                    add_bos_token = true,
+                    encoder_repetition_penalty = 1,
+                    min_length = 0,
+                    num_beams = 1,
+                    length_penalty = 1,
+                    early_stopping = false,
+                    max_tokens_second = 0,
+                    prompt_lookup_num_tokens = 0,
+                    auto_max_new_tokens = false,
                     ban_eos_token = false,
+                    add_bos_token = true,
                     skip_special_tokens = true
                 };
 
-
                 try
                 {
-                    if (textGenWebUiApiEndpoint == "/api/v1/generate") // new better API, use this with the textGenWebUi args --extensions api --notebook
-                    {
-                        var content = new StringContent(JsonConvert.SerializeObject(parameters), Encoding.UTF8, "application/json");
-                        response = await httpClient.PostAsync(apiUrl, content);
-                    }
-
-                    else if (textGenWebUiApiEndpoint == "/api/v1/stream") // new better API, use this with the textGenWebUi args --extensions api --notebook
-                    {
-                        Console.WriteLine("Streaming API not yet set up. Please send your request to /api/v1/generate instead.");
-                    }
+                    var content = new StringContent(JsonConvert.SerializeObject(parameters), Encoding.UTF8, "application/json");
+                    response = await httpClient.PostAsync(apiUrl, content);
                 }
                 catch
                 {
@@ -804,11 +817,11 @@ namespace SallyBot
 
                 if (result != null)
                 {
-                    JsonDocument jsonDocument = JsonDocument.Parse(result);
+                    JObject jsonObject = JObject.Parse(result);
 
-                    JsonElement dataArray = jsonDocument.RootElement.GetProperty("results");
-                    botReply = dataArray[0].GetProperty("text").ToString(); // get just the response part of the json
-                                                                            //Console.WriteLine("Bot reply check result: " + botReply);
+                    // Extract the value of the "text" property
+                    botReply = jsonObject["choices"][0]["text"].Value<string>();
+
                     if (botReply.ToLower().Trim().Contains("y".ToLower()))
                     {
                         // flag LLM to generate a reply
@@ -1091,25 +1104,45 @@ namespace SallyBot
                 var parameters = new
                 {
                     prompt = inputPrompt,
-                    max_new_tokens = tokenCount,
-                    do_sample = false,
-                    temperature = 0.7,
+                    max_tokens = tokenCount,
+                    n = 1,
+                    presence_penalty = 0,
+                    stop = new string[] { "\n[", "\n>", "\n#", "\n##", "\n###", "# ", "##", "## ", "###", "### ", "</s>", "</p>", "</div>", "<br>", "<|endoftemplate|>", "000000000000", "1111111111", "0.0.0.0.", "1.1.1.1.", "2.2.2.2.", "3.3.3.3.", "4.4.4.4.", "5.5.5.5.", "6.6.6.6.", "7.7.7.7.", "8.8.8.8.", "9.9.9.9.", "22222222222222", "33333333333333", "4444444444444444", "5555555555555", "66666666666666", "77777777777777", "888888888888888", "999999999999999999", "01010101", "0123456789", "<noinput>", "<nooutput>" },
+                    stream = false,
+                    temperature = 1,
                     top_p = 1,
-                    min_p = 0.1,
-                    typical_p = 1,
-                    repetition_penalty = 1.17,
-                    encoder_repetition_penalty = 1,
+                    min_p = 0,
+                    dynamic_temperature = false,
+                    dynatemp_low = 1,
+                    dynatemp_high = 1,
+                    dynatemp_exponent = 1,
+                    smoothing_factor = 0,
                     top_k = 0,
-                    num_beams = 1,
+                    repetition_penalty = 1,
+                    repetition_penalty_range = 512,
+                    typical_p = 1,
+                    tfs = 1,
+                    top_a = 0,
+                    epsilon_cutoff = 0,
+                    eta_cutoff = 0,
+                    guidance_scale = 1,
                     penalty_alpha = 0,
-                    min_length = 0,
-                    length_penalty = 1,
-                    no_repeat_ngram_size = 0,
-                    early_stopping = true,
-                    stopping_strings = new string[] { "\n[", "\n>", "\n#", "\n##", "\n###", "# ", "##", "## ", "###", "### ", "</s>", "</p>", "</div>", "<br>", "<|endoftemplate|>", "000000000000", "1111111111", "0.0.0.0.", "1.1.1.1.", "2.2.2.2.", "3.3.3.3.", "4.4.4.4.", "5.5.5.5.", "6.6.6.6.", "7.7.7.7.", "8.8.8.8.", "9.9.9.9.", "22222222222222", "33333333333333", "4444444444444444", "5555555555555", "66666666666666", "77777777777777", "888888888888888", "999999999999999999", "01010101", "0123456789", "<noinput>", "<nooutput>" },
+                    mirostat_mode = 0,
+                    mirostat_tau = 5,
+                    mirostat_eta = 0.1,
+                    temperature_last = false,
+                    do_sample = true,
                     seed = -1,
-                    add_bos_token = true,
+                    encoder_repetition_penalty = 1,
+                    min_length = 0,
+                    num_beams = 1,
+                    length_penalty = 1,
+                    early_stopping = false,
+                    max_tokens_second = 0,
+                    prompt_lookup_num_tokens = 0,
+                    auto_max_new_tokens = false,
                     ban_eos_token = false,
+                    add_bos_token = true,
                     skip_special_tokens = true
                 };
 
@@ -1119,16 +1152,8 @@ namespace SallyBot
                 HttpResponseMessage response = null;
                 try
                 {
-                    if (textGenWebUiApiEndpoint == "/api/v1/generate") // new better API, use this with the textGenWebUi args --extensions api --notebook
-                    {
-                        var content = new StringContent(JsonConvert.SerializeObject(parameters), Encoding.UTF8, "application/json");
-                        response = await httpClient.PostAsync(apiUrl, content);
-                    }
-
-                    else if (textGenWebUiApiEndpoint == "/api/v1/stream") // new better API, use this with the textGenWebUi args --extensions api --notebook
-                    {
-                        Console.WriteLine("Streaming API not yet set up. Please send your request to /api/v1/generate instead.");
-                    }
+                    var content = new StringContent(JsonConvert.SerializeObject(parameters), Encoding.UTF8, "application/json");
+                    response = await httpClient.PostAsync(apiUrl, content);
                 }
                 catch
                 {
@@ -1145,10 +1170,10 @@ namespace SallyBot
 
                 if (!string.IsNullOrEmpty(result))
                 {
-                    JsonDocument jsonDocument = JsonDocument.Parse(result);
+                    JObject jsonObject = JObject.Parse(result);
 
-                    JsonElement dataArray = jsonDocument.RootElement.GetProperty("results");
-                    botReply = dataArray[0].GetProperty("text").ToString(); // get just the response part of the json
+                    // Extract the value of the "text" property
+                    botReply = jsonObject["choices"][0]["text"].Value<string>();
                 }
                 else
                 {
