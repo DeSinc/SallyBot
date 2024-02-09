@@ -10,9 +10,11 @@ Context: [I Made a Discord Chat Bot that Can Take Selfies](https://www.youtube.c
 
 ### Supported LLM interfaces:
 
-[Google Gemini-Pro API (up to 60 API requests per minute free)](https://ai.google.dev/)
-[Oobabooga Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)  
-[Dalai Alpaca](https://github.com/cocktailpeanut/dalai)
+[Oobabooga Text Generation Web UI](https://github.com/oobabooga/text-generation-webui)
+
+[Google Gemini-Pro API (totally free 60 messages per minute)](https://ai.google.dev/)
+
+[Dalai Alpaca (older abandonware deprecated method but still works - NOT recommended)](https://github.com/cocktailpeanut/dalai)
 
 ### Examples
 
