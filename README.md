@@ -60,7 +60,7 @@ Go to Google's AI studio by clicking this link: https://ai.google.dev/
 
 Get your API key and then copy and paste it into the MainGlobal.cs file (inside the folder where you cloned SallyBot into)
 
-Now just start up the bot and type ``enable gemini`` in any discord chat that the bot can see and it will switch over to google's API and be ready to go!
+Now just start up the bot and type in any discord chat that the bot can see and it will switch over to google's API and be ready to go! To enable or disable gemini explicity you can type ``enable gemini`` or ``disable gemini`` and it will try to use other sources like Text-gen-webui or dalai if present.
 
 ## Using Oobabooga Text Generation Webui -- Runs on the GPU - much faster - OR the CPU depending on what you choose in the installer
 
