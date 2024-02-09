@@ -99,12 +99,7 @@ You then download the model with the web interface:
 * Click the little blue 'Refresh' icon next to the model selection drop-down box at the top left corner of the webpage
 * Select the model from the drop-down list, as it should now be present
 
-Updated information: Text Gen Webui moved to the OpenAI API format randomly one day and deleted the old API that sallybot was built on. In order to use the API now, you just need to get the old API from the below snapshot made by Oobabooga (the author of the text gen webui) and take the \extensions\api\ folder out of that and place it in your current folder.
-
-Old Text Gen Webui snapshot with the original API:
-https://github.com/oobabooga/text-generation-webui/archive/refs/tags/snapshot-2023-11-12.zip
-
-Rename or delete the 'api' folder that's already in there from the install, and replace it with the one from that zip file instead.
+Updated information: Text Gen Webui moved to the OpenAI API format and this bot now uses that standardised format.
 
 After the installing has finished you need to set up the arguments in the `start_windows.bat` or `start_linux.sh` file to allow SallyBot to communicate with Oobabooga.
 It can be found near the bottom of the file on the following line: `call python one_click.py`
@@ -117,40 +112,12 @@ Arguments to be added here include:
 
 `--model <folder_name_of_model>` specifies which model Oobabooga should use, replace `<folder_name_of_model>` it is the name of the folder in text-generation-webui/models.
 
-`--extensions api` tells Oobabooga to turn on the API to listen to SallyBot requests.
+`--api` tells Oobabooga to turn on the OpenAI API format to listen to SallyBot requests.
 
 `--listen-port 7862` is set to 7862 to not overlap with stable diffusion. `--api` opens a separate port for sallybot to interface with which runs on port 5000. Port 7862 can still be used to view the web interface if you like.
 
 See the following example of args:
-`call python one_click.py --extensions api --verbose --listen-port 7862 %*`
-
-If you'd like to modify the parameters for Oobabooga, it's this section here:
-```c#
-var parameters = new
-{
-    prompt = oobaboogaInputPrompt,
-    max_new_tokens = tokenCount,
-    do_sample = false,
-    temperature = 0.5,
-    top_p = 0.1,
-    typical_p = 1,
-    repetition_penalty = 1.18,
-    encoder_repetition_penalty = 1,
-    top_k = 40,
-    num_beams = 1,
-    penalty_alpha = 0,
-    min_length = 0,
-    length_penalty = 1,
-    no_repeat_ngram_size = 0,
-    early_stopping = true,
-    stopping_strings = new string[] { "\n[", "\n>", "]:", "\n#", "\n##", "\n###", "##", "###", "000000000000", "1111111111", "0.0.0.0.", "1.1.1.1.", "2.2.2.2.", "3.3.3.3.", "4.4.4.4.", "5.5.5.5.", "6.6.6.6.", "7.7.7.7.", "8.8.8.8.", "9.9.9.9.", "22222222222222", "33333333333333", "4444444444444444", "5555555555555", "66666666666666", "77777777777777", "888888888888888", "999999999999999999", "01010101", "0123456789", "<noinput>", "<nooutput>" },
-    seed = -1,
-    add_bos_token = true,
-    ban_eos_token = false,
-    skip_special_tokens = true
-};
-```
-(From Program.cs in the OobaboogaReply() function)
+`call python one_click.py --api --verbose --listen-port 7862 %*`
 
 ## AI Text Generation with Dalai Alpaca (Run on the CPU) -- Easier to install, but has long-standing bugs that are not likely to be fixed (project seems abandoned)
 
