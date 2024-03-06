@@ -18,7 +18,7 @@
     <PackageReference Include="Discord.Net.WebSocket" Version="3.9.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="RestSharp" Version="109.0.1" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.0.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.3" />
     <PackageReference Include="SocketIOClient" Version="3.0.8" />
     <PackageReference Include="System.Regex" Version="1.0.0" />
   </ItemGroup>
