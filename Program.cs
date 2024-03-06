@@ -72,13 +72,13 @@ namespace SallyBot
         private static string inputPromptStart = $"";
 
         // This is the end of the prompt. Default set to the bot's name in chat to prompt a response from the bot.
-        private static string inputPromptEnd = $"[{botName}]:";
+        private static string inputPromptEnd = $"### Response:\n[{botName}]:";
 
         // Instruction prompt for the LLM to generate an image prompt for stable diffusion
         private static string inputPromptStartPic = $"### Instruction: Take the scene and create a single line comma separated list of descriptions of the scene and keywords/tags to describe what things are visible.\r\n\r\nIgnore things that are not visible, such as thoughts, feelings, speech or sound.\r\n\r\nMinimum Requirements:\r\n1. List of keywords for characters in the scene\r\n2. List of keywords to describe the location\r\n\r\nUse only the top 15 keywords in the list. Reply with nothing but the single line list.";
 
         // Prompts the llm to write image tags for the image instruction prompt
-        private static string inputPromptEndPic = $"### Nouns and tags to describe the requested image:";
+        private static string inputPromptEndPic = $"### Response:";
 
         public static string botReply = string.Empty;
 
@@ -253,7 +253,7 @@ namespace SallyBot
                 botName = arg2.Username;
             }
             botNameMatchRegexStr = @$"(?:{botName}\?|{botName},)";
-            inputPromptEnd = $"[{botName}]:";
+            inputPromptEnd = $"### Response:\n[{botName}]:";
             return null;
         }
 
