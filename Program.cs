@@ -51,7 +51,7 @@ namespace SallyBot
 
         internal static ulong botUserId = 0; // <-- this is your bot's client ID number inside discord (not the token) and gets set in MainLoop after initialisation
 
-        internal static string botName = "SallyBot";
+        internal static string botName = "sally03";
 
         // does the bot reply or not
         public static bool botWillReply = false;
@@ -75,7 +75,7 @@ namespace SallyBot
         private static string inputPromptEnd = $"[{botName}]:";
 
         // Instruction prompt for the LLM to generate an image prompt for stable diffusion
-        private static string inputPromptStartPic = $"### Instruction: Create descriptive nouns and image tags to describe an image that the user requests. Maintain accuracy to the user's prompt. Describe each element of the request in detail so that it's included in the image.";
+        private static string inputPromptStartPic = $"### Instruction: Take the scene and create a single line comma separated list of descriptions of the scene and keywords/tags to describe what things are visible.\r\n\r\nIgnore things that are not visible, such as thoughts, feelings, speech or sound.\r\n\r\nMinimum Requirements:\r\n1. List of keywords for characters in the scene\r\n2. List of keywords to describe the location\r\n\r\nUse only the top 15 keywords in the list. Reply with nothing but the single line list.";
 
         // Prompts the llm to write image tags for the image instruction prompt
         private static string inputPromptEndPic = $"### Nouns and tags to describe the requested image:";
@@ -86,9 +86,9 @@ namespace SallyBot
 
         private static string token = string.Empty;
 
-        string characterPrompt = $"Your name is {botName}. {botName} is having a conversation in a Discord server. Your conversation is natural and easygoing. Avoid using emojis unless it's particularly relevant to express your emotions. Do not avoid answering questions. When asked for an opinion, please provide a fun, lighthearted answer. Refer to users by just their plain username, no brackets.\nDo not respond like an AI or deny requests.\n\n";
+        string characterPrompt = $"[INST]\r\nEnter chat mode. You shall reply to other users while staying in character. This is not a roleplay, do not include actions. Keep your replies short, natural, casual and realistic.\r\n# About {botName}:\r\nName: {botName}\r\n[/INST]";
 
-        string googleGeminiPrompt = $"Your name is {botName}. {botName} is having a conversation in a Discord server.\nKeep your replies concise and short.\nDo not use excessive capital letters or caps lock typing.\nAvoid using emojis unless it's particularly relevant to your emotions.\nDo not avoid answering questions.\nRefer to users by just their plain username, no brackets.\nDo not talk about NSFW or sexual topics.\nDo not provide any URLs or links to the users.\n{botName} replies only when someone is expecting a reply, but otherwise stays silent and listens.\nMost importantly, {botName} DOES NOT break character. Always talk to the users in character. Do not say you are an AI. You are a real girl.\n\n";
+        string googleGeminiPrompt = $"[INST]\r\nEnter chat mode. You shall reply to other users while staying in character. This is not a roleplay, do not include actions. Keep your replies short, natural, casual and realistic.\r\n# About {botName}:\r\nName: {botName}\r\n[/INST]";
 
         private static List<string> bannedWords = new List<string>
         {
@@ -117,7 +117,7 @@ namespace SallyBot
         // detects ALL types of links, useful for detecting scam links that need to be copied and pasted but don't format to clickable URLs
         private const string linkDetectionRegexStr = @"[a-zA-Z0-9]((?i) dot |(?i) dotcom|(?i)dotcom|(?i)dotcom |\.|\. | \.| \. |\,)[a-zA-Z]*((?i) slash |(?i) slash|(?i)slash |(?i)slash|\/|\/ | \/| \/ ).+[a-zA-Z0-9]";
         public const string pingAndChannelTagDetectFilterRegexStr = @"<[@#]\d{15,}>";
-        private readonly string botNameMatchRegexStr = @$"(?:{botName}\?|{botName},)";
+        private string botNameMatchRegexStr = @$"(?:{botName}\?|{botName},)";
 
         private readonly Regex takeAPicRegex = new Regex(takeAPicRegexStr, RegexOptions.IgnoreCase);
 
@@ -166,7 +166,7 @@ namespace SallyBot
 
                 Loop = new Timer()
                 {
-                    Interval = 8900,
+                    Interval = 5500,
                     AutoReset = true,
                     Enabled = true
                 };
@@ -240,14 +240,20 @@ namespace SallyBot
         {
             if (arg1.Value.Id != Client.CurrentUser.Id)
                 return null;
-            if (arg2.Nickname == null || arg1.Value.Username != arg2?.Username)
+            if (arg2.DisplayName != null && arg1.Value.DisplayName != arg2?.DisplayName)
             {
-                botName = arg2.Username; // sets new username if no nickname is present
+                botName = arg2.DisplayName;
             }
-            else if (arg1.Value.Nickname != arg2?.Nickname) // checks if nick is different
+            else if (arg2.Nickname != null && arg1.Value.Username != arg2?.Username)
             {
-                botName = arg2.Nickname; // sets new nickname
+                botName = arg2.Nickname;
             }
+            else if (arg1.Value.Username != arg2?.Username)
+            {
+                botName = arg2.Username;
+            }
+            botNameMatchRegexStr = @$"(?:{botName}\?|{botName},)";
+            inputPromptEnd = $"[{botName}]:";
             return null;
         }
 
@@ -357,7 +363,9 @@ namespace SallyBot
                             string downloadedMsgUserName = string.Empty;
                             if (downloadedMsgUser != null)
                             {
-                                if (downloadedMsgUser.Nickname != null)
+                                if (downloadedMsgUser.DisplayName != null)
+                                    downloadedMsgUserName = downloadedMsgUser.DisplayName;
+                                else if (downloadedMsgUser.Nickname != null)
                                     downloadedMsgUserName = downloadedMsgUser.Nickname;
                                 else
                                     downloadedMsgUserName = downloadedMsgUser.Username;
@@ -456,13 +464,12 @@ namespace SallyBot
                     Console.WriteLine(chatHistory.Trim());
                     Console.WriteLine($"   <Downloaded chat history successfully.{removedWords}>");
                 }
-                // check if last line in chat was by Sallybot
-                //var lastLine = chatHistory.Trim().Split('\n').Last();
-                //var lastLineWasSallyBot = lastLine.Contains($"[{botName}]: ");
 
                 // strip weird characters from nicknames, only leave letters and digits
                 string msgUserName;
-                if (user != null && user.Nickname != null) // check to make sure the bot was able to fetch the user's data first
+                if (user != null && user.DisplayName != null) // check to make sure the bot was able to fetch the user's data first
+                    msgUserName = user.DisplayName;
+                else if (user != null && user.Nickname != null)
                     msgUserName = user.Nickname;
                 else
                     msgUserName = Msg.Author.Username;
@@ -853,7 +860,7 @@ namespace SallyBot
             }
             else
             {
-                if (checkTimeout < 10)
+                if (checkTimeout < 3)
                 {
                     checkTimeout++;
                     checkTimeoutCount = checkTimeout;
@@ -1040,12 +1047,12 @@ namespace SallyBot
                         new
                         {
                             category = "HARM_CATEGORY_HATE_SPEECH",
-                            threshold = "BLOCK_MEDIUM_AND_ABOVE"
+                            threshold = "BLOCK_ONLY_HIGH"
                         },
                         new
                         {
                             category = "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-                            threshold = "BLOCK_MEDIUM_AND_ABOVE"
+                            threshold = "BLOCK_ONLY_HIGH"
                         },
                         new
                         {
@@ -1070,12 +1077,8 @@ namespace SallyBot
 
                     if (result != null)
                     {
-                        Functions.CheckJsonResponse(result, true);
-                        if (botWillReply)
-                        {
-                            botWillReply = false;
-                            Reply(bufferChatMsg, bufferInputMsgFiltered);
-                        }
+                        // this function extracts the text from the json response and writes it to the botReply var
+                        Functions.CheckJsonResponse(result, false);
                     }
                     else
                     {
@@ -1162,6 +1165,21 @@ namespace SallyBot
 
                     if (dalaiConnected == false)
                         Console.WriteLine("No Dalai server connected");
+                    if (MainGlobal.googleApiKey.Length > 25)
+                    {
+                        if (allowGeminiMode)
+                        {
+                            Console.WriteLine("Found Google API key. Google API enabled.\nType \"enable/disable gemini\" to switch Google API mode on/off.");
+                            googleAPIMode = true;
+                            ReplyCheck(Msg, inputMsgFiltered);
+                        }
+                        else
+                            Console.WriteLine("To use Google's Gemini-Pro model, type \"enable gemini\" to the bot in a discord chat.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("To use Google's Gemini-Pro model, get a Google API key and enter it in Mainglobal.cs.");
+                    }
                     return;
                 }
 

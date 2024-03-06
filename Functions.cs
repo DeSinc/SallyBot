@@ -283,6 +283,16 @@ namespace SallyBot.Extras
                 { "height", height },
                 { "send_images", true },
                 { "sampler_name", "DDIM" }, // set this to "DPM++ SDE Karras" if you want slightly higher quality images, but slower image generation
+                // below options are all for upscaling (much improved details like hands etc. at the cost of a lot of speed)
+                { "enable_hr", false }, // set this to true to upscale your image to 2x size with significant quality improvements (better hands better details etc) at cost of significantly longer generation time
+                { "denoising_strength", 0.3 },
+                //{ "firstphase_width", width },
+                //{ "firstphase_height", height },
+                { "hr_scale", 2 },
+                { "hr_resize_x", width*2 },
+                { "hr_resize_y", height*2 },
+                { "hr_upscaler", "R-ESRGAN 4x+ Anime6B" },
+                { "hr_second_pass_steps", 4 },
                 { "override_settings", overrideSettings }
             };
 
