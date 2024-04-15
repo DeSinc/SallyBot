@@ -176,7 +176,7 @@ namespace SallyBot
 
                 MainGlobal.Client = Client;
 
-                // Connect to the LLM with SocketIO (fill in your particular LLM server details here if required)
+                // Connect to Dalai with SocketIO, if present
                 try
                 {
                     // Initialize the Socket.IO connection
