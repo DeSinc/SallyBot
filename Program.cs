@@ -152,7 +152,8 @@ namespace SallyBot
                     GatewayIntents =
                 GatewayIntents.MessageContent |
                 GatewayIntents.Guilds |
-                GatewayIntents.GuildMessages
+                GatewayIntents.GuildMessages |
+                GatewayIntents.GuildMembers
                 });
 
                 Client.Log += Client_Log;
