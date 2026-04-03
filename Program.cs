@@ -112,6 +112,18 @@ namespace SallyBot
 
         private async Task AsyncMain()
         {
+            // Validate required config before doing anything else
+            if (MainGlobal.DiscordToken.Contains("goes here") || MainGlobal.DiscordToken.Length < 10)
+            {
+                Console.WriteLine("[CONFIG] Set MainGlobal.DiscordToken to your Discord bot token.");
+                return;
+            }
+            if (MainGlobal.GuildId == 0)
+            {
+                Console.WriteLine("[CONFIG] Set MainGlobal.GuildId to your Discord server (guild) ID.");
+                return;
+            }
+
             try
             {
                 _client = new DiscordSocketClient(new DiscordSocketConfig
@@ -137,7 +149,7 @@ namespace SallyBot
                 await _client.StartAsync();
 
                 // Attempt Dalai connection (non-fatal)
-                MainGlobal.DalaiBackend = new DalaiBackend(MainGlobal.DalaiUrl);
+                MainGlobal.DalaiBackend = new DalaiBackend(MainGlobal.DalaiUrl, MainGlobal.DalaiModel);
                 await MainGlobal.DalaiBackend.ConnectAsync();
 
                 // Auto-detect first available backend

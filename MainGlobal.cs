@@ -21,6 +21,7 @@ namespace SallyBot
         internal static string OobaboogaUrl = "http://127.0.0.1:5000";
         internal static string LmStudioUrl  = "http://127.0.0.1:1234";
         internal static string DalaiUrl     = "http://localhost:3000";
+        internal static string DalaiModel   = "alpaca.7B";
 
         // ── Model overrides (optional, leave empty for server default) ─────────
         internal static string OpenAiModel      = "gpt-4o-mini";

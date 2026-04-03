@@ -19,13 +19,13 @@ namespace SallyBot.Backends
         public string Name => "LM Studio";
 
         private readonly string _baseUrl;
-        private readonly HttpClient _probeHttp;
         private ILlmBackend? _impl;
+
+        private static readonly HttpClient _probeHttp = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
 
         public LmStudioBackend(string baseUrl = "http://127.0.0.1:1234")
         {
             _baseUrl = baseUrl.TrimEnd('/');
-            _probeHttp = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
         }
 
         // ── ILlmBackend ────────────────────────────────────────────────────────

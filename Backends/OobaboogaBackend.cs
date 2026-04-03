@@ -20,13 +20,14 @@ namespace SallyBot.Backends
         public string Name => "Oobabooga";
 
         private readonly string _baseUrl;
-        private readonly HttpClient _probeHttp;
         private ILlmBackend? _impl;   // resolved on first use
+
+        // Static probe client: short timeout, safe to share across instances
+        private static readonly HttpClient _probeHttp = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
 
         public OobaboogaBackend(string baseUrl = "http://127.0.0.1:5000")
         {
             _baseUrl = baseUrl.TrimEnd('/');
-            _probeHttp = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
         }
 
         // ── ILlmBackend ────────────────────────────────────────────────────────

@@ -18,11 +18,13 @@ namespace SallyBot.Backends
         public bool IsConnected { get; private set; }
 
         private readonly string _serverUrl;
+        private readonly string _model;
         private SocketIO? _socket;
 
-        public DalaiBackend(string serverUrl = "http://localhost:3000")
+        public DalaiBackend(string serverUrl = "http://localhost:3000", string model = "alpaca.7B")
         {
             _serverUrl = serverUrl;
+            _model     = model;
         }
 
         // ── Connection management ─────────────────────────────────────────────
@@ -71,7 +73,7 @@ namespace SallyBot.Backends
                 repeat_last_n = 64,
                 repeat_penalty = 1.1,
                 debug = false,
-                model = "alpaca.7B",
+                model = _model,
                 prompt,
             };
 
