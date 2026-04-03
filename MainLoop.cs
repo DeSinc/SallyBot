@@ -7,7 +7,7 @@ namespace SallyBot
     {
         internal static Task StartLoop()
         {
-            MainGlobal.Server = MainGlobal.Client.GetGuild(MainGlobal.guildId);
+            MainGlobal.Server = MainGlobal.Client.GetGuild(MainGlobal.GuildId);
             if (MainGlobal.Server != null) // check if bot is in a server
             {
                 Console.WriteLine("| Server detected: " + MainGlobal.Server.Name);
@@ -23,12 +23,12 @@ namespace SallyBot
                 Task.Delay(1200);
             }
 
-            Program.botUserId = MainGlobal.Client.CurrentUser.Id; // <--- bot's user ID is detected and filled in automatically
+            Program.BotUserId = MainGlobal.Client.CurrentUser.Id; // <--- bot's user ID is detected and filled in automatically
 
             // check if there is a nickname to set
-            Program.botName = MainGlobal.Server.GetUser(Program.botUserId).Nickname ??
+            Program.BotName = MainGlobal.Server.GetUser(Program.BotUserId).Nickname ??
                               // otherwise, just use username if there is no nickname
-                              MainGlobal.Server.GetUser(Program.botUserId).Username;
+                              MainGlobal.Server.GetUser(Program.BotUserId).Username;
 
             return Task.CompletedTask;
         }

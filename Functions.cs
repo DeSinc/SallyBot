@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -7,7 +7,6 @@ using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 
-// regex
 using System.Text.RegularExpressions;
 
 // Stable Diffusion required json and image manipulation packages
@@ -16,7 +15,6 @@ using Newtonsoft.Json.Linq;
 using RestSharp;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
-using System.Text.Json;
 using System.Linq;
 
 namespace SallyBot.Extras
@@ -488,7 +486,7 @@ namespace SallyBot.Extras
 
         public static string FilterPingsAndChannelTags(string inputMsg)
         {
-            Regex pingAndChannelTagDetectionRegex = new Regex(Program.pingAndChannelTagDetectFilterRegexStr);
+            Regex pingAndChannelTagDetectionRegex = new Regex(Program.PingAndChannelTagDetectFilterRegexStr);
             // replace pings and channel tags with their actual names
             var matches = pingAndChannelTagDetectionRegex.Matches(inputMsg);
             // get only unique matches
@@ -516,7 +514,6 @@ namespace SallyBot.Extras
                             inputMsg = inputMsg.Replace(matchedTag, $"{matchedUser.Nickname}");
                         else
                             inputMsg = inputMsg.Replace(matchedTag, $"{matchedUser.Username}");
-                        //inputMsg = inputMsg.Replace(matchedTag, $"@{matchedUser.Username}#{matchedUser.Discriminator}");
                     }
                     catch
                     {
@@ -533,79 +530,9 @@ namespace SallyBot.Extras
                         break; // not a real ID, break here
                     }
                 else
-                    break; // you somehow escaped this function without matching either, so break now before the code breaks
+                    break;
             }
             return inputMsg;
-        }
-
-        public static async Task CheckJsonResponse(string result, bool replyCheck)
-        {
-            // Parse the JSON output into a JsonDocument object
-            JsonDocument doc = JsonDocument.Parse(result);
-
-            // Get the root element of the JSON document
-            JsonElement root = doc.RootElement;
-
-            // Try to get the "candidates" property as an array
-            bool foundCandidates = root.TryGetProperty("candidates", out JsonElement candidates);
-
-            // Also check for a "promptFeedback" property as an array
-            bool foundFeedback = root.TryGetProperty("promptFeedback", out JsonElement promptFeedback);
-            if (foundCandidates)
-            {
-                // Get the first element of the array
-                JsonElement first = candidates[0];
-
-                // Get the "content" property as an object
-                JsonElement jsonContent = first.GetProperty("content");
-
-                // Get the "parts" property as an array
-                JsonElement parts = jsonContent.GetProperty("parts");
-
-                // Get the first element of the array
-                JsonElement part = parts[0];
-
-                // Get the "text" property as a string
-                string text = part.GetProperty("text").GetString();
-
-                Program.botReply = text;
-
-                if (replyCheck && // if this is a reply check, not a full reply request
-                    Program.botReply.ToLower().Trim()
-                    .Contains('y')) // and the reply check came back with a "YES" or "Y" or other affirmative response
-                {
-                    // flag LLM to generate a reply on next tick or followthrough code
-                    Program.botWillReply = true;
-
-                    // clear botReply so the bot doesn't shout "YES" in the chat if the reply fails to populate this field later
-                    Program.botReply = string.Empty;
-                }
-            }
-            else if (foundFeedback)
-            {
-                //// Get the first element of the array
-                //JsonElement first = promptFeedback[0];
-
-                //// Get the "content" property as an object
-                //JsonElement jsonContent = first.GetProperty("blockReason");
-
-                //// Get the "parts" property as an array
-                //JsonElement parts = jsonContent.GetProperty("parts");
-
-                //// Get the first element of the array
-                //JsonElement part = parts[0];
-
-                //// Get the "text" property as a string
-                //string text = part.GetProperty("text").GetString();
-
-                Console.WriteLine(result.ToString());
-                Console.WriteLine("Error: Response was blocked due to one of the above safeguards.");
-            }
-            else
-            {
-                Console.WriteLine(result.ToString());
-                Console.WriteLine("Error: The above JSON format different from expected. The usual response text was not present in the reply from the API. This might be due to an API restriction or a rate limit.");
-            }
         }
     }
 }
